@@ -1,4 +1,5 @@
 (Inheritance Allen human)
+(stv Allen 0.5 1)
 (Inheritance Abe human)
 (Inheritance Cason human)
 (Inheritance Davion human)
