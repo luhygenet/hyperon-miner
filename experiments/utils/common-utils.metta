@@ -1,5 +1,5 @@
 ;; Count the number elements in an expression
-(= (count-atom-element $tuple) (if (== $tuple ()) 0 (+ 1 (tuple-count (cdr-atom $tuple)))))
+(= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
 
 ;; Count the number of instances of a given pattern
 (= (count $db $pattern)
