@@ -1,9 +1,9 @@
  ;; Count the number elements in an expression
-(= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
+(= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
 
  ;; Count the number of instances of a given pattern
 (= (count $db $pattern)
-    (let $result (collapse (match &$db ($pattern) $pattern))
+    (let $result (collapse (match $db $pattern $pattern))
         (count-atom-element $result)
     )
 )
