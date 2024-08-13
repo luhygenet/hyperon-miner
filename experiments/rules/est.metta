@@ -1,3 +1,7 @@
+! (register-module! ../../experiments)
+! (import! &self experiments:utils:common-utils)
+! (import! &self data:u:common-utils)
+! (import! &db )
 
 (: LambdaLink Type)
 (: ConceptNode Type)
@@ -11,5 +15,5 @@
 
 (= (gen-est-rule $pattern $db $ms)
     (
-        let $minsup_pattern (minsup_eval $pattern $db $ms) ()
+        let $minsup_pattern (sup-eval $pattern $db $ms) ( if ($minsup_pattern) ($minsup_pattern) () )
     ))
