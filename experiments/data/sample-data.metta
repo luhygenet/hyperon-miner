@@ -1,0 +1,8 @@
+(Implication P Q)
+(Inheritance A B)
+(Inheritance A C)
+(Inheritance D D)
+(abebe)
+(kebede)
+(chala)
+(abebe)
