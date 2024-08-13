@@ -19,7 +19,10 @@
     (idx2var (VarIdx $k) $varlist))
 
 (= (Debruijn2var $symbol $varlist)
-    (if (== (get-type $symbol) %Undefined%) $symbol (empty)))
+    (case (get-type $symbol)
+        ((Linktype Empty)
+         (DeBruijn Empty)
+         ($_ $symbol))))
 
 (= (Debruijn2var ($link $first $second) $varlist)
     ($link (Debruijn2var $first $varlist) (Debruijn2var $second $varlist)))
@@ -30,3 +33,10 @@
       ((, $p1 $p2) (, (Debruijn2var $p1 $varlist) (Debruijn2var $p2 $varlist)))
       ((, $p1 $p2 $p3) (, (Debruijn2var $p1 $varlist) (Debruijn2var $p2 $varlist) (Debruijn2var $p3 $varlist)))
       ($_ (Debruijn2var $ptrn $varlist)))))
+
+;; Test
+; (: Linktype Type)
+; (: Inheritance (-> $a $b Linktype))
+; !(Deb2var (Inheritance (VarIdx Z) E) (Cons $Xvar (Cons $Yvar Nil)))
+; !(Deb2var (Inheritance A E) (Cons $Xvar (Cons $Yvar Nil)))
+; !(Deb2var (, (Inheritance (VarIdx Z) E) (Inheritance A (VarIdx (S Z)))) (Cons $Xvar (Cons $Yvar Nil)))

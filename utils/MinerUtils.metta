@@ -1,6 +1,3 @@
-; !(register-module! ../../hyperon-miner)
-!(import! &self hyperon-miner:utils:DeBruijnIndex)
-
 ;;;;;;;;;
 ;; Nat ;;
 ;;;;;;;;;
@@ -70,19 +67,19 @@
 
 (= (build-specialization $sp)
    (case (match &specializations (specializationOf $sp $aptrn) $sp)
-        ((%void% (let* ((($link $x $y) $sp)
+        ((Empty (let* ((($link $x $y) $sp)
                         ($aptrn ($link (VarIdx Z) (VarIdx (S Z)))))
                     (add-atom &specializations (specializationOf $sp $aptrn)))))))
 
 (= (build-specialization $sp $kb)
    (case (match $kb (: $wt (specializationOf $sp $aptrn)) $sp)
-        ((%void% (let* ((($link $x $y) $sp)
+        ((Empty (let* ((($link $x $y) $sp)
                         ($aptrn ($link (VarIdx Z) (VarIdx (S Z)))))
                     (add-atom $kb (: (sp_witness $sp) (specializationOf $sp $aptrn))))))))
 
 (= (add-abstractions $aptrn)
    (case (match &abstractions $aptrn $aptrn)
-        ((%void% (add-atom &abstractions $aptrn)))))
+        ((Empty (add-atom &abstractions $aptrn)))))
 
 ;; Get unique links
 (= (get-links) (match &abstractions ($link $x $y) $link))
