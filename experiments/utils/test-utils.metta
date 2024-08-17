@@ -10,3 +10,11 @@
 
  ;; check if the sup-eval function returns True when a pattern's support is greater than minimum support
 ! (sup-eval $database abebe 1) ;; True
+
+;; Test has-type
+!(has-type lambda (lambda x y))
+;; Test get-arity
+!(get-arity (lambda  (Parent $x Nil)  (Parent $x Nil)))
+
+;; TEST n_conjuncts
+!(n_conjuncts (lambda   (Parent $x Nil) (Parent $x Nil)) )
