@@ -52,3 +52,10 @@
            (get-arity (cdr-atom $pattern))
            1)))
 
+
+;;db size
+(: db_size (-> hyperon::space::DynSpace  Number))
+(= (db_size $db)
+    (count-atom-element (collapse (get-atoms $db)))
+)
+

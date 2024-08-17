@@ -18,3 +18,16 @@
 
 ;; TEST n_conjuncts
 !(n_conjuncts (lambda   (Parent $x Nil) (Parent $x Nil)) )
+
+
+
+;;test db size
+! (add-reduct &self (= (get-space) (new-space))) 
+!(add-atom (get-space) (Inheritance Abe human))
+!(add-atom (get-space) (Inheritance Rio human))
+!(add-atom (get-space) (Inheritance Bob human))
+!(add-atom (get-space) (Inheritance Mike human))
+!(add-atom (get-space) (Inheritance Zac human))
+
+
+!(db_size (get-space))
