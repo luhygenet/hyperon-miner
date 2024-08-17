@@ -59,3 +59,25 @@
     (count-atom-element (collapse (get-atoms $db)))
 )
 
+;; TODO: Implement support for negative powers.
+(: pow (-> $a $a $a))
+(= (pow $x $y)
+  (if (> $y 0 )
+  (* $x (pow $x (- $y 1)))
+  1
+  )
+
+ )
+
+
+ ;; universe count
+ (= (universe_count $pattern $db)
+  (pow (db_size $db) (n_conjuncts $pattern))
+ 
+ )
+
+
+
+
+
+

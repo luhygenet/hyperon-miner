@@ -31,3 +31,9 @@
 
 
 !(db_size (get-space))
+
+;;test pow
+ !(pow 5 3)
+
+
+!(universe_count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))
