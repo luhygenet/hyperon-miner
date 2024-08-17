@@ -36,4 +36,4 @@
  !(pow 5 3)
 
 
-!(universe_count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))
+!(universe-count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))

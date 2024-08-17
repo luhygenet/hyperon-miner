@@ -1,3 +1,4 @@
+
  ;; Declaration of List data type and constructors
 (: List (-> $a Type))
 (: Nil (List $a))
@@ -71,7 +72,7 @@
 
 
  ;; universe count
- (= (universe_count $pattern $db)
+ (= (universe-count $pattern $db)
   (pow (db_size $db) (n_conjuncts $pattern))
  
  )
