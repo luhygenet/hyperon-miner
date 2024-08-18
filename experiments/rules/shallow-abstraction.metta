@@ -4,13 +4,21 @@
 !(bind! &shabspace (new-space))
 !(bind! &valspace (new-space))
 
+;; Function to construct shallow abstraction over variable X
+(= (shabsX $db $x) (collapse(match $db (ValuationOf $x $z) (add-atom &shabspace (ShallowAbstractionOf $x $z)))))
+
+;; Function to construct shallow abstraction over variable Y
+(= (shabsY $db $y) (collapse(match $db (ValuationOf $y $t) (add-atom &shabspace (ShallowAbstractionOf $y $t)))))
+
 ;; Function to retrive shallow abstraction over all variables of a pattern from a valuation space
 (= (shallow-abstraction $rel $x $y $db)
-(let* (
-    (() (match $db (ValuationOf $x $z) (add-atom &shabspace (ShallowAbstractionOf $x $z))))
-    (() (match $db (ValuationOf $y $t) (add-atom &shabspace (ShallowAbstractionOf $y $t))))
+
+   (superpose ((collapse(match $db (ValuationOf $x $z) (add-atom &shabspace (ShallowAbstractionOf $x $z))))
+    (collapse(match $db (ValuationOf $y $t) (add-atom &shabspace (ShallowAbstractionOf $y $t))))
+    (let $t (match $db (, (ValuationOf $x $c) (ValuationOf $y $c)) True) (if (== $t True) (add-atom &shabspace (ShallowAbstractionOf $x $y)) Empty))
     )
-    (println! "Added shallow abstraction successfully"))
+    
+    )
 )
 
 ;; Testing shallow abstraction
