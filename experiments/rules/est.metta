@@ -23,4 +23,4 @@
     (match $db $pattern $pattern)
 )
  ; (check &db (abebe))
- ;! (match &db (abebe) yes)
+ ;! (match &db (abebe) yes)             
