@@ -15,8 +15,8 @@
         )
     (if (and (and (exist $emp) (exist $est))
             (and
-                (gt-zero-confidence-eval $emp)
-                (gt-zero-confidence-eval $est)))
+                (gt-zero-confidence-eval (let* ( ($list (cdr-atom $emp)) ($conf (car-atom $list))) $conf))
+                (gt-zero-confidence-eval (let* ( ($list (cdr-atom $est)) ($conf (car-atom $list))) $conf))))
         (jsd-eval $pattern $db $emp $est)
         (superpose ())
     ))
@@ -24,10 +24,12 @@
 
 (= (jsd-eval $pattern $db $emp $est)
     (let* (
-            ($m (/ (+ $emp $est) 2))
+            ($emp_extracted (car-atom $emp))
+            ($est_extracted (car-atom $est))
+            ($m (/ (+ $emp_extracted $est_extracted) 2))
         )
-    (cog-set-tv $pattern (cog-new-stv (sqrt (+ (/ (* $emp (log (/ $emp $m))) 2)
-                    (/ (* $est (log (/ $est $m))) 2))) 1.0))
+    (cog-set-tv $pattern (cog-new-stv (sqrt (+ (/ (* $emp_extracted (log (/ $emp_extracted $m))) 2)
+                    (/ (* $est_extracted (log (/ $est_extracted $m))) 2))) 1.0))
 )
 )
 
