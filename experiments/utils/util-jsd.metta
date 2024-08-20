@@ -20,9 +20,9 @@
 (= (emp-eval $pattern $db)
     (case $pattern
         (
-            ( (Parent abel henok) 0.6)
-            ( (Parent abel mary) 0.7)
-            ($_ 0.5)
+            ( (Parent abel henok) (0.6 1))
+            ( (Parent abel mary) (0.7 1))
+            ($_ (0.5 1))
         )
 ))
 
@@ -31,9 +31,9 @@
 (= (est-eval $pattern $db)
     (case $pattern
         (
-            ( (Parent abel henok) 0.55)
-            ( (Parent abel mary) 0.65)
-            ($_ 0.5)
+            ( (Parent abel henok) (0.55 1))
+            ( (Parent abel mary) (0.65 1))
+            ($_ (0.5 1))
         )
 ))
 
