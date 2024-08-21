@@ -94,3 +94,20 @@
     (pow (db_size $db) (n_conjuncts $pattern))
 
 )
+
+ ;Check if atom is member of list or not
+(= (is-member $y ()) False)
+(= (is-member $y ($x $xs))
+    (if (== $y $x)
+        True
+        (is-member $y $xs)
+    )
+)
+
+ ;check if atom is variable or not
+(= (is-variable $x)
+    (if (== (get-metatype $x) Variable)
+        True
+        False
+    )
+)
