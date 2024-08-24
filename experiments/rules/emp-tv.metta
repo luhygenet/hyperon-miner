@@ -1,7 +1,7 @@
-! (register-module! ../../../hyperon-miner)
-! (import! &database hyperon-miner:experiments:data:sample-data)
-! (import! &self hyperon-miner:experiments:utils:common-utils)
-! (import! &self hyperon-miner:utils:DeBruijnIndex)
+;! (register-module! ../../../hyperon-miner)
+;! (import! &database hyperon-miner:experiments:data:sample-data)
+;! (import! &self hyperon-miner:experiments:utils:common-utils)
+;! (import! &self hyperon-miner:utils:DeBruijnIndex)
 ;; Rule to calculate the empirical truth value of a pattern.
 
 ;; TODO: implement universe-count and support.
@@ -52,6 +52,6 @@
 
 ;;TODO candidate
 
-!(emp-tv (lambda (Parent $x Nil) (Parent $x Nil)) (new-space))
+;!(emp-tv (lambda (Parent $x Nil) (Parent $x Nil)) (new-space))
 
 
