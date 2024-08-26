@@ -59,7 +59,7 @@
 ;Extract joint variables that make the blocks dependent each other.
 (=(joint-variable $space $patterns ) (
     (add-var-to-space  $space $patterns)
-    (match $space $x $x )
+    (match $space $a $a )
     
 ))
 
@@ -83,12 +83,12 @@
 
  (get-subpatterns (, (Inheritance Abe human) (Inheritance Abe sodadrinker) (Inheritance Abe man)))
 
-;! (emp-tv ((Inheritance Abe human) (Abe human)) &db)
+! (emp-tv ((Inheritance Abe human) (Abe human)) &db)
 
 ;!(do-emp-tv (Inheritance Abe human))
 
 ;!(let $result (get-variable (pattern $x $y)) (superpose $result))  
 
-!(joint-variable (new-space) ((Parent $x $x) (Parent $x $x)))
+;!(joint-variable (new-space) ((Parent $x $y) (Parent $x $z)))
 
 
