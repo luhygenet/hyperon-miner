@@ -15,6 +15,9 @@
 
 (:get-subpatterns (-> LambdaT Atom))
 
+
+
+
 (=(list-patterns $x) (
     
     if (== $x ()) () (  
@@ -28,16 +31,18 @@
 )
 
 
-
+;Extract subpatterns or blocks from the given nested pattern
 ( = (get-subpatterns $pattern) 
     (if (== , (car-atom $pattern)) (
          let $result  (list-patterns (cdr-atom $pattern)) $result
     )  $pattern   
 ) )
 
+;Return variables in the pattern, later used to check the joint variable.
 (=(get-variable ($link $var1 $var2)) (
     if (== $var1 $var2) $var1 ($var1 $var2)
 ))
+
 
 (=(add-var-to-space $space $ptrns) 
 (if (== $ptrns ())()(
@@ -51,7 +56,7 @@
 ))
 )
 
-
+;Extract joint variables that make the blocks dependent each other.
 (=(joint-variable $space $patterns ) (
     (add-var-to-space  $space $patterns)
     (match $space $x $x )
@@ -77,11 +82,12 @@
  ;! (match &db (abebe) yes)
 
  (get-subpatterns (, (Inheritance Abe human) (Inheritance Abe sodadrinker) (Inheritance Abe man)))
-;! (emp-tv (Inheritance Abe human) &db)
+
+;! (emp-tv ((Inheritance Abe human) (Abe human)) &db)
 
 ;!(do-emp-tv (Inheritance Abe human))
 
-;!(let $result (get-variable (pattern $x $y)) (superpose $result))
+;!(let $result (get-variable (pattern $x $y)) (superpose $result))  
 
 !(joint-variable (new-space) ((Parent $x $x) (Parent $x $x)))
 
