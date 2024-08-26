@@ -59,4 +59,6 @@
 (Inheritance Jassy sodadrinker)
 (Inheritance Jenica sodadrinker)
 (Inheritance Kecia sodadrinker)
+(Inheritance Nil Nil)
 (Member Allen Father)
+(Nil Nil Nil)

@@ -6,7 +6,7 @@
 ! (count-atom-element (abebe, abebe, abebe)) ;; 3
 
  ;; check if the count function returns the number of instances of a given pattern
-! (count &database abebe) ;; 2
+! (counter &database abebe) ;; 2
 
  ;; check if the sup-eval function returns True when a pattern's support is greater than minimum support
 ! (sup-eval $database abebe 1) ;; True
@@ -32,8 +32,12 @@
 
 !(db_size (get-space))
 
-;;test pow
- !(pow 5 3)
-
 
 !(universe-count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))
+
+;;test pow
+ !(pow 5 3)
+! (pow 100000 -7)
+! (pow 5 3)
+!(pow 1 0)
+! (+ (abs -5) 10) ; 15
