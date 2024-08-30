@@ -16,11 +16,24 @@
     )
 )
 
+(= (counter_two $db $pattern)
+    (let $result (collapse (match $db $pattern $pattern))
+        (count-atom-element $result)
+    )
+)
  ;; Evaluate if the pattern has enough support
 (: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
 (= (sup-eval $db $pattern $ms)
     (let $sup (counter $db $pattern)
         (if (>= $sup $ms) True False)
+    )
+)
+
+;; returns the number of support of a pattern
+
+(= (sup-num $db $pattern)
+    (let $sup (counter_two $db $pattern)
+        $sup
     )
 )
 
@@ -77,6 +90,7 @@
             (
                 (False "Less than zero")
                 (True "Equal to zero")))))
+
  ;; pow is a function that calculates a to the power of b where a and b are numbers
 (: pow (-> Number Number Number))
 (= (pow $a $b)

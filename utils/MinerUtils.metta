@@ -1,5 +1,5 @@
 ; !(register-module! ../../hyperon-miner)
-!(import! &self hyperon-miner:utils:DeBruijnIndex)
+;!(import! &self hyperon-miner:utils:DeBruijnIndex)
 
 ;;;;;;;;;
 ;; Nat ;;

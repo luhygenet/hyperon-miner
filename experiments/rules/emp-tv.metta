@@ -1,8 +1,8 @@
- ; ! (register-module! ../../../hyperon-miner)
+ !(register-module! ../../../hyperon-miner)
 ! (import! &database hyperon-miner:experiments:data:sample-data)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
- ;;! (import! &self hyperon-miner:utils:MinerUtils)
- ;;! (import! &self hyperon-miner:utils:DeBruijnIndex)
+! (import! &self hyperon-miner:utils:MinerUtils)
+ ! (import! &self hyperon-miner:utils:DeBruijnIndex)
 ! (import! &self hyperon-miner:match:MinerMatch)
 
  ;; Rule to calculate the empirical truth value of a pattern.
@@ -46,3 +46,4 @@
 
 (= (candidate $pattern $count )
     (get-candidate Z $pattern $count))
+! (emp-tv (Inheritance Abe human) &database)
