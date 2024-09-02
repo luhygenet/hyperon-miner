@@ -1,40 +1,9 @@
- ; /**
- ; 	 * Given cnjtion and pattern, consider all possible connections
- ; 	 * (a.k.a linkages) and expand cnjtion accordingly. For instance if
- ; 	 *
- ; 	 * cnjtion = (Inheritance X Y)
- ; 	 * pattern = (Inheritance Z W)
- ; 	 *
- ; 	 * return
- ; 	 *
- ; 	 *   (And (Inheritance X Y) (Inheritance X W))
- ; 	 *   (And (Inheritance X Y) (Inheritance Z X))
- ; 	 *   (And (Inheritance X Y) (Inheritance Y W))
- ; 	 *   (And (Inheritance X Y) (Inheritance X Y))
- ; 	 *
- ; 	 * It will also only include patterns with minimum support ms
- ; 	 * according to db, and perform alpha-conversion when necessary.
- ; 	 * If an expansion is cnjtion itself it will be dismissed.
- ; 	 *
- ; 	 * mv is the maximum number of variables allowed in the resulting
- ; 	 *    patterns.
- ; 	 *
- ; 	 * es is a flag to enforce specialization by
- ; 	 *    discarding new variables.
- ;*/
-
 ! (register-module! ../../experiments)
 ! (import! &self experiments:utils:common-utils)
 ! (import! &self conj-exp)
 
 ! (bind! np (py-atom numpy))
 ! (bind! np-array (py-atom numpy.array))
-
- ; ! (bind! py-exec (py-atom exec))
-
- ; (= (remove-quotes $atom)
- ;     (py-exec (str " (output := [elem[1:-1] if isinstance (elem, str) else elem for elem in " $pattern "])"))
- ; )
 
 (= (expand_conjunction $cnjtion $pattern $db $ms $mv $es)
     (let* (
@@ -88,7 +57,7 @@
     (if (== $variables ())
         $var
         (if (== $var (car-atom $variables))
-            (random $set)
+            (generateRandomVar $var $variables)
              ; $rand
             (find-replacement $var (let* (
                         ($temp (cdr-atom $variables))
@@ -96,17 +65,11 @@
                     $tail)))
     )
 )
-(= (format $exp)
-    (rm_q $exp)
-)
+
  ;Test cases
  ; ! (get_variables (Inheritance $Y $X ConceptNode Test $Z))
- ; ! (format (collapse (replace (Inheritance $Y $Y ConceptNode Test $Z $Z $A)  ($X ($Y ($A ()))))))
-! (alpha_convert (Inheritance $Y $X ConceptNode Test $Z $Y) ($Y ($U ($V ()))))
-
- ;#########################################################
- ;###################### Not Complete #####################
- ;#########################################################
+ ; ! (collapse (replace (Inheritance $Y $Y ConceptNode Test $Z $Z $A)  ($X ($Y ($A ())))))
+ ; ! (alpha_convert (Inheritance $Y $X ConceptNode Test $Z) ($W ($U ($V ()))))
 
 (= (expand_conjunction_rec $cnjtion $apat $db $ms $mv $pattern)
     (let* (
@@ -125,7 +88,7 @@
 
 (= (inner_loop $cvi $cvars $pvi $pvars $cnjtion $pattern $mv $ms)
     (if (< $cvi (count-atom-element $cvars))
-        (let ($npat (expand_conjunction_connect $cnjtion $pattern (get_variables $pattern) (get_variables $cnjtion)))
+        (let ($npat (pat_format (expand_conjunction_connect $cnjtion $pattern (get_variables $pattern) (get_variables $cnjtion))))
             (if (and (<= (count-atom-element (get_variables $npat)) mv) (< (n_conjuncts $cnjtion) (n_conjuncts $npat)))
                 (if (< (count $npat) $ms)
                     (inner_loop (+ 1 $cvi) $cvars $pvi $pvars $cnjtion $pattern $mv $ms)
@@ -134,35 +97,23 @@
         (outer_loop (+1 $pvi) $pvars $cnjtion $pattern $mv $ms))
 )
 
- ; (= (p2c ($x $xs) $ys)
- ;     ( (p2c-helper $x $ys) (p2c $xs $ys)))
-
- ; (= (p2c () $ys) ())
-
- ; (= (p2c-helper $x ($y $ys))
- ;     ($x $y (p2c-helper $x $ys)))
- ; (= (p2c-helper $x ()) ())
-
  ; Test mapping
-! (mp_var ($Y ($X ())) ($a  ($b ($c ()))))
+ ; ! (combine_lists ($Y ($X ())) ($a  ($b ($c ()))))
 
 (= (expand_conjunction_connect $cnjtion $pattern $cnjtion_var $pattern_var)
-    (expand_conjunction_connect $cnjtion $pattern (p2c $cnjtion_var $pattern_var))
+    (expand_conjunction_connect $cnjtion $pattern (combine_lists $cnjtion_var $pattern_var))
 )
 
 (= (expand_conjunction_connect $cnjtion $pattern $pv2cv)
     (if (== $pv2cv ())
         ()
-        (,
-            $cnjtion
-            (pattern_var_replacer $pattern $pattern (car-atom $pv2cv) $cnjtion $pv2cv)
-        )
-)
+        (pattern_var_replacer $pattern $pattern (car-atom $pv2cv) $cnjtion $pv2cv)
+    )
 )
 
 (= (pattern_var_replacer $ori_pattern $pattern $var $cnjtion $pv2cv)
     (if (== $pattern ())
-        (expand_conjunctin_connect $cnjtion $ori_pattern (cdr-atom $pv2cv))
+        (Nil (expand_conjunction_connect $cnjtion $ori_pattern (cdr-atom $pv2cv)))
         (if (is-variable (car-atom $pattern))
             ( (car-atom $var) (pattern_var_replacer $ori_pattern (cdr-atom $pattern) (cdr-atom $var) $cnjtion $pv2cv))
             ( (car-atom $pattern) (pattern_var_replacer $ori_pattern (cdr-atom $pattern) $var $cnjtion $pv2cv)))
@@ -173,9 +124,5 @@
     pass
 )
 
- ; ! (let $x (cdr-atom ( ($x $Z ($x $y ())) ( ($x $Z ($x $y ())) ()))) (superpose $x))
- ;  ; ! (cdr-atom ($y))
- ;  ;Test expand_conjunction_connect
- ; ! (expand_conjunction_connect (Inheritance $X $Y) (Inheritance $Z $W) (get_variables (Inheritance $X $Y)) (get_variables (Inheritance $Z $W)))
-
- ; ! (let $x ( (py-dot hyp MeTTa.register_atom) ("print-all")) $x)
+ ;Test expand_conjunction_connect
+! (expand_conjunction_connect (Inheritance $X $Y) (Inheritance $Z $W $A) (get_variables (Inheritance $X $Y)) (get_variables (Inheritance $Z $W $A)))
