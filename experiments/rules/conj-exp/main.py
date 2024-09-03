@@ -132,11 +132,30 @@ def rand_str(run_context):
 
         new_var = V(base_name)
         mapping[str(b)] = new_var
+        metta = MeTTa()
+
+        # Getting a reference to a native GroundingSpace,
+        # implemented by the MeTTa core library.
+        grounding_space = GroundingSpaceRef()
+        grounding_space.add_atom(E(V("A"), V("B")))
+        grounding_space.add_atom(E(S("A"), S("B")))
+        space_atom = G(grounding_space)
+
+        # Registering a new custom token based on a regular expression.
+        # The new token can be used in a MeTTa program.
+        metta.register_atom("&space", space_atom)
+        A = "A"
+        print("process",metta.run(f"! (match &space ({A} $x) $x)")[0])
+        # return metta.run(f"!(match &space ({A} $x) $x)")[0]
+        # return V("$A")
         return [new_var]
 
     # Define the operation atom with its parameters and function
-    generateRandomVar = OperationAtom('generateRandomVar', lambda a, b: generate_random_var(a, b),
-                                      ['Atom', 'Atom', 'Variable'], unwrap=False)
+    # generateRandomVar = OperationAtom('generateRandomVar', lambda a, b: (print(f"a: {a}, b: {b}"),generate_random_var(a, b))[1],
+    #                                   ['Atom', 'Atom', 'Variable'], unwrap=False)
+    
+    generateRandomVar = OperationAtom('generateRandomVar', lambda a, b: (print(f"a: {a}, b: {b}"), generate_random_var(a, b))[1],
+                                  ['Atom', 'Atom', 'Variable'], unwrap=False)
 
     return {
         r"generateRandomVar": generateRandomVar
