@@ -46,7 +46,7 @@ def cnj_exp(metta):
     mapVariables = OperationAtom(
         'mp_var',
         lambda *args: map_variables(metta, *args),
-        [AtomType.ATOM, "Expression"],
+        [AtomType.ATOM, AtomType.ATOM, "Expression"],
         unwrap=False
     )
 

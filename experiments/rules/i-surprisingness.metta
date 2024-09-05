@@ -1,50 +1,104 @@
-; implementation of i-surprisingness explained in https://wiki.opencog.org/w/Measuring_Surprisingness
-
-; get max of two numbers
+; Python integration for max and min functions
 ! (bind! max (
     py-atom max (
         -> Number Number Number
     )
 ))
 
+! (bind! min (
+    py-atom min (
+        -> Number Number Number
+    )
+))
 
-; Define a function to calculate the total number of observations
+; Function to count occurrences of a combination in the dataset
+(= (count-occurrences $combination $data)
+   (foldl (lambda ($count $item)
+            (if (subset? $combination $item)
+                (+ $count 1)
+                $count))
+          0 $data))
+
+; Function to calculate the total number of observations
 (= (total-observations $data)
    (length $data))
 
-; Define a function to calculate empirical probability of a combination
-; count-occurrences yet to be implemented
+; Function to calculate empirical probability of a combination
 (= (empirical-prob $combination $data)
    (/ (count-occurrences $combination $data) (total-observations $data)))
 
-; Define a function to calculate the joint probability P(AB)
-(= (joint-prob $A $B $data)
-   (empirical-prob (list $A $B) $data))
+; Generalized function to calculate joint probability for any number of variables
+(= (joint-prob $variables $data)
+   (empirical-prob $variables $data))
 
-; Define a function to calculate the joint probability P(ABC)
-; list yet to be implemented
-(= (joint-prob $A $B $C $data)
-   (empirical-prob (list $A $B $C) $data))
+; Generalized maxP function for any number of variables
+(= (maxP $variables $data)
+   (foldl max 0
+          (map (lambda ($subset)
+                 (* (empirical-prob $subset $data)
+                    (empirical-prob (difference $variables $subset) $data)))
+               (subsets $variables))))
 
-; Define the maxP calculation function
-(= (maxP $A $B $C $data)
-   (max (* (joint-prob $A $B $data) (empirical-prob $C $data))
-        (* (joint-prob $A $C $data) (empirical-prob $B $data))
-        (* (joint-prob $B $C $data) (empirical-prob $A $data))
-        (* (empirical-prob $A $data) (empirical-prob $B $data) (empirical-prob $C $data))))
+; Generalized minP function for any number of variables
+(= (minP $variables $data)
+   (foldl min 1
+          (map (lambda ($subset)
+                 (* (empirical-prob $subset $data)
+                    (empirical-prob (difference $variables $subset) $data)))
+               (subsets $variables))))
 
-; Define the minP calculation function
-(= (minP $A $B $C $data)
-   (min (* (joint-prob $A $B $data) (empirical-prob $C $data))
-        (* (joint-prob $A $C $data) (empirical-prob $B $data))
-        (* (joint-prob $B $C $data) (empirical-prob $A $data))
-        (* (empirical-prob $A $data) (empirical-prob $B $data) (empirical-prob $C $data))))
+; Generalized I-Surprisingness function
+(= (i-surprisingness $variables $data)
+   (let (($joint-prob (joint-prob $variables $data))
+         ($maxP (maxP $variables $data))
+         ($minP (minP $variables $data)))
+     (max (- $joint-prob $maxP)
+          (- $minP $joint-prob))))
 
-; Define the I-Surprisingness function
-(= (i-surprisingness $A $B $C $data)
-   (max (- (joint-prob $A $B $C $data) (maxP $A $B $C $data))
-        (- (minP $A $B $C $data) (joint-prob $A $B $C $data))))
+; Generalized Normalized I-Surprisingness function
+(= (normalized-i-surprisingness $variables $data)
+   (/ (i-surprisingness $variables $data) (joint-prob $variables $data)))
 
-; Define the normalized I-Surprisingness function
-(= (normalized-i-surprisingness $A $B $C $data)
-   (/ (i-surprisingness $A $B $C $data) (joint-prob $A $B $C $data)))
+; Helper functions
+
+; Generates all non-empty subsets of a list (for maxP and minP)
+(= (subsets $variables)
+   (filter (lambda ($subset) (not (empty? $subset)))
+           (powerset $variables)))
+
+; Generates the power set (all subsets) of a list
+(= (powerset $lst)
+   (if (empty? $lst)
+       (list '())
+       (let (($rest (powerset (cdr $lst))))
+         (append $rest (map (lambda ($subset) (cons (car $lst) $subset)) $rest)))))
+
+; Calculates the difference between two sets
+(= (difference $set1 $set2)
+   (filter (lambda ($item) (not (member? $item $set2)))
+           $set1))
+
+; Checks if an item is a member of a list
+(= (member? $item $lst)
+   (if (empty? $lst)
+       false
+       (or (= $item (car $lst))
+           (member? $item (cdr $lst)))))
+
+; Checks if a list is empty
+(= (empty? $lst)
+   (match $lst
+      ('() true)
+      (_ false)))
+
+; Calculates the length of a list
+(= (length $lst)
+   (if (empty? $lst)
+       0
+       (+ 1 (length (cdr $lst)))))
+
+; Fold left function to accumulate a value across a list
+(= (foldl $fn $init $lst)
+   (if (empty? $lst)
+       $init
+       (foldl $fn ($fn $init (car $lst)) (cdr $lst))))
