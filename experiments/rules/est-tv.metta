@@ -9,15 +9,15 @@
 
 (: LambdaT LambdaLink)
 (: ConceptT hyperon::space::DynSpace)
-(: NumberT Number)
 
-(: gen-est-rule (-> hyperon::space::DynSpace  LambdaT  Number  Atom))
+
+
+
+
 
 (:get-subpatterns (-> LambdaT Atom))
 
 
-(Inheritance Abe human)
-(Inheritance Abe human)
 
 
 (=(list-patterns $x) (
