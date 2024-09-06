@@ -18,8 +18,7 @@ echo "! (show (est_tv))" >> tmpEsttv.metta
 
 # Add initialization and execution commands at the bottom
 cat <<EOF >> tmpEsttv.metta
-!  (est_tv &db (,(Inheritance x y) (Inheritance w y) (Inheritance x z) (Inheritance x o)))
-! (match &db (Inheritance $x $y) ($x $y))
+!  (est_tv &db (,(Inheritance $x $y) (Inheritance $w $y) (Inheritance $x $z) (Inheritance $x $o)))
 EOF 
 
 # Execute the metta command and time the execution, saving the result
