@@ -18,18 +18,60 @@ def combine_lists_op(metta: MeTTa, var1, var2):
     input_str1 = str(var1)
     input_str2 = str(var2)
     
-    list1 = parse_list_structure(input_str1.replace('"', ''))
-    list2 = parse_list_structure(input_str2.replace('"', ''))
+    list1 = parse_list_structure(input_str1)
+    list2 = parse_list_structure(input_str2) 
 
     combinations = combine_lists(list1, list2)
     
-    unique_combos = unique_combinations(combinations, list1, list2)
+    # unique_combos = unique_combinations(combinations, list1, list2)
     
-    combined_pattern = " ".join(["({} {} {})".format(combo[0], combo[1], combo[2]) for combo in unique_combos])
+    # This needs to be dynamic
+    combined_pattern = " ".join(["({} {} {})".format(combo[0], combo[1], combo[2]) for combo in combinations])
     combined_pattern_atoms = "(" + combined_pattern + ")"
 
     atoms = metta.parse_all(combined_pattern_atoms)
     return atoms
+
+def format_list(metta: MeTTa, list):
+    """
+    Formats a flat list of elements into groups that end with "End", and then
+    parses it into an Atom using the MeTTa instance.
+
+    Args:
+        metta (MeTTa): The MeTTa instance.
+        list (Atom): The input nested list structure as an Atom.
+
+    Returns:
+        Atom: The formatted list of groups as an Atom.
+    """
+    
+    input_str = str(list)
+    parsed_structure = parse_list_structure(input_str)
+
+    flat_list = flatten_list(parsed_structure)
+
+    grouped_list = []
+    current_group = []
+
+    # Group elements until you hit "End"
+    for item in flat_list:
+        if item == "End":
+            if current_group:  # Ensure we're not appending empty groups
+                grouped_list.append(f"({' '.join(current_group)})")
+            current_group = []  # Reset for the next group
+        else:
+            current_group.append(item)
+
+    # Join the grouped list into a single string
+    formatted_list = " ".join(grouped_list)
+    formatted_list_ready = "(" + formatted_list + ")"
+
+    # Parse the formatted list using MeTTa to return it as an Atom
+    formatted_atom = metta.parse_all(formatted_list_ready)
+
+    return formatted_atom
+
+
 
 def parse_list_structure(input_str):
     """Convert a string with parentheses into a nested list structure."""
@@ -104,22 +146,22 @@ def combine_lists(list1, list2):
     length = max(len(flat_list1), len(flat_list2))
     return combine_lists_recursive(flat_list1, flat_list2, length)
 
-def unique_combinations(combinations, list1, list2):
-    flat_list1 = flatten_list(list1)
-    flat_list2 = flatten_list(list2)
+# def unique_combinations(combinations, list1, list2):
+#     flat_list1 = flatten_list(list1)
+#     flat_list2 = flatten_list(list2)
     
-    seen = set()
-    unique_combos = []
-    list1_set = set(str(item) for item in flat_list1)
-    list2_set = set(str(item) for item in flat_list2)
+#     seen = set()
+#     unique_combos = []
+#     list1_set = set(str(item) for item in flat_list1)
+#     list2_set = set(str(item) for item in flat_list2)
 
-    for combo in combinations:
-        sorted_combo = tuple(sorted(str(item) for item in combo))
-        combo_set = set(sorted_combo)
-        if sorted_combo not in seen and combo_set != list1_set and combo_set != list2_set:
-            seen.add(sorted_combo)
-            unique_combos.append(combo)
-    return unique_combos
+#     for combo in combinations:
+#         sorted_combo = tuple(sorted(str(item) for item in combo))
+#         combo_set = set(sorted_combo)
+#         if sorted_combo not in seen and combo_set != list1_set and combo_set != list2_set:
+#             seen.add(sorted_combo)
+#             unique_combos.append(combo)
+#     return unique_combos
 
 @register_atoms(pass_metta=True)
 def cnj_exp(metta):
@@ -129,9 +171,15 @@ def cnj_exp(metta):
         lambda var1, var2: combine_lists_op(metta, var1, var2), 
         ['Atom', 'Atom', 'Expression'], 
         unwrap=False)
+    formatList = OperationAtom(
+        'format_list', 
+        lambda list: format_list(metta, list), 
+        ['Atom', 'Expression'], 
+        unwrap=False)
     
     return {
-        r"combine_lists": combineLists
+        r"combine_lists": combineLists,
+        r"format_list": formatList
     }
 
 
