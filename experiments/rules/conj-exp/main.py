@@ -25,8 +25,11 @@ def combine_lists_op(metta: MeTTa, var1, var2):
     
     # unique_combos = unique_combinations(combinations, list1, list2)
     
-    # This needs to be dynamic
-    combined_pattern = " ".join(["({} {} {})".format(combo[0], combo[1], combo[2]) for combo in combinations])
+    # This generates dynamic combinations with a variable number of elements
+    combined_pattern = " ".join(
+        ["({})".format(" ".join(combo)) for combo in combinations]
+    )
+
     combined_pattern_atoms = "(" + combined_pattern + ")"
 
     atoms = metta.parse_all(combined_pattern_atoms)
@@ -112,14 +115,16 @@ def parse_list_structure(input_str):
     return eval(parsed_str)
 
 def flatten_list(nested_list):
-    """Flatten a nested list structure into a flat list of elements."""
-    if isinstance(nested_list, list):
-        flat_list = []
-        for item in nested_list:
-            flat_list.extend(flatten_list(item))
-        return flat_list
-    else:
-        return [nested_list]
+    flat_list = []
+    stack = [nested_list]
+    while stack:
+        current = stack.pop()
+        if isinstance(current, list):
+            stack.extend(reversed(current))
+        else:
+            flat_list.append(current)
+    return flat_list
+
 
 def combine_lists_recursive(list1, list2, length, current_combination=None, index1=0, index2=0):
     if current_combination is None:
