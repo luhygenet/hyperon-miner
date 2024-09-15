@@ -88,7 +88,7 @@
     (if (== $variables ())
         $var
         (if (== $var (car-atom $variables))
-            (random $set)
+            (genRandomVar $set)
              ; $rand
             (find-replacement $var (let* (
                         ($temp (cdr-atom $variables))

@@ -1,67 +1,36 @@
-! (register-module! ../../../hyperon-miner)
-! (import! &database hyperon-miner:experiments:data:sample-data)
-! (import! &self hyperon-miner:experiments:utils:common-utils)
- ;;! (import! &self hyperon-miner:utils:MinerUtils)
- ;;! (import! &self hyperon-miner:utils:DeBruijnIndex)
-! (import! &self hyperon-miner:match:MinerMatch)
- ;!(import! &self hyperon-miner:utils:MinerUtils)
-
- ; joint-independence estimate with memoization
-(= (ji_tv_est_mem $pattern $db) 1
-
-)
-
-(= (get_mean $pattern) 1)
-
-(= (emp_tv_pbs_mem $pattern $db $jte_mean $db_ratio) 1)
-
- ;Calculate its estimate first to optimize empirical calculation
-(= (do-emp-tv $pattern $db $db_ratio)
-    (let* (
-            ($jte (ji_tv_est_mem $pattern $db))
-            ($emp_tv_pbs (emp_tv_pbs_mem  $pattern $db  $jte_mean  $db_ratio))
-            ($jte_mean (get_mean $jte)))
-        $emp_tv_pbs
-    )
-)
 
  ;; Rule to calculate the empirical truth value of a pattern.
 
+ ;;;;;;;;;;
+ ;; Type ;;
+ ;;;;;;;;;;
+
+(: TruthValue Type)
+
+ ;;;;;;;;;;;;;;;;;;
+ ;; Constructor ;;
+ ;;;;;;;;;;;;;;;;;;
+
+ ;; Takes pattern and db_ratio to form an
+ ;; empirical truth value.
+(: EMPTV (-> $a $b TruthValue))
+
 (= (Default_k) 1)
+
+ ;;Support: number of data trees matching a given pattern.
+(= (sup $pattern $db)
+    (count-atom-element (collapse (match $db $pattern $pattern))))
+
 (= (count_to_confidence $x) (/ $x (+ $x (Default_k))))
 
+ ;; calculate the empirical truth value of a pattern.
 (= (emp-tv $pattern $db)
     (let*
-        (
-            (
-                ($ucount )
-                ( (universe-count $pattern $db))
-            )
-        (
-            ($ms)
-            ($ucount)
+        ( ( ($ucount ) ( (universe-count $pattern $db)))
+            ( ($ms) ($ucount))
+            ( ($sup) ( (sup $pattern $db)))
+            ( ($conf) ( (count_to_confidence $ucount)) )
+            ($mean (/ $sup $ucount))
+            ($confidence   (* 1e-1 $conf))
         )
-    (
-        ($sup)
-        ( (support  $pattern   $ms)
-        )
-)
-
-(
-    ($conf)
-    ( (count_to_confidence $ucount))
-)
-
-($mean (/ $sup $ucount))
-($confidence   (* 1e-1 $conf))
-)
-
-($mean  $confidence)
-
-)
-)
-
-(= (candidate $pattern $count )
-    (get-candidate Z $pattern $count))
-
-! (do-emp-tv  (Inheritance Nil Nil) a 1)
+    (EMPTV $mean  $confidence)))
