@@ -25,15 +25,18 @@
                     match $spezspace (SpecializationOf $pattern $specialized)
                     (let $result (sup-eval $dbspace $specialized $minsup)
                         (if (== $result True)
-                            (add-atom $cndpspace $specialized)
+                            (add-atom $cndpspace (CandidatePattern $specialized))
                             $result
-                        ))
-            ))
-))
+                        )
+                    )
+                )
+            )
+        )
+    )
 )
 
  ;; First, let's run the valuation-set function to populate the &valspace with the valuation sets
-! (valuation-set Inheritance $x $y &dbspace &valspace)
+! (valuation-set Inheritance $xvalue $yvalue &dbspace &valspace)
 
  ;; Check if valuation sets are inserted correctly
 ! (match &valspace (ValuationOf $c $d) (ValuationOf $c $d))

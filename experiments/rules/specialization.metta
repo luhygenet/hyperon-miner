@@ -12,7 +12,7 @@
             (collapse (match $shabspace (ShallowAbstractionOf X $t) (add-atom $spezspace (SpecializationOf ($link $x $y) ($link $t $y)))))
             (collapse (match $shabspace (ShallowAbstractionOf Y $t) (add-atom $spezspace (SpecializationOf ($link $x $y) ($link $x $t)))))
         )
-)
+    )
 )
 
  ;; First, let's run the valuation-set function to populate the &valspace with the valuation sets
