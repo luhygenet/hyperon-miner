@@ -11,7 +11,7 @@
  ;; Count the number of instances of a given pattern
 (: counter (-> hyperon::space::DynSpace Atom Number))
 (= (counter $db $pattern)
-    (let $result (collapse (match $db ($pattern) $pattern))
+    (let $result (collapse (match $db $pattern $pattern))
         (count-atom-element $result)
     )
 )
