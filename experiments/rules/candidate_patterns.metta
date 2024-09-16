@@ -11,15 +11,6 @@
 ! (bind! &cndpspace (new-space))
 
 (= (candidatePattern $dbspace $spezspace $minsup $cndpspace)
-     ;     (match $spezspace (SpecializationOf $pattern $specialized)
-     ;         (let $result (sup-eval $dbspace $specialized $minsup)
-     ;             (if (== $result True)
-     ;                 (add-atom $cndpspace (candidatePattern $specialized $pattern))
-     ;                 (superpose ())
-     ;             )
-     ;         $result
-     ;     )
-     ; )
     (superpose (
             (collapse (
                     match $spezspace (SpecializationOf $pattern $specialized)
