@@ -103,8 +103,45 @@
     )
 )
 
+ ;reverse the list
+(:reverse (-> List List))
+
+(= (reverse ()) ())
+(= (append () $ele) ( $ele ()))
+
+(= (append ( $x $xs) $ele)
+    ( $x (append $xs $ele)))
+(= (reverse ( $x $xs))
+    (append (reverse $xs) $x))
+
+ ;! (reverse (Inherie (y (b (a (Nil (Inherie (y (x (a (Nil (Inheritance (y (x (b (d (Nil ())))))))))))))))))
+
+ ; put you code here
+(= (handle $x ($xs)) (cons-atom $xs $x))
+(= (handle $val ($x $y))
+    (let $z (cons-atom $x $val) (handle $z $y) )
+)
+
+(= (get_elements  () ()) ())
+(= (get_elements $val ($elm ()))  ( (cons-atom $elm $val)))
+( = (get_elements $val ($x ($xs $xss)))
+    (
+        if (== $x End)
+        (get_elements () ($xs $xss))
+        (
+            if ( == $xs End)
+            ( (cons-atom $x $val) (get_elements () $xss))
+            (let $f (cons-atom $x $val ) (get_elements $f  ($xs $xss)) )
+        )
+))
+
+(= (parse_list ($x ($xs $xss)))
+    (handle () (get_elements  () (reverse ($x ($xs $xss)))))
+
+)
+
 (= (expand_conjunction_rec $cnjtion $apat $db $ms $pattern)
-    (let $npat (let $temp (expand_conjunction_connect $cnjtion $pattern (get_variables $pattern) (get_variables $cnjtion)) (format_list $temp))
+    (let $npat (let $temp (expand_conjunction_connect $cnjtion $pattern (get_variables $pattern) (get_variables $cnjtion)) (parse_list $temp))
         (checker $cnjtion (reconstruct $cnjtion $npat) $ms))
 )
 
