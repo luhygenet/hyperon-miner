@@ -111,3 +111,63 @@
         False
     )
 )
+
+ ; THIS IMPLEMENTATION CONSIDERS THE VARIABLE NAMES
+(= (is_more_abstract ($link1 $x1 $y1) ($link2 $x2 $y2))
+    (if (== $link1 $link2)
+        (if
+            (and
+                (or
+                     ; Check if x1 and x2 are equal, or x1 is more abstract (a variable)
+                    (== $x1 $x2)
+                    (and
+                        (== (get-metatype $x1) Variable)
+                        (== (get-metatype $x2) Symbol)))
+                (or
+                     ; Check if y1 and y2 are equal, or y1 is more abstract (a variable)
+                    (== $y1 $y2)
+                    (and
+                        (== (get-metatype $y1) Variable)
+                        (== (get-metatype $y2) Symbol))))
+            True
+            False )
+        False
+    )
+)
+
+! (is_more_abstract (Inheritance cat $Y) (Inheritance $X pet))
+
+ ; Recursive function to check if the given clause is more abstract than any clause in the rest
+(= (is_more_abstract_in_list $clause $clauses)
+    (if (== $clauses ()) ; Base case: no more clauses to compare
+        False
+        (if (and (not (== $clause (car-atom $clauses))) (is_more_abstract $clause (car-atom $clauses))) ; Compare with the first clause
+            True
+            (is_more_abstract_in_list $clause (cdr-atom $clauses)) ; Recurse through the rest
+        ))
+)
+
+ ; Function to remove abstract clauses from a list of patterns
+(= (remove_abstract_clauses $clauses $original_clauses)
+    (if (== $clauses ())
+        ()
+        (let* (
+                ($clause (car-atom $clauses))
+                ($is_abstract (is_more_abstract_in_list $clause $original_clauses)) ; Check if clause is abstract
+            )
+         ; If the clause is abstract, skip it; otherwise, keep it
+        (if $is_abstract
+            (remove_abstract_clauses (cdr-atom $clauses) $original_clauses) ; Skip the clause and continue
+            ($clause (remove_abstract_clauses (cdr-atom $clauses) $original_clauses)) ; Keep the clause and continue
+        )))
+)
+
+ ; Initial function to call to remove abstract clauses
+(= (remove_abstract_clauses_initial $clauses)
+    (remove_abstract_clauses $clauses $clauses) ; Start with original clauses
+)
+
+ ; Test the remove_abstract_clauses function
+! (remove_abstract_clauses_initial ( (Inheritance cat $Y) (Inheritance $X pet) (Inheritance $X $Y) ))
+! (remove_abstract_clauses_initial ( (Inheritance $X C1) (Inheritance C2 $Y) (Inheritance $X $Y) ))
+! (remove_abstract_clauses_initial ( (Inheritance $X $Y) (Inheritance $Y $Z) (Inheritance $Z $W) ))
