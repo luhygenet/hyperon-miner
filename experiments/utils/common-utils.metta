@@ -113,6 +113,7 @@
 )
 
  ; THIS IMPLEMENTATION CONSIDERS THE VARIABLE NAMES
+ ; THIS WILL REMOVE REDUNDANT CLAUSES ALONG WITH THE ABSTRACTS
 (= (is_more_abstract ($link1 $x1 $y1) ($link2 $x2 $y2))
     (if (== $link1 $link2)
         (if
@@ -135,7 +136,8 @@
     )
 )
 
-! (is_more_abstract (Inheritance cat $Y) (Inheritance $X pet))
+ ;Test
+ ; ! (is_more_abstract (Inheritance cat $Y) (Inheritance $X pet))
 
  ; Recursive function to check if the given clause is more abstract than any clause in the rest
 (= (is_more_abstract_in_list $clause $clauses)
@@ -237,3 +239,37 @@
  ;     ( (Inheritance $X pet)
  ;         (Inheritance cat $Y)
  ;         (Inheritance $Z $X)))
+
+ ;########################
+ ; General function to remove redundant patterns if they are in
+ ; list format
+ ;########################
+
+(: remove_redundant_clauses (-> (List Clause) (List Clause)))
+(= (remove_redundant_clauses ())
+    ()
+)
+(= (remove_redundant_clauses ( $clause $rest))
+    (setInsert $clause (remove_redundant_clauses $rest))
+)
+
+(: setInsert (-> $t (List $t) (List $t)))
+(= (setInsert $item ())
+    ( $item ())
+)
+(= (setInsert $item ( $head $tail))
+    (if (== $item $head)
+        ( $head $tail)
+        ( $head (setInsert $item $tail))
+    )
+)
+
+ ; Test: Remove redundant clauses
+ ; ! (remove_redundant_clauses
+ ;     ( (Inheritance $X $Y)
+ ;         ( (Inheritance $X $Y)
+ ;             ( (Inheritance $X $Y)
+ ;                 ( (Inheritance $X W) ())
+ ;             )
+ ;     )
+ ; ))

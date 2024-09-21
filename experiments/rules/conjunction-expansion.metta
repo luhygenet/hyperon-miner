@@ -46,17 +46,6 @@
  ; This function extracts all the variables from a given pattern (Expression).
  ; It works recursively by checking each element of the pattern to see if it is of the metatype "Variable".
 
-(= (get_variables $pattern)
-    (if (== $pattern ())
-        ()
-        (if (== (let* (
-                        ($var (car-atom $pattern)))
-                    (get-metatype $var)) Variable)
-            ( (car-atom $pattern) (get_variables (cdr-atom $pattern)))
-            (get_variables (cdr-atom $pattern))
-        ))
-)
-
  ; Alpha convert pattern so that none of its variables collide with
  ; the variables in other_vars.
 
@@ -113,8 +102,6 @@
     ( $x (append $xs $ele)))
 (= (reverse ( $x $xs))
     (append (reverse $xs) $x))
-
- ;! (reverse (Inherie (y (b (a (Nil (Inherie (y (x (a (Nil (Inheritance (y (x (b (d (Nil ())))))))))))))))))
 
  ; put you code here
 (= (handle $x ($xs)) (cons-atom $xs $x))
@@ -216,7 +203,7 @@
 )
 
  ;Test cases
-! (expand_conjunction (Inheritance $X $Y) (Inheritance $Z $W $A) &db 10 2 False)
+! (expand_conjunction (Inheritance $X $Y) (Inheritance $Z $W) &db 10 2 False)
  ; ! (get_variables (Inheritance $Y $X ConceptNode Test $Z))
  ; ! (collapse (replace (Inheritance $Y $Y ConceptNode Test $Z $Z $A)  ($X ($Y ($A ())))))
  ; ! (let $x (alpha_convert (Inheritance $Y $X ConceptNode Test $Z) ($Y ($U ($V ())))) (get_variables $x))
