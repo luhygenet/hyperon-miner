@@ -168,6 +168,72 @@
 )
 
  ; Test the remove_abstract_clauses function
-! (remove_abstract_clauses_initial ( (Inheritance cat $Y) (Inheritance $X pet) (Inheritance $X $Y) ))
-! (remove_abstract_clauses_initial ( (Inheritance $X C1) (Inheritance C2 $Y) (Inheritance $X $Y) ))
-! (remove_abstract_clauses_initial ( (Inheritance $X $Y) (Inheritance $Y $Z) (Inheritance $Z $W) ))
+ ; ! (remove_abstract_clauses_initial ( (Inheritance cat $Y) (Inheritance $X pet) (Inheritance $X $Y) ))
+ ; ! (remove_abstract_clauses_initial ( (Inheritance $X C1) (Inheritance C2 $Y) (Inheritance $X $Y) ))
+ ; ! (remove_abstract_clauses_initial ( (Inheritance $X $Y) (Inheritance $Y $Z) (Inheritance $Z $W) ))
+
+ ; Function: get_variables
+ ; This function extracts all the variables from a given pattern (Expression).
+ ; It works recursively by checking each element of the pattern to see if it is of the metatype "Variable".
+
+(= (get_variables $pattern)
+    (if (== $pattern ())
+        ()
+        (if (== (let* (
+                        ($var (car-atom $pattern)))
+                    (get-metatype $var)) Variable)
+            ( (car-atom $pattern) (get_variables (cdr-atom $pattern)))
+            (get_variables (cdr-atom $pattern))
+        ))
+)
+
+ ; Helper function to check if a variable is in a nested list
+(= (is_variable_in_list $variable $list)
+    (if (== $list ())
+        False ; If list is empty, return False
+        (if (== $variable (car-atom $list))
+            True ; If the variable matches the first item, return True
+            (is_variable_in_list $variable (cdr-atom $list)) ; Check the rest of the list
+        )
+)
+)
+
+ ; Helper function to check if a variable is joint with any clause
+(= (is_variable_joint_with_clauses $variable $clauses)
+    (if (== $clauses ())
+        False ; If no clauses are left, return False
+        (let* (
+                ($clause_vars (let $temp (car-atom $clauses) (get_variables $temp))) ; Extract variables from the current clause
+            )
+         ; Check if the variable is in the current clause's variables
+        (if (is_variable_in_list $variable $clause_vars) ; ismember
+            True ; If found, return True
+            (is_variable_joint_with_clauses $variable (cdr-atom $clauses)) ; Otherwise, check the next clause
+        )
+)
+))
+
+ ; Recursive function to check all variables in the clause
+(= (are_all_variables_joint () $clauses) True)
+(= (are_all_variables_joint ($v $vs) $clauses)
+    (if (is_variable_joint_with_clauses $v $clauses)
+        (are_all_variables_joint $vs $clauses) ; Check the next variable
+        False ; If one variable is not joint, return False
+    )
+)
+
+ ; Main function: check if all variables in the clause are joint with other clauses
+(= (has_only_joint_variables $clause $clauses)
+    (let* (
+            ($clause_vars (get_variables $clause)) ; Extract variables from the clause
+        )
+     ; Check if each variable in the clause is joint with the other clauses
+    (are_all_variables_joint $clause_vars $clauses)
+)
+)
+
+ ; Test: Check if all variables in the first clause are joint with others
+ ; ! (has_only_joint_variables (Inheritance $X $Z $Y)
+ ;     ( (Inheritance $X pet)
+ ;         (Inheritance cat $Y)
+ ;         (Inheritance $Z $X)))
