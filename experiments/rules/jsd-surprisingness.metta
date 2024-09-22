@@ -109,12 +109,27 @@
 )
 
  ;;TODO: implement Present
-(: Present (-> TruthValue Bool))
-(= (Present $x) True)
+ ;;Present accepts an atom and checks if it is present in the db
+(: Present (-> Atom Bool))
+(= (Present $x)
+    (let $matchOutcome ( (match &self $x True ))
+        (if (or (== $matchOutcome ()) (== $matchOutcome empty) ) (False) (True))
+    )
 
+)
  ;;TODO: implement Absent
+ ; (: Absent (-> Atom Bool))
+ ; (= (Absent $x) not (Present $x))
+
+ ;;The Absent function checks if a given atom exists in the database.
+ ;; If the atom exists, the function returns False; otherwise, it returns True.
 (: Absent (-> Atom Bool))
-(= (Absent $x) True)
+(= (Absent $x)
+    (let $matchOutcome ( (match &self $x True ))
+        (if (or (== $matchOutcome ()) (== $matchOutcome []) ) (True) (False))
+    )
+
+)
 
  ;; evaluateJsdSurpCriteria checks if the JSD-Surprisingness criteria is met
 (: evaluateJsdSurpCriteria (-> Atom Atom Atom Bool))
@@ -152,7 +167,7 @@
 )
 
  ;;Test
-
+(Person A)
 ! (assertEqual
     (gt_zero_confidence_eval (STV 0.5 0.1) )
     True)
@@ -166,7 +181,7 @@
 !  (mapper PresentLink ($cnj-bodies-0 $cnj-bodies-1))
 
 ! (gt_zero_confidence_eval (STV 0.5 0.1) )
-! (evaluateJsdSurpCriteria (Inheritance Allen human) (STV 0.1 0.2) $z)
 ! (absolutely_true_eval  (STV 1 2))
 ! (absolutely_true_eval  (STV 1 2))
-! (evaluateJsdSurpCriteria (Inheritance Allen human) (STV 0.1 0.2) $z)
+! (Present (Person A))
+! (Absent (Person A))
