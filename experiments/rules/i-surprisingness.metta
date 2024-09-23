@@ -21,15 +21,18 @@
 
 ; Function to calculate the total number of observations
 (= (total-observations $data)
-   (length $data))
+   (length $data)
+)
 
 ; Function to calculate empirical probability of a combination
 (= (empirical-prob $combination $data)
-   (/ (count-occurrences $combination $data) (total-observations $data)))
+   (/ (count-occurrences $combination $data) (total-observations $data))
+)
 
 ; Generalized function to calculate joint probability for any number of variables
 (= (joint-prob $variables $data)
-   (empirical-prob $variables $data))
+   (empirical-prob $variables $data)
+)
 
 ; Generalized maxP function for any number of variables
 (= (maxP $variables $data)
@@ -37,7 +40,10 @@
           (map (lambda ($subset)
                  (* (empirical-prob $subset $data)
                     (empirical-prob (difference $variables $subset) $data)))
-               (subsets $variables))))
+               (subsets $variables)
+         )
+   )
+)
 
 ; Generalized minP function for any number of variables
 (= (minP $variables $data)
@@ -45,15 +51,22 @@
           (map (lambda ($subset)
                  (* (empirical-prob $subset $data)
                     (empirical-prob (difference $variables $subset) $data)))
-               (subsets $variables))))
+               (subsets $variables)
+      )
+   )
+)
 
 ; Generalized I-Surprisingness function
 (= (i-surprisingness $variables $data)
    (let (($joint-prob (joint-prob $variables $data))
          ($maxP (maxP $variables $data))
-         ($minP (minP $variables $data)))
+         ($minP (minP $variables $data))
+         )
      (max (- $joint-prob $maxP)
-          (- $minP $joint-prob))))
+          (- $minP $joint-prob)
+      )
+   )
+)
 
 ; Generalized Normalized I-Surprisingness function
 (= (normalized-i-surprisingness $variables $data)
@@ -101,4 +114,6 @@
 (= (foldl $fn $init $lst)
    (if (empty? $lst)
        $init
-       (foldl $fn ($fn $init (car $lst)) (cdr $lst))))
+       (foldl $fn ($fn $init (car $lst)) (cdr $lst))
+   )
+)
