@@ -4,6 +4,15 @@
 (: Nil (List $a))
 (: Cons (-> $a (List $a) (List $a)))
 
+;; Define Nat
+(: Nat Type)
+(: Z Nat)
+(: S (-> Nat Nat))
+
+;; Define cast functions between Nat and Number
+(: fromNumber (-> Number Nat))
+(= (fromNumber $n) (if (<= $n 0) Z (S (fromNumber (- $n 1)))))
+
  ;; Count the number elements in an expression
 (: count-atom-element (-> %Undefined% Number))
 (= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
@@ -16,11 +25,11 @@
     )
 )
 
- ;; Evaluate if the pattern has enough support
+;; Evaluate if the pattern has enough support
 (: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
 (= (sup-eval $db $pattern $ms)
     (let $sup (counter $db $pattern)
-        (if (>= $sup $ms) True False)
+        (if (>= $sup $ms) (CandidatePattern $pattern) (superpose ()))
     )
 )
 
