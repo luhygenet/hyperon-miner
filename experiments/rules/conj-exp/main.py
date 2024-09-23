@@ -13,179 +13,179 @@ from hyperon.base import Tokenizer, SExprParser
 from hyperon.ext import register_atoms, register_tokens
 import hyperonpy as hp
 
-def combine_lists_op(metta: MeTTa, var1, var2):
-    #($Y ($X ())) ($a  ($b ($c ())))
-    input_str1 = str(var1)
-    input_str2 = str(var2)
+# def combine_lists_op(metta: MeTTa, var1, var2):
+#     #($Y ($X ())) ($a  ($b ($c ())))
+#     input_str1 = str(var1)
+#     input_str2 = str(var2)
     
-    list1 = parse_list_structure(input_str1)
-    list2 = parse_list_structure(input_str2) 
+#     list1 = parse_list_structure(input_str1)
+#     list2 = parse_list_structure(input_str2) 
 
-    combinations = combine_lists(list1, list2)
+#     combinations = combine_lists(list1, list2)
     
-    # unique_combos = unique_combinations(combinations, list1, list2)
+#     # unique_combos = unique_combinations(combinations, list1, list2)
     
-    # This generates dynamic combinations with a variable number of elements
-    combined_pattern = " ".join(
-        ["({})".format(" ".join(combo)) for combo in combinations]
-    )
+#     # This generates dynamic combinations with a variable number of elements
+#     combined_pattern = " ".join(
+#         ["({})".format(" ".join(combo)) for combo in combinations]
+#     )
 
-    combined_pattern_atoms = "(" + combined_pattern + ")"
+#     combined_pattern_atoms = "(" + combined_pattern + ")"
 
-    atoms = metta.parse_all(combined_pattern_atoms)
-    return atoms
+#     atoms = metta.parse_all(combined_pattern_atoms)
+#     return atoms
 
-def format_list(metta: MeTTa, list):
-    """
-    Formats a flat list of elements into groups that end with "End", and then
-    parses it into an Atom using the MeTTa instance.
+# def format_list(metta: MeTTa, list):
+#     """
+#     Formats a flat list of elements into groups that end with "End", and then
+#     parses it into an Atom using the MeTTa instance.
 
-    Args:
-        metta (MeTTa): The MeTTa instance.
-        list (Atom): The input nested list structure as an Atom.
+#     Args:
+#         metta (MeTTa): The MeTTa instance.
+#         list (Atom): The input nested list structure as an Atom.
 
-    Returns:
-        Atom: The formatted list of groups as an Atom.
-    """
+#     Returns:
+#         Atom: The formatted list of groups as an Atom.
+#     """
     
-    input_str = str(list)
-    parsed_structure = parse_list_structure(input_str)
+#     input_str = str(list)
+#     parsed_structure = parse_list_structure(input_str)
 
-    flat_list = flatten_list(parsed_structure)
+#     flat_list = flatten_list(parsed_structure)
 
-    grouped_list = []
-    current_group = []
+#     grouped_list = []
+#     current_group = []
 
-    # Group elements until you hit "End"
-    for item in flat_list:
-        if item == "End":
-            if current_group:  # Ensure we're not appending empty groups
-                grouped_list.append(f"({' '.join(current_group)})")
-            current_group = []  # Reset for the next group
-        else:
-            current_group.append(item)
+#     # Group elements until you hit "End"
+#     for item in flat_list:
+#         if item == "End":
+#             if current_group:  # Ensure we're not appending empty groups
+#                 grouped_list.append(f"({' '.join(current_group)})")
+#             current_group = []  # Reset for the next group
+#         else:
+#             current_group.append(item)
 
-    # Join the grouped list into a single string
-    formatted_list = " ".join(grouped_list)
-    formatted_list_ready = "(" + formatted_list + ")"
+#     # Join the grouped list into a single string
+#     formatted_list = " ".join(grouped_list)
+#     formatted_list_ready = "(" + formatted_list + ")"
 
-    # Parse the formatted list using MeTTa to return it as an Atom
-    formatted_atom = metta.parse_all(formatted_list_ready)
+#     # Parse the formatted list using MeTTa to return it as an Atom
+#     formatted_atom = metta.parse_all(formatted_list_ready)
 
-    return formatted_atom
+#     return formatted_atom
 
 
 
-def parse_list_structure(input_str):
-    """Convert a string with parentheses into a nested list structure."""
-    elements = []
-    current = ""
-    in_word = False
+# def parse_list_structure(input_str):
+#     """Convert a string with parentheses into a nested list structure."""
+#     elements = []
+#     current = ""
+#     in_word = False
     
-    for char in input_str:
-        if char == '(':
-            if in_word:
-                elements.append(f'"{current.strip()}", ')
-                current = ""
-                in_word = False
-            elements.append('[')
-        elif char == ')':
-            if in_word:
-                elements.append(f'"{current.strip()}"')
-                current = ""
-                in_word = False
-            elements.append('], ')
-        elif char.isspace():
-            if in_word:
-                elements.append(f'"{current.strip()}", ')
-                current = ""
-                in_word = False
-        else:
-            current += char
-            in_word = True
+#     for char in input_str:
+#         if char == '(':
+#             if in_word:
+#                 elements.append(f'"{current.strip()}", ')
+#                 current = ""
+#                 in_word = False
+#             elements.append('[')
+#         elif char == ')':
+#             if in_word:
+#                 elements.append(f'"{current.strip()}"')
+#                 current = ""
+#                 in_word = False
+#             elements.append('], ')
+#         elif char.isspace():
+#             if in_word:
+#                 elements.append(f'"{current.strip()}", ')
+#                 current = ""
+#                 in_word = False
+#         else:
+#             current += char
+#             in_word = True
     
-    if in_word:
-        elements.append(f'"{current.strip()}"')
+#     if in_word:
+#         elements.append(f'"{current.strip()}"')
     
-    parsed_str = ''.join(elements)
+#     parsed_str = ''.join(elements)
     
-    parsed_str = parsed_str.replace(', ]', ']')
-    parsed_str = parsed_str.rstrip(', ')
+#     parsed_str = parsed_str.replace(', ]', ']')
+#     parsed_str = parsed_str.rstrip(', ')
     
-    return eval(parsed_str)
+#     return eval(parsed_str)
 
-def flatten_list(nested_list):
-    flat_list = []
-    stack = [nested_list]
-    while stack:
-        current = stack.pop()
-        if isinstance(current, list):
-            stack.extend(reversed(current))
-        else:
-            flat_list.append(current)
-    return flat_list
+# def flatten_list(nested_list):
+#     flat_list = []
+#     stack = [nested_list]
+#     while stack:
+#         current = stack.pop()
+#         if isinstance(current, list):
+#             stack.extend(reversed(current))
+#         else:
+#             flat_list.append(current)
+#     return flat_list
 
 
-def combine_lists_recursive(list1, list2, length, current_combination=None, index1=0, index2=0):
-    if current_combination is None:
-        current_combination = []
+# def combine_lists_recursive(list1, list2, length, current_combination=None, index1=0, index2=0):
+#     if current_combination is None:
+#         current_combination = []
     
-    if len(current_combination) == length:
-        return [current_combination]
+#     if len(current_combination) == length:
+#         return [current_combination]
     
-    combinations = []
+#     combinations = []
     
-    for i in range(index1, len(list1)):
-        new_combination = current_combination + [list1[i]]
-        combinations.extend(combine_lists_recursive(list1, list2, length, new_combination, i + 1, index2))
+#     for i in range(index1, len(list1)):
+#         new_combination = current_combination + [list1[i]]
+#         combinations.extend(combine_lists_recursive(list1, list2, length, new_combination, i + 1, index2))
 
-    for j in range(index2, len(list2)):
-        new_combination = current_combination + [list2[j]]
-        combinations.extend(combine_lists_recursive(list1, list2, length, new_combination, index1, j + 1))
+#     for j in range(index2, len(list2)):
+#         new_combination = current_combination + [list2[j]]
+#         combinations.extend(combine_lists_recursive(list1, list2, length, new_combination, index1, j + 1))
 
-    return combinations
+#     return combinations
 
-def combine_lists(list1, list2):
-    flat_list1 = flatten_list(list1)
-    flat_list2 = flatten_list(list2)
-    length = max(len(flat_list1), len(flat_list2))
-    return combine_lists_recursive(flat_list1, flat_list2, length)
-
-# def unique_combinations(combinations, list1, list2):
+# def combine_lists(list1, list2):
 #     flat_list1 = flatten_list(list1)
 #     flat_list2 = flatten_list(list2)
-    
-#     seen = set()
-#     unique_combos = []
-#     list1_set = set(str(item) for item in flat_list1)
-#     list2_set = set(str(item) for item in flat_list2)
+#     length = max(len(flat_list1), len(flat_list2))
+#     return combine_lists_recursive(flat_list1, flat_list2, length)
 
-#     for combo in combinations:
-#         sorted_combo = tuple(sorted(str(item) for item in combo))
-#         combo_set = set(sorted_combo)
-#         if sorted_combo not in seen and combo_set != list1_set and combo_set != list2_set:
-#             seen.add(sorted_combo)
-#             unique_combos.append(combo)
-#     return unique_combos
+# # def unique_combinations(combinations, list1, list2):
+# #     flat_list1 = flatten_list(list1)
+# #     flat_list2 = flatten_list(list2)
+    
+# #     seen = set()
+# #     unique_combos = []
+# #     list1_set = set(str(item) for item in flat_list1)
+# #     list2_set = set(str(item) for item in flat_list2)
 
-@register_atoms(pass_metta=True)
-def cnj_exp(metta):
+# #     for combo in combinations:
+# #         sorted_combo = tuple(sorted(str(item) for item in combo))
+# #         combo_set = set(sorted_combo)
+# #         if sorted_combo not in seen and combo_set != list1_set and combo_set != list2_set:
+# #             seen.add(sorted_combo)
+# #             unique_combos.append(combo)
+# #     return unique_combos
+
+# @register_atoms(pass_metta=True)
+# def cnj_exp(metta):
     
-    combineLists = OperationAtom(
-        'combine_lists', 
-        lambda var1, var2: combine_lists_op(metta, var1, var2), 
-        ['Atom', 'Atom', 'Expression'], 
-        unwrap=False)
-    formatList = OperationAtom(
-        'format_list', 
-        lambda list: format_list(metta, list), 
-        ['Atom', 'Expression'], 
-        unwrap=False)
+#     combineLists = OperationAtom(
+#         'combine_lists', 
+#         lambda var1, var2: combine_lists_op(metta, var1, var2), 
+#         ['Atom', 'Atom', 'Expression'], 
+#         unwrap=False)
+#     formatList = OperationAtom(
+#         'format_list', 
+#         lambda list: format_list(metta, list), 
+#         ['Atom', 'Expression'], 
+#         unwrap=False)
     
-    return {
-        r"combine_lists": combineLists,
-        r"format_list": formatList
-    }
+#     return {
+#         r"combine_lists": combineLists,
+#         r"format_list": formatList
+#     }
 
 
 @register_atoms(pass_metta=True)

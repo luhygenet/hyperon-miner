@@ -103,7 +103,6 @@
 (= (reverse ( $x $xs))
     (append (reverse $xs) $x))
 
- ; put you code here
 (= (handle $x ($xs)) (cons-atom $xs $x))
 (= (handle $val ($x $y))
     (let $z (cons-atom $x $val) (handle $z $y) )
@@ -128,7 +127,7 @@
 )
 
 (= (expand_conjunction_rec $cnjtion $apat $db $ms $pattern)
-    (let $npat (let $temp (expand_conjunction_connect $cnjtion $pattern (get_variables $pattern) (get_variables $cnjtion)) (parse_list $temp))
+    (let $npat (let $temp (expand_conjunction_connect $cnjtion $pattern) (parse_list $temp))
         (checker $cnjtion (reconstruct $cnjtion $npat) $ms))
 )
 
@@ -156,7 +155,7 @@
 
  ; Combine and reconstruct are functions to combine each patterns generated with
  ; the conjunction and then reconstruct them into a list.
- ; It will create something like this: ((, (Inheritance $X $Y) (Inheritance $X $W $A)) ...)
+ ; It will create something like this: ((, (Inheritance $X $Y) (Inheritance $X $W)) ...)
 
 (= (combine $cnjtion $pattern)
     (if (== $patterns ())
@@ -172,13 +171,29 @@
     )
 )
 
-(= (expand_conjunction_connect $cnjtion $pattern $cnjtion_var $pattern_var)
-    (expand_conjunction_connect $cnjtion $pattern (combine_lists $cnjtion_var $pattern_var))
+ ; If the patterns are only two variables with the link
+ ; If that is not the case I have written a python grounded function named combine_lists to find
+ ; the combinations between every variable in the pattern and the conjunction
+
+(= (generate-combinations ($link $x $y) ($link $a $b))
+    (   ($x $a)
+        ($x $b)
+        ($y $a)
+        ($y $b)
+        ($a $x)
+        ($a $y)
+        ($b $x)
+        ($b $y)
+    )
+)
+
+(= (expand_conjunction_connect $cnjtion $pattern)
+    (expand_conjunction_connect $cnjtion $pattern (generate-combinations  $cnjtion $pattern))
 )
 
  ; This function create the patterns using the combined variables from the
  ; Pattern and the Conjunction. It will create a list of patterns that can be used for combination later with conjunction.
- ; It will create something like: (Inheritance ($X ($Y ($X (End (Inheritance ($X ($Y ($W (End  ...))))))))))
+ ; It will create something like: (Inheritance ($X ($Y (End (Inheritance ($X ($Y (End  ...))))))))
 
 (= (expand_conjunction_connect $cnjtion $pattern $pv2cv)
     (if (== $pv2cv ())
@@ -204,8 +219,3 @@
 
  ;Test cases
 ! (expand_conjunction (Inheritance $X $Y) (Inheritance $Z $W) &db 10 2 False)
- ; ! (get_variables (Inheritance $Y $X ConceptNode Test $Z))
- ; ! (collapse (replace (Inheritance $Y $Y ConceptNode Test $Z $Z $A)  ($X ($Y ($A ())))))
- ; ! (let $x (alpha_convert (Inheritance $Y $X ConceptNode Test $Z) ($Y ($U ($V ())))) (get_variables $x))
- ; ! (format_list (Inheritance ($X ($Y ($W (Nil (Inheritance ($X ($Y ($A (Nil (Inheritance ($X ($X ($W (Nil (Inheritance ($X ($X ($A (Nil (Inheritance ($Y ($W ($A (Nil ()))))))))))))))))))))))))))
- ; ! (expand_conjunction_connect (Inheritance $X $Y) (Inheritance $X $W $A) (get_variables (Inheritance $X $Y)) (get_variables (Inheritance $X $W $A)))
