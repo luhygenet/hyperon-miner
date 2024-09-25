@@ -10,14 +10,6 @@
 
  ;; Valuation set Implementation
 (= (valuation-set $link $x $y $dbspace $valspace) (let* ((($w $z) (match $dbspace ($link $x $y) ($x $y)))
-                                    (() (println! ($w $z)))
                                     (() (add-atom $valspace (ValuationOf X $w)))
                                     (() (add-atom $valspace (ValuationOf Y $z))))
                                     (println! "Inserted valuation set into valuation space")))
-
-
-;; Test valuation-set Implementation
-;!(valuation-set Inheritance $x $y &valspace)
-
-;; Check if valuation sets are inserted correctly
-;!(match &valspace (ValuationOf $c $d) (ValuationOf $c $d))
