@@ -22,7 +22,7 @@
 
 ! (register-module! ../../experiments)
 ! (import! &self experiments:utils:common-utils)
-! (import! &self conj-exp)
+ ; ! (import! &self conj-exp)
 
  ; The starting point for the conjunction expansion. It passes
  ; the Alpha Converted pattern (if necessary) to the expand_conjunction functions.
@@ -30,7 +30,7 @@
 
 (= (expand_conjunction $cnjtion $pattern $db $ms $mv $es)
     (let* (
-            ($apat (alpha_convert $pattern (get_variables $cnjtion))))
+            ($apat (alpha_convert $cnjtion $pattern)))
         (if (> (let* (
                         ($temp (get_variables $pattern))
                         ($temp2 (get_variables $cnjtion)))
@@ -42,57 +42,22 @@
     )
 )
 
- ; Function: get_variables
- ; This function extracts all the variables from a given pattern (Expression).
- ; It works recursively by checking each element of the pattern to see if it is of the metatype "Variable".
-
  ; Alpha convert pattern so that none of its variables collide with
  ; the variables in other_vars.
 
-(= (alpha_convert $pattern $cnjtion_vars)
-    (if (== $cnjtion_vars ())
-        $pattern
-        (let* (
-                ($pattern_vars (get_variables $pattern))
-            )
-        (if (is-member (car-atom $cnjtion_vars) $pattern_vars)
-            (alpha_convert (collapse (replace $pattern $cnjtion_vars)) (cdr-atom $cnjtion_vars))
-            (alpha_convert $pattern (cdr-atom $cnjtion_vars))
-        )))
-)
-
- ; It recursively traverses the pattern, checking each atom, and replaces
- ; it with a corresponding replacement (if one exists) by calling `find-replacement`.
-
-(= (replace $pattern $variables)
-    (if (== $pattern ())
-        (empty)
-        (let* (
-                ($head (car-atom $pattern))
-                ($tail (cdr-atom $pattern))
-                ($rh (find-replacement $head $variables))
-            )
-        (superpose ($rh (replace $tail $variables)))
+(= (alpha_convert ($link1 $x1 $y1) ($link2 $x2 $y2))
+    (if (and (== $x1 $x2) (== $y1 $y2))
+        ($link2 $X-78235323 $y2)
+        ($link2 $x2 $y2)
     )
-))
-
- ; This function finds a replacement for a given variable
- ; in the list of variables. And the genrateRandomVar function is written
- ; with python and imported here.
-
-(= (find-replacement $var $variables)
-    (if (== $variables ())
-        $var
-        (if (== $var (car-atom $variables))
-            (generateRandomVar $var $variables)
-            (find-replacement $var (let* (
-                        ($temp (cdr-atom $variables))
-                        ($tail (car-atom $temp)))
-                    $tail)))
+)
+(= (alpha_convert ($link1 $x1 $y1) ($link2 $x2 $y2))
+    (if (and (== $x1 $x2) (== $y1 $y2))
+        ($link2 $x2 $Y-78235323)
+        ($link2 $x2 $y2)
     )
 )
 
- ;reverse the list
 (:reverse (-> List List))
 
 (= (reverse ()) ())
@@ -121,21 +86,29 @@
         )
 ))
 
+ ; Parse a list that is like:- (Inheritance ($X ($Y (End (Inheritance ($X ($Y (End  ...))))))))
+ ; into ((Inheritance $X $Y) (Inheritance $X $Y) ...) FOR later combination with cnjtion and
+ ; pattern matching against the db
+
 (= (parse_list ($x ($xs $xss)))
     (handle () (get_elements  () (reverse ($x ($xs $xss)))))
 
 )
 
 (= (expand_conjunction_rec $cnjtion $apat $db $ms $pattern)
-    (let $npat (let $temp (expand_conjunction_connect $cnjtion $pattern) (parse_list $temp))
-        (checker $cnjtion (reconstruct $cnjtion $npat) $ms))
+    (let $npat (let $temp (expand_conjunction_connect $cnjtion $apat) (parse_list $temp))
+        (checker $db (reconstruct $cnjtion $npat) $ms))
 )
 
  ; Simulate support evaluation since the support implementation currently takes
  ; lots of minutes to check just one support and I have to check more than 20 pattern's support
 
-(= (support_evaluation $pattern $minimum_support)
-    True
+(= (support_evaluation $db $pattern $ms)
+    (let $sup (counter $db $pattern)
+        (if (>= $sup $ms)
+            True
+            False)
+    )
 )
 
 (= (length ()) 0)
@@ -145,11 +118,11 @@
  ; This function checks if the patterns generated pass support evaluation and the conjunction passes n_conjuncts check
  ; (The implementation for n_conjunction in the common-utils.metta seems incorrect. I don't know maybe I am wrong :)
 
-(= (checker $cnjtion () $ms) ())
-(= (checker $cnjtion ($x $xs) $ms)
-    (if (support_evaluation $x $ms)
-        ($x (checker $cnjtion $xs $ms))
-        (checker $cnjtion $xs $ms)
+(= (checker $db () $ms) ())
+(= (checker $db ($x $xs) $ms)
+    (if (support_evaluation $db $x $ms)
+        ($x (checker $db $xs $ms))
+        (checker $db $xs $ms)
     )
 )
 
@@ -175,7 +148,7 @@
  ; If that is not the case I have written a python grounded function named combine_lists to find
  ; the combinations between every variable in the pattern and the conjunction
 
-(= (generate-combinations ($link $x $y) ($link $a $b))
+(= (generate-combinations ($link1 $x $y) ($link2 $a $b))
     (   ($x $a)
         ($x $b)
         ($y $a)
@@ -216,6 +189,18 @@
 (= (expand_conjunction_es_rec $cnjtion $apat $db $ms)
     (pass)
 )
+ ;##############
+ ;# Test cases #
+ ;##############
 
- ;Test cases
-! (expand_conjunction (Inheritance $X $Y) (Inheritance $Z $W) &db 10 2 False)
+ ;Populate the Atomspace with some data
+
+(Inheritance cat mammal)
+(ListLink mammal animal)
+(Inheritance square shape)
+
+ ;(expand_conjunction_inputs cnjtion pattern db ms mv es)
+! (expand_conjunction (Inheritance $X $Y) (ListLink $X $Y) &self 1 2 False)
+
+ ; One CE output for (Inheritance $X $Y) (ListLink $X $Y) with ms 2
+! (match &self (, (Inheritance $X $Y) (ListLink $Y $X-78235323)) ($X $Y $X-78235323))

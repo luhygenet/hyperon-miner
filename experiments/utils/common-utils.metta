@@ -4,12 +4,12 @@
 (: Nil (List $a))
 (: Cons (-> $a (List $a) (List $a)))
 
-;; Define Nat
+ ;; Define Nat
 (: Nat Type)
 (: Z Nat)
 (: S (-> Nat Nat))
 
-;; Define cast functions between Nat and Number
+ ;; Define cast functions between Nat and Number
 (: fromNumber (-> Number Nat))
 (= (fromNumber $n) (if (<= $n 0) Z (S (fromNumber (- $n 1)))))
 
@@ -25,7 +25,7 @@
     )
 )
 
-;; Evaluate if the pattern has enough support
+ ;; Evaluate if the pattern has enough support
 (: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
 (= (sup-eval $db $pattern $ms)
     (let $sup (counter $db $pattern)
@@ -282,3 +282,114 @@
  ;             )
  ;     )
  ; ))
+
+(= (is_subclause $clause $expr)
+    (if (== $expr ())
+        False
+        (if (== $clause (car-atom $expr)) ; If the clause matches the first element
+            True
+            (is_subclause $clause (cdr-atom $expr))) ; Otherwise, check the rest
+    )
+)
+
+ ;########################
+ ; Remove Redundunt subclauses from the list of clauses
+ ; It currently checks for subclauses in one depth.
+ ; It can be extended to check for subclauses within subclauses
+
+ ; Main function to process and remove redundant clauses from the expression
+(= (remove_redundant_subclauses $exp)
+    (process_expressions_for_redundant_subclauses $exp $exp)
+)
+
+ ; Outer loop to process the entire expression list
+(= (process_expressions_for_redundant_subclauses $expr $original_expr)
+    (if (== $expr ()) ; No more clauses, return empty
+        ()
+        (let* (
+                ($current_clause (car-atom $expr)) ; Get the current clause
+                ($remaining_expr (cdr-atom $expr))) ; Get the rest of the expression
+            (if (is_clause_redundant $current_clause $original_expr) ; Check if current clause is redundant
+                (process_expressions_for_redundant_subclauses $remaining_expr $original_expr) ; Skip redundant clause
+                ($current_clause (process_expressions_for_redundant_subclauses $remaining_expr $original_expr))))
+    )
+)
+
+ ; Check if the current clause is redundant by comparing with remaining expressions
+(= (is_clause_redundant $clause $remaining_expr)
+    (check_nested_subclauses $clause $remaining_expr) ; Check deeper for nested redundancy
+)
+
+ ; Go deeper into the structure and check nested subclauses
+(= (check_nested_subclauses $clause $remaining_expr)
+    (if (== $remaining_expr ())
+        False
+        (let* (
+                ($next_clause (car-atom $remaining_expr)) ; Get the next clause
+                ($remaining_rest (cdr-atom $remaining_expr))
+                ($is_redundant (or
+                        (is_subclause $clause $next_clause) ; Check for subclause in the nested list
+                        (check_nested_subclauses $clause $remaining_rest))))
+            $is_redundant )
+    )
+)
+
+ ; ! (remove_redundant_subclauses ( (Mortal $W) (Implies (Human $X) (Mortal $X))  (Human $X) ))
+
+ ; ##############################
+(= (is_more_abstract ($link1 $x1 $y1) ($link2 $x2 $y2) $relative_var)
+    (if (or (and (== $x1 $x2) (== $x1 $relative_var)) (and (== $y1 $y2) (== $y1 $relative_var)))
+        (if (== $link1 $link2)
+            (if
+                (and
+                    (or
+                         ; Check if x1 and x2 are equal, or x1 is more abstract (a variable)
+                        (== $x1 $x2)
+                        (and
+                            (== (get-metatype $x1) Variable)
+                            (== (get-metatype $x2) Symbol)))
+                    (or
+                         ; Check if y1 and y2 are equal, or y1 is more abstract (a variable)
+                        (== $y1 $y2)
+                        (and
+                            (== (get-metatype $y1) Variable)
+                            (== (get-metatype $y2) Symbol))))
+                True
+                False )
+            False
+        )
+    False )
+)
+
+(= (is_pat_more_abstract $l_pat $r_pat $relative_var)
+    (if (== (car-atom $l_pat) ,)
+        (if (== (car-atom $r_pat) ,)
+            (process_input_for_check (cdr-atom $l_pat) (cdr-atom $r_pat) $relative_var)
+            (process_input_for_check (cdr-atom $l_pat) ($r_pat) $relative_var))
+        (if (== (car-atom $r_pat) ,)
+            (process_input_for_check ($l_pat) (cdr-atom $r_pat) $relative_var)
+            (process_input_for_check ($l_pat) ($r_pat) $relative_var))
+    )
+)
+
+(= (process_input_for_check $l_pat $r_pat $relative_var)
+    (if (== $l_pat ())
+        False
+        (check_pattern_match (car-atom $l_pat) $r_pat $relative_var $l_pat $r_pat)
+    )
+)
+
+(= (check_pattern_match $l_pat $r_pat $relative_var $ori_l_pat $ori_r_pat)
+    (if (== $r_pat ())
+        (process_input_for_check (cdr-atom $ori_l_pat) $ori_r_pat $relative_var)
+        (if (is_more_abstract $l_pat  (car-atom $r_pat) $relative_var)
+            True
+            (check_pattern_match $l_pat (cdr-atom $r_pat) $relative_var $ori_l_pat $ori_r_pat))
+    )
+)
+
+ ; ! (is_pat_more_abstract (Inheritance $Z $W) (Inheritance $Z $Y) $Z) ;[False]
+ ; ! (is_pat_more_abstract (Inheritance $Z $W) (Inheritance $Z A) $Z) ; [True]
+ ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $X B)) (Inheritance $Z A) $X) ; [False]
+ ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $Y B)) (Inheritance $X A) $X) ; [True]
+ ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $Y B)) (, (Inheritance $X $Y) (Inheritance $X C0)) $X) ; [True]
