@@ -195,12 +195,12 @@
 
  ;Populate the Atomspace with some data
 
-(Inheritance cat mammal)
-(ListLink mammal animal)
-(Inheritance square shape)
+(INHERITANCE_LINK A B)
+(LIST_LINK B C)
+(INHERITANCE_LINK A D)
 
  ;(expand_conjunction_inputs cnjtion pattern db ms mv es)
-! (expand_conjunction (Inheritance $X $Y) (ListLink $X $Y) &self 1 2 False)
+! (expand_conjunction (INHERITANCE_LINK $X $Y) (LIST_LINK $X $Y) &self 1 2 False)
 
- ; One CE output for (Inheritance $X $Y) (ListLink $X $Y) with ms 2
-! (match &self (, (Inheritance $X $Y) (ListLink $Y $X-78235323)) ($X $Y $X-78235323))
+ ; One CE output for (Inheritance $X $Y) (LIST_LINK $X $Y) with ms 2
+! (match &self (, (INHERITANCE_LINK $X $Y) (LIST_LINK $Y $X-78235323)) ($X $Y $X-78235323))
