@@ -1,5 +1,6 @@
 ;;! (register-module! ../../../hyperon-miner)
 ;;! (import! &self hyperon-miner:experiments:utils:common-utils)
+;;! (import! &self hyperon-miner:experiments:utils:TruthValue)
 
 
 
@@ -48,6 +49,118 @@
         
     )
 ))
+
+
+(=(_beta_distribution $alpha $beta)(
+     let*(
+        ($beta_mean (beta_mean $alpha $beta))
+        ($beta_variance (beta_var $alpha $beta))
+     )
+
+     (Beta $beta_mean $beta_variance)
+))
+
+
+;;!(_beta_distribution 2 5)
+
+
+
+(=(mk_distribution_list $patten_list)(
+    if (== $patten_list ()) () (
+        let* (
+            ($head (car-atom $patten_list))
+            ($tail (cdr-atom $patten_list))
+            ($beta_dist (mk_distribution $head))
+            ($dummy (mk_distribution_list $tail))
+        )
+              (cons-atom $beta_dist $dummy)
+           
+    )
+))
+
+
+;;!(confidence->count 1.2)
+
+
+;!(mk_distribution ((Inheritance Abe human)(ETV 1.0 0.05)))
+
+;; accept pattern and $db return list of patterns with  thier empirical truth value
+ ;! (get-subpatterns (,(Inheritance Abe human) (Inheritance Rio human) (Inheritance Bob human)))
+
+;;Calculate the product of the probability over subpatterns
+;;without considering joint variables
+ (=(emp_tv_mem $pattern_list $db) (
+    if (== $pattern_list ()) () (
+        let* (
+              
+              ($head (car-atom $pattern_list))
+              ($tail (cdr-atom $pattern_list))
+             ; ($emp_value (emp-tv $head $db))
+              ($set_emp ($head (EMPTV 1.0 0.05)))
+              ($dummy (emp_tv_mem $tail $db))
+        )
+            
+            (cons-atom $set_emp $dummy)
+    )
+ ))
+
+
+(Beta (mean 54) (variance 57))
+
+(=(get_beta_mean_var $beta $key)(
+    let* (
+           ($temp (cdr-atom $beta));;((mean 54) (variance 57))
+           ($mean_tuple (car-atom $temp));; (mean 54)
+           ($mean_temp (cdr-atom $mean_tuple)) ;; (54)
+           ($mean_value (car-atom $mean_temp)) ;; 54
+           ($temp2  (cdr-atom $temp));;((variance 57))
+           ($var_tuple (car-atom $temp2 ));; (variance 57)
+           ($var_temp (cdr-atom $var_tuple));; (57)
+           ($variance (car-atom $var_temp)) ;; 57
+           
+    )
+      (
+        if (== $key mean) $mean_value $variance
+      )
+      
+))
+
+;!(get_beta_mean_var (Beta (mean 54) (variance 57)) var)
+
+
+
+
+;!(+ (square 3.0) 3)
+
+
+
+;!(var_accumulater ((Beta (mean 4) (variance 57)) (Beta (mean 6) (variance 57))) 0 5)
+
+
+(=(avrg_tv $tv_list)(
+    let* (
+        ($size (count-atom-element $tv_list))
+        ($mean (let $sum (mean_accumulater $tv_list 0) (/ $sum $size)))
+        ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (/ $var_sum $size)))
+    )
+        ($mean $re_variance)
+))
+
+
+;!(avrg_tv ((Beta (mean 4) (variance 57)) (Beta (mean 6) (variance 57)) (Beta (mean 4) (variance 57))) )
+
+
+(=(eq_prob $db $patten_list )(
+    let* (
+        ($tv (emp_tv_mem $patten_list $db))
+        ($beta_list (mk_distribution_list $tv))
+        ($prod_etv (avrg_tv $beta_list))
+    )
+        $prod_etv
+))
+
+
+
 
 
 ;;A function that calculates the set of values that Xi can take when its corresponding component is matched against the database alone,
@@ -111,11 +224,19 @@
             ($db_size  (db_size $db))
             ($pattern_list (get-subpatterns $pattern))
             ($list_length (count-atom-element $pattern_list))
-            ($est_tv (outer_temp $db $db_size $pattern_list $pattern_list 1 $list_length 1))
+            ($prob_value (eq_prob $db $pattern_list))
+            ($rp (car-atom $prob_value))
+            ($temp_rc (cdr-atom $prob_value))
+            ($rc (car-atom $prob_value))
+            ($rp_est (outer_temp $db $db_size $pattern_list $pattern_list 1 $list_length 1))
+            ($strength (* $rp $rp_est))
+            ($confidence (* 1e-1 $rc))
         ) 
-         $est_tv
+          (STV $strength $confidence)
     )
 )
+
+
 
 
 
