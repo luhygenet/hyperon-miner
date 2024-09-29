@@ -25,10 +25,11 @@
     )
 )
 
- ;; Evaluate if the pattern has enough support
+;; Evaluate if the pattern has enough support
 (: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
 (= (sup-eval $db $pattern $ms)
     (let $sup (counter $db $pattern)
+        (if (>= $sup $ms) (CandidatePattern $pattern) (superpose ()))
         (if (>= $sup $ms) (CandidatePattern $pattern) (superpose ()))
     )
 )
