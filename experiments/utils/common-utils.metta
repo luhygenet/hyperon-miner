@@ -4,12 +4,12 @@
 (: Nil (List $a))
 (: Cons (-> $a (List $a) (List $a)))
 
-;; Define Nat
+ ;; Define Nat
 (: Nat Type)
 (: Z Nat)
 (: S (-> Nat Nat))
 
-;; Define cast functions between Nat and Number
+ ;; Define cast functions between Nat and Number
 (: fromNumber (-> Number Nat))
 (= (fromNumber $n) (if (<= $n 0) Z (S (fromNumber (- $n 1)))))
 
@@ -25,7 +25,7 @@
     )
 )
 
-;; Evaluate if the pattern has enough support
+ ;; Evaluate if the pattern has enough support
 (: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
 (= (sup-eval $db $pattern $ms)
     (let $sup (counter $db $pattern)
@@ -81,23 +81,21 @@
 (: classify_integer_position (-> Number String))
 (= (classify_integer_position $x)
     (if (> $x 0)
-        ("Greater than zero")
+        1 ; Return 1 if x is greater than zero
         (case (equals-to-zero $x)
             (
-                (False "Less than zero")
-                (True "Equal to zero")))))
+                (False -1) ; Return -1 if x is less than zero
+                (True 0))))) ; Return 0 if x is equal to zero
  ;; pow is a function that calculates a to the power of b where a and b are numbers
 (: pow (-> Number Number Number))
 (= (pow $a $b)
     (case (classify_integer_position $b)
         (
-            ("Equal to zero" 1)
-            ("Less than zero" (/ 1 (pow $a (abs $b))))
+            (0 1)
+            (-1 (/ 1 (pow $a (abs $b))))
             ($_ (* $a (pow $a (- $b 1))))
         )
-)
-)
-
+))
  ;; universe count
 (= (universe-count $pattern $db)
     (pow (db_size $db) (n_conjuncts $pattern))
