@@ -13,7 +13,7 @@
 ! (bind! &cndpspace (new-space))
 ! (bind! &minedpspace (new-space))
 
-(= (depth)(fromNumber 2))
+(= (depth)(fromNumber 1))
 
 !(add-atom &cndpspace (CandidatePattern (Inheritance (VarIdx Z) (VarIdx (S Z)))))
 
@@ -36,7 +36,8 @@
     )
 )
 
-(= (init-miner $minsup $link $x $y)(
+
+(= (init-miner $minsup $link $x $y Z)(
     (superpose(
     (let ($link1 $s $t) (Debruijn2var ($link $x $y) (Cons $Xvar (Cons $Yvar Nil))) (valuation-set $link1 $s $t &dbspace &valspace))
     (shallow-abstraction &valspace &shabspace)
@@ -50,20 +51,30 @@
     )
 )
 
-(= (run-miner Z)(
-    match &cndpspace (CandidatePattern ($link $x $y)) (init-miner 2 $link $x $y)
+
+(= (init-miner $minsup $link $x $y (S $k))(
+    (superpose(
+    (let ($link1 $s $t) (Debruijn2var ($link $x $y) (Cons $Xvar (Cons $Yvar Nil))) (valuation-set $link1 $s $t &dbspace &valspace))
+    (shallow-abstraction &valspace &shabspace)
+    (let ($link1 $s $t) (Debruijn2var ($link $x $y) (Cons $Xvar (Cons $Yvar Nil))) (specialize-pattern $link1 $s $t &shabspace &spezspace))
+    (cleanup-cnd-spec &cndpspace)
+    (candidate-pattern &dbspace &spezspace $minsup &cndpspace)
+    (add-mined-pattern &minedpspace &cndpspace)
+    (match &cndpspace (CandidatePattern ($link $x $y))(remove-specd-pats &minedpspace &cndpspace (CandidatePattern ($link $x $y))))
+    (cleanup-spaces &valspace &shabspace &spezspace)
+    (init-miner $minsup $link $x $y $k)
+    ))
+    )
+)
+    
+
+
+(= (run-miner $minsup $depth)(
+    let ($link $x $y) (match &cndpspace (CandidatePattern ($link $x $y))($link $x $y)) (init-miner $minsup $link $x $y $depth)
     )
 )
 
-(= (run-miner (S $k))(
-    superpose(
-        (run-miner Z)
-        (run-miner $k)
-    )
-)
 
-)
-
-!(run-miner (depth))
+!(run-miner 2 (depth))
 !(match &cndpspace $h $h)
 !(match &minedpspace $h $h)
