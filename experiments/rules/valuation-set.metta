@@ -9,10 +9,11 @@
 ;!(satisfying-set (Inheritance $x $y) &dbspace)
 
 
- ;; Valuation set Implementation
+;; Valuation set Implementation
 (= (valuation-set $link $x $y $dbspace $valspace) (superpose (
-        (collapse (match $dbspace ($link $x $y) (superpose((remove-atom $valspace (ValuationOf X $x)) (add-atom $valspace (ValuationOf X $x))))))
-        (collapse (match $dbspace ($link $x $y) (superpose((remove-atom $valspace (ValuationOf Y $y)) (add-atom $valspace (ValuationOf Y $y))))))
+        (println! ($link $x $y))
+        (match $dbspace ($link $x $y) (superpose((remove-atom $valspace (ValuationOf X $x)) (add-atom $valspace (ValuationOf X $x)))))
+        (match $dbspace ($link $x $y) (superpose((remove-atom $valspace (ValuationOf Y $y)) (add-atom $valspace (ValuationOf Y $y)))))
         )   
     )
 )

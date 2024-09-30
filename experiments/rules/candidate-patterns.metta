@@ -11,17 +11,12 @@
 ;! (bind! &cndpspace (new-space))
 
 (= (candidate-pattern $dbspace $spezspace $minsup $cndpspace)
-    (superpose 
+    (match $spezspace (SpecializationOf $pattern ($link $x $y))
         (
-            (collapse (
-                match $spezspace (SpecializationOf $pattern $specialized)
-                    (add-atom $cndpspace (sup-eval $dbspace $specialized $minsup))
-                )
-            )
-        )
+        add-atom $cndpspace (sup-eval $dbspace ($link $x $y) $minsup)
     )
 )
-
+)
 ;; First, let's run the valuation-set function to populate the &valspace with the valuation sets
 ;! (valuation-set Inheritance $xvalue $yvalue &dbspace &valspace)
 
