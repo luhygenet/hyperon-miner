@@ -1,4 +1,3 @@
-
  ;; Declaration of List data type and constructors
 (: List (-> $a Type))
 (: Nil (List $a))
@@ -12,26 +11,38 @@
 ;; Define cast functions between Nat and Number
 (: fromNumber (-> Number Nat))
 (= (fromNumber $n) (if (<= $n 0) Z (S (fromNumber (- $n 1)))))
+(: fromNat (-> Nat Number))
+(= (fromNat Z) 0)
+(= (fromNat (S $k)) (+ 1 (fromNat $k)))
 
  ;; Count the number elements in an expression
-(: count-atom-element (-> %Undefined% Number))
-(= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
+(: tuple-count (-> %Undefined% Number))
+(= (tuple-count $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
 
  ;; Count the number of instances of a given pattern
 (: counter (-> hyperon::space::DynSpace Atom Number))
-(= (counter $db $pattern)
-    (let $result (collapse (match $db $pattern $pattern))
-        (count-atom-element $result)
+(= (counter $db ($link $x $y))
+    (let $result (collapse (match $db ($link $x $y) ($link $x $y)))
+        (tuple-count $result)
     )
 )
 
+; Count the number of instances of a given pattern
+(= (count $pattern $db)
+    (let* (($dptrn (Debruijn2var $pattern (Cons $Xvar (Cons $Yvar Nil))))
+           ($result (collapse (match $db $dptrn $dptrn))))
+        (tuple-count $result)))
+
+;; Evaluate if the pattern has enough support
 ;; Evaluate if the pattern has enough support
 (: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
-(= (sup-eval $db $pattern $ms)
-    (let $sup (counter $db $pattern)
-        (if (>= $sup $ms) (CandidatePattern $pattern) (superpose ()))
+(= (sup-eval $db ($link $x $y) $ms)
+    (let $sup (counter $db ($link $x $y))
+        (if (>= $sup $ms) (CandidatePattern (Var2Debruijn ($link $x $y))) (superpose ()))
     )
 )
+
+
 
  ;Check if expression is truth value or not
 (: cog-tv? (-> Atom Boolean))
