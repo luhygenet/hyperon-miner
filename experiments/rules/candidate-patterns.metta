@@ -12,12 +12,8 @@
 
 (= (candidate-pattern $dbspace $spezspace $minsup $cndpspace)
     (match $spezspace (SpecializationOf $pattern ($link $x $y))
-         ; (
-         ;     add-atom $cndpspace (sup-eval $dbspace ($link $x $y) $minsup)
-         ; )
         (let $result (sup-eval $dbspace ($link $x $y) $minsup)
             (superpose ( (remove-atom $cndpspace $result) (add-atom $cndpspace $result)))
-             ; (add-atom $cndpspace $result)
         )
 )
 )
