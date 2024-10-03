@@ -1,145 +1,276 @@
-from hyperon import *
-from hyperon.ext import register_atoms
-import re
-import sys
-import os
-import random
-import string
-import time
+# from hyperon import *
+# from hyperon.ext import register_atoms
+# import re
+# import sys
+# import os
+# import random
+# import string
+# import time
 
-from hyperon.atoms import ExpressionAtom, E, GroundedAtom, OperationAtom, ValueAtom, NoReduceError, AtomType, MatchableObject, VariableAtom,\
-    G, S,V, Atoms, get_string_value, GroundedObject, SymbolAtom
-from hyperon.base import Tokenizer, SExprParser
-from hyperon.ext import register_atoms, register_tokens
-import hyperonpy as hp
+# from hyperon.atoms import ExpressionAtom, E, GroundedAtom, OperationAtom, ValueAtom, NoReduceError, AtomType, MatchableObject, VariableAtom,\
+#     G, S,V, Atoms, get_string_value, GroundedObject, SymbolAtom
+# from hyperon.base import Tokenizer, SExprParser
+# from hyperon.ext import register_atoms, register_tokens
+# import hyperonpy as hp
 
-
-def remove_quotes_op(metta: MeTTa, *args):  
-
-    text = " ".join(str(atom) for atom in args)
-
-    unquoted_text = text.replace('"', '')
-
-    atoms = metta.parse_all(unquoted_text)
-    return [ValueAtom(atoms, 'Expression')]
-
-def map_variables(metta: MeTTa, *args):
-    cnj_var = args[0]
-    pat_var = args[1]
+# def combine_lists_op(metta: MeTTa, var1, var2):
+#     #($Y ($X ())) ($a  ($b ($c ())))
+#     input_str1 = str(var1)
+#     input_str2 = str(var2)
     
-    cnj_str = str(cnj_var)
-    pat_str = str(pat_var)
+#     list1 = parse_list_structure(input_str1)
+#     list2 = parse_list_structure(input_str2) 
 
-    #TODO implement mapping logic here
-    mapped_pattern = "(It is working)"
+#     combinations = combine_lists(list1, list2)
+    
+#     # unique_combos = unique_combinations(combinations, list1, list2)
+    
+#     # This generates dynamic combinations with a variable number of elements
+#     combined_pattern = " ".join(
+#         ["({})".format(" ".join(combo)) for combo in combinations]
+#     )
 
-    atoms = metta.parse_all(mapped_pattern)
-    return [ValueAtom(atoms, 'Expression')]
+#     combined_pattern_atoms = "(" + combined_pattern + ")"
 
-@register_atoms(pass_metta=True)
-def cnj_exp(metta):
-    removeQuote = OperationAtom(
-        'rm_q', 
-        lambda *args: remove_quotes_op(metta, *args), 
-        [AtomType.ATOM, "Expression"], 
-        unwrap=False)
-    mapVariables = OperationAtom(
-        'mp_var',
-        lambda *args: map_variables(metta, *args),
-        [AtomType.ATOM, AtomType.ATOM, "Expression"],
-        unwrap=False
-    )
+#     atoms = metta.parse_all(combined_pattern_atoms)
+#     return atoms
+
+# def format_list(metta: MeTTa, list):
+#     """
+#     Formats a flat list of elements into groups that end with "End", and then
+#     parses it into an Atom using the MeTTa instance.
+
+#     Args:
+#         metta (MeTTa): The MeTTa instance.
+#         list (Atom): The input nested list structure as an Atom.
+
+#     Returns:
+#         Atom: The formatted list of groups as an Atom.
+#     """
+    
+#     input_str = str(list)
+#     parsed_structure = parse_list_structure(input_str)
+
+#     flat_list = flatten_list(parsed_structure)
+
+#     grouped_list = []
+#     current_group = []
+
+#     # Group elements until you hit "End"
+#     for item in flat_list:
+#         if item == "End":
+#             if current_group:  # Ensure we're not appending empty groups
+#                 grouped_list.append(f"({' '.join(current_group)})")
+#             current_group = []  # Reset for the next group
+#         else:
+#             current_group.append(item)
+
+#     # Join the grouped list into a single string
+#     formatted_list = " ".join(grouped_list)
+#     formatted_list_ready = "(" + formatted_list + ")"
+
+#     # Parse the formatted list using MeTTa to return it as an Atom
+#     formatted_atom = metta.parse_all(formatted_list_ready)
+
+#     return formatted_atom
 
 
-    return {
-        r"rm_q": removeQuote,
-        r"mp_var": mapVariables
-    }
+
+# def parse_list_structure(input_str):
+#     """Convert a string with parentheses into a nested list structure."""
+#     elements = []
+#     current = ""
+#     in_word = False
+    
+#     for char in input_str:
+#         if char == '(':
+#             if in_word:
+#                 elements.append(f'"{current.strip()}", ')
+#                 current = ""
+#                 in_word = False
+#             elements.append('[')
+#         elif char == ')':
+#             if in_word:
+#                 elements.append(f'"{current.strip()}"')
+#                 current = ""
+#                 in_word = False
+#             elements.append('], ')
+#         elif char.isspace():
+#             if in_word:
+#                 elements.append(f'"{current.strip()}", ')
+#                 current = ""
+#                 in_word = False
+#         else:
+#             current += char
+#             in_word = True
+    
+#     if in_word:
+#         elements.append(f'"{current.strip()}"')
+    
+#     parsed_str = ''.join(elements)
+    
+#     parsed_str = parsed_str.replace(', ]', ']')
+#     parsed_str = parsed_str.rstrip(', ')
+    
+#     return eval(parsed_str)
+
+# def flatten_list(nested_list):
+#     flat_list = []
+#     stack = [nested_list]
+#     while stack:
+#         current = stack.pop()
+#         if isinstance(current, list):
+#             stack.extend(reversed(current))
+#         else:
+#             flat_list.append(current)
+#     return flat_list
 
 
-@register_atoms(pass_metta=True)
-def rand_str(run_context):
-    """
-    This function registers an operation atom `generateRandomVar` that dynamically generates a unique variable name.
-    It ensures the generated variable name is not already used within the given context. The uniqueness is achieved by
-    combining a random string with the current timestamp, and checking against existing variables in the atom.
+# def combine_lists_recursive(list1, list2, length, current_combination=None, index1=0, index2=0):
+#     if current_combination is None:
+#         current_combination = []
+    
+#     if len(current_combination) == length:
+#         return [current_combination]
+    
+#     combinations = []
+    
+#     for i in range(index1, len(list1)):
+#         new_combination = current_combination + [list1[i]]
+#         combinations.extend(combine_lists_recursive(list1, list2, length, new_combination, i + 1, index2))
 
-    The operation atom `generateRandomVar` takes two atoms as input and generates a new variable that does not conflict
-    with any existing variable names extracted from these atoms.
+#     for j in range(index2, len(list2)):
+#         new_combination = current_combination + [list2[j]]
+#         combinations.extend(combine_lists_recursive(list1, list2, length, new_combination, index1, j + 1))
+
+#     return combinations
+
+# def combine_lists(list1, list2):
+#     flat_list1 = flatten_list(list1)
+#     flat_list2 = flatten_list(list2)
+#     length = max(len(flat_list1), len(flat_list2))
+#     return combine_lists_recursive(flat_list1, flat_list2, length)
+
+# # def unique_combinations(combinations, list1, list2):
+# #     flat_list1 = flatten_list(list1)
+# #     flat_list2 = flatten_list(list2)
+    
+# #     seen = set()
+# #     unique_combos = []
+# #     list1_set = set(str(item) for item in flat_list1)
+# #     list2_set = set(str(item) for item in flat_list2)
+
+# #     for combo in combinations:
+# #         sorted_combo = tuple(sorted(str(item) for item in combo))
+# #         combo_set = set(sorted_combo)
+# #         if sorted_combo not in seen and combo_set != list1_set and combo_set != list2_set:
+# #             seen.add(sorted_combo)
+# #             unique_combos.append(combo)
+# #     return unique_combos
+
+# @register_atoms(pass_metta=True)
+# def cnj_exp(metta):
+    
+#     combineLists = OperationAtom(
+#         'combine_lists', 
+#         lambda var1, var2: combine_lists_op(metta, var1, var2), 
+#         ['Atom', 'Atom', 'Expression'], 
+#         unwrap=False)
+#     formatList = OperationAtom(
+#         'format_list', 
+#         lambda list: format_list(metta, list), 
+#         ['Atom', 'Expression'], 
+#         unwrap=False)
+    
+#     return {
+#         r"combine_lists": combineLists,
+#         r"format_list": formatList
+#     }
+
+
+# @register_atoms(pass_metta=True)
+# def rand_str(run_context):
+#     """
+#     This function registers an operation atom `generateRandomVar` that dynamically generates a unique variable name.
+#     It ensures the generated variable name is not already used within the given context. The uniqueness is achieved by
+#     combining a random string with the current timestamp, and checking against existing variables in the atom.
+
+#     The operation atom `generateRandomVar` takes two atoms as input and generates a new variable that does not conflict
+#     with any existing variable names extracted from these atoms.
 
     
 
-    Parameters:
-    - run_context: The context in which this function is run, provided by the caller.
+#     Parameters:
+#     - run_context: The context in which this function is run, provided by the caller.
 
-    Returns:
-    - A dictionary mapping the operation name to the OperationAtom instance.
-    """
+#     Returns:
+#     - A dictionary mapping the operation name to the OperationAtom instance.
+#     """
 
-    # Mapping to store generated variables to ensure uniqueness
-    mapping = {}
+#     # Mapping to store generated variables to ensure uniqueness
+#     mapping = {}
     
-    def generate_random_string(length=1):
-        """
-        Generates a random string of specified length composed of uppercase letters and digits.
+#     def generate_random_string(length=1):
+#         """
+#         Generates a random string of specified length composed of uppercase letters and digits.
 
-        Parameters:
-        - length (int): The length of the random string to generate. Default is 1.
+#         Parameters:
+#         - length (int): The length of the random string to generate. Default is 1.
 
-        Returns:
-        - A random string of uppercase letters and digits.
-        """
-        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+#         Returns:
+#         - A random string of uppercase letters and digits.
+#         """
+#         return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
-    def extract_variables_from_atom(atom):
-        """
-        Extracts variable names from a given atom. Variables are identified by a leading '$' symbol.
-        Variables containing '#' are ignored as they are considered invalid.
+#     def extract_variables_from_atom(atom):
+#         """
+#         Extracts variable names from a given atom. Variables are identified by a leading '$' symbol.
+#         Variables containing '#' are ignored as they are considered invalid.
 
-        Parameters:
-        - atom: The atom from which to extract variable names.
+#         Parameters:
+#         - atom: The atom from which to extract variable names.
 
-        Returns:
-        - A list of valid variable names extracted from the atom.
-        """
-        atom_str = str(atom)
-        pattern = r"\$[^\s\(\)]+"
-        variables = re.findall(pattern, atom_str)
-        return [var for var in variables if "#" not in var]
+#         Returns:
+#         - A list of valid variable names extracted from the atom.
+#         """
+#         atom_str = str(atom)
+#         pattern = r"\$[^\s\(\)]+"
+#         variables = re.findall(pattern, atom_str)
+#         return [var for var in variables if "#" not in var]
 
-    def generate_random_var(a, b):
-        """
-        Generates a unique variable name based on the variables extracted from two atoms.
-        If a variable name for 'b' is already generated and stored in the mapping, it returns that variable.
-        Otherwise, it generates a new unique variable name, stores it in the mapping, and returns it.
+#     def generate_random_var(a, b):
+#         """
+#         Generates a unique variable name based on the variables extracted from two atoms.
+#         If a variable name for 'b' is already generated and stored in the mapping, it returns that variable.
+#         Otherwise, it generates a new unique variable name, stores it in the mapping, and returns it.
 
-        Parameters:
-        - a: The first atom from which to extract variables.
-        - b: The second atom from which to extract variables and for which to generate a unique variable name.
+#         Parameters:
+#         - a: The first atom from which to extract variables.
+#         - b: The second atom from which to extract variables and for which to generate a unique variable name.
 
-        Returns:
-        - A list containing the newly generated unique variable.
-        """
-        variables = extract_variables_from_atom(a)
-        variables_set = set(var[1:] for var in variables)
-        base_name = "rn" + generate_random_string() + str(int(time.time()))
+#         Returns:
+#         - A list containing the newly generated unique variable.
+#         """
+#         variables = extract_variables_from_atom(a)
+#         variables_set = set(var[1:] for var in variables)
+#         base_name = "rn" + generate_random_string() + str(int(time.time()))
 
-        if base_name in variables_set:
-            i = 1
-            while f"{base_name}{i}" in variables_set:
-                i += 1
-            base_name = f"{base_name}{i}"
+#         if base_name in variables_set:
+#             i = 1
+#             while f"{base_name}{i}" in variables_set:
+#                 i += 1
+#             base_name = f"{base_name}{i}"
 
-        new_var = V(base_name)
-        mapping[str(b)] = new_var
-        return [new_var]
+#         new_var = V(base_name)
+#         mapping[str(b)] = new_var
+#         return [new_var]
 
-    # Define the operation atom with its parameters and function
-    generateRandomVar = OperationAtom('generateRandomVar', lambda a, b: generate_random_var(a, b),
-                                      ['Atom', 'Atom', 'Variable'], unwrap=False)
+#     # Define the operation atom with its parameters and function
+#     generateRandomVar = OperationAtom('generateRandomVar', lambda a, b: generate_random_var(a, b),
+#                                       ['Atom', 'Atom', 'Variable'], unwrap=False)
 
-    return {
-        r"generateRandomVar": generateRandomVar
-    }
+#     return {
+#         r"generateRandomVar": generateRandomVar
+#     }
 
 
