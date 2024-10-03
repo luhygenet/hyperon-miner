@@ -17,11 +17,6 @@
 
 !(add-atom &cndpspace (CandidatePattern (Inheritance (VarIdx Z) (VarIdx (S Z)))))
 
-(=(remove-specd-pats $minedpspace $cndpspace $pat)(
-    match $minedpspace (MinedPattern $pat)(remove-atom $cndpspace $pat)
-    )
-)
-
 (= (cleanup-spaces $valspace $shabspace $spezspace)(
     superpose(
         (match $valspace (ValuationOf $x $y)(remove-atom $valspace (ValuationOf $x $y)))
@@ -36,7 +31,6 @@
     )
 )
 
-
 (= (init-miner $minsup $link $x $y $valspace $shabspace $spezspace $cndpspace $minedpspace Z)(
     (superpose(
     (let ($link1 $s $t) (Debruijn2var ($link $x $y) (Cons $Xvar (Cons $Yvar Nil))) (valuation-set $link1 $s $t &dbspace $valspace))
@@ -45,7 +39,6 @@
     (cleanup-cnd-spec $cndpspace)
     (candidate-pattern &dbspace $spezspace $minsup $cndpspace)
     (add-mined-pattern $minedpspace $cndpspace)
-    (match $cndpspace (CandidatePattern ($link $x $y))(remove-specd-pats $minedpspace $cndpspace (CandidatePattern ($link $x $y))))
     (cleanup-spaces $valspace $shabspace $spezspace)
     ))
     )
@@ -60,7 +53,6 @@
     (cleanup-cnd-spec $cndpspace)
     (candidate-pattern &dbspace $spezspace $minsup $cndpspace)
     (add-mined-pattern $minedpspace $cndpspace)
-    (match $cndpspace (CandidatePattern ($link $x $y))(remove-specd-pats $minedpspace $cndpspace (CandidatePattern ($link $x $y))))
     (cleanup-spaces $valspace $shabspace $spezspace)
     (let ($link2 $x2 $y2) (match $cndpspace (CandidatePattern ($link2 $x2 $y2))($link2 $x2 $y2))(init-miner $minsup $link2 $x2 $y2 $valspace $shabspace $spezspace $cndpspace $minedpspace $k))
     ))
