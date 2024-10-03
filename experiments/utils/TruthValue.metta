@@ -23,6 +23,11 @@
    let $result  (/ $alpha (+ $alpha $beta)) (mean $result)
 ))
 
+(:min (-> Number Number Number))
+(=(min $num1 $num2)(
+    if (< $num1 $num2) $num1 $num2
+))
+
 
 
 ;;The variance of a Beta distribution is given by the formula:
@@ -68,8 +73,6 @@
            ($relative_var (+ $variance (* $diff $diff)))
            ($rel_var_sum (+ $relative_var $pre_value))
            ($dummy (var_accumulater $tail $rel_var_sum $mean))
-
-       
         )
            $dummy
     )
@@ -91,13 +94,23 @@
 ;; For now the underlying beta distributions have a Jeffreys prior,
 ;; i.e. the prior alpha and beta are 0.5.
 (: prior-alpha (-> Number))
-(= (prior-alpha) 0.5)
+(= (prior-alpha) 1.0)
+
 (: prior-beta (-> Number))
-(= (prior-beta) 0.5)
+(= (prior-beta) 1.0)
+
+
+;; Default K value , as sated on "openCog/atomps/simpleTruthValue.h"
+(: default_k (-> Number))
+(= (default_k) 800.0)
+
 
 ;; Lookahead
 (: lookahead (-> Number))
 (= (lookahead) 1.0)
+
+
+
 
 ;; Maximum supported count (till +inf is supported, possibly).
 (: max-count (-> Number))
@@ -115,11 +128,18 @@
 
 ;; Convert confidence to count using the formula
 ;;
-;; count = (confidence * lookahead) / (1 - confidence)
+;; count = (confidence * default_k) / (1 - confidence)
 (: confidence->count (-> Number Number))
-(= (confidence->count $conf) (if (approxEq 1.0 $conf 1e-9)
-                                 (max-count)
-                                 (/ (* $conf (lookahead)) (- 1.0 $conf))))
+;;(= (confidence->count $conf) (if (approxEq 1.0 $conf 1e-9)(max-count)(/ (* $conf (lookahead)) (- 1.0 $conf))))
+
+(=(confidence->count $conf) (
+    let* (
+       ( $cf (min $conf 0.9999998))
+       ( $count (/ (* (default_k) $cf) (- 1.0 $cf)))
+
+    )
+      $count
+))
 
 
 
@@ -142,7 +162,37 @@
     $conf
 ))
 
+(= (find_alpha $mean $variance) (
+    * $mean (- (/ (* $mean (- 1 $mean) ) $variance) 1)
+))
 
+(= (find_beta $mean $variance) (
+    * (- 1 $mean) (- ( / (* $mean (- 1 $mean)) $variance) 1)
+))
+
+;;(: mk_stv (-> ))
+(=(mk_stv $mean $variance) (
+   let* (
+     ($alpha (find_alpha $mean $variance))
+     ($beta (find_beta $mean $variance))
+     ($count (+ $alpha (- $beta (- (prior-alpha) (prior-beta)))))
+     ($confidence (/ $count (+ $count (default_k))))
+     ($mode  (
+    if (and (> $alpha 1) (> $beta 1)) (
+                / (- $alpha 1) (+ $alpha (- $beta 2))   ;; a-1 / a + b -2
+    ) (
+        if (and (<= $alpha 1) (> $beta 1)) 0 (
+
+            if (and (< $alpha 1) (== $beta 1)) 1 
+            (
+                if (and (< $alpha 1) (< $beta 1)) $mean 1
+            )
+        )
+    ))))
+
+    ($mode $confidence)
+   
+))
 
 (=(mk_distribution $Etv)(
     let*(
@@ -150,8 +200,7 @@
         ($tv (car-atom $tail))
         ($tv_mean (get_tv_mean $tv))
         ($tv_conf (get_tv_conf $tv))
-        ($_count (collapse (confidence->count $tv_conf)))
-        ($count (car-atom $_count))
+        ($count (confidence->count $tv_conf))
         ($pos_count (* $tv_mean $count))
         ($alpha (+ (prior-alpha) $pos_count) )
         ($beta (+ (prior-beta) (- $count $pos_count ))) 

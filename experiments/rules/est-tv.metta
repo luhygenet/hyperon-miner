@@ -137,13 +137,18 @@
 ;!(var_accumulater ((Beta (mean 4) (variance 57)) (Beta (mean 6) (variance 57))) 0 5)
 
 
-(=(avrg_tv $tv_list)(
+(=(avrg_tv $tv)(
     let* (
+        ($tv_list (mk_distribution_list $tv))
         ($size (count-atom-element $tv_list))
-        ($mean (let $sum (mean_accumulater $tv_list 0) (/ $sum $size)))
-        ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (/ $var_sum $size)))
+       ($mean (let $sum (mean_accumulater $tv_list 0) (/ $sum $size)))
+       ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (/ $var_sum $size)))
+        ($mk_stv_val (mk_stv $mean $re_variance))
+        ($mode (car-atom $mk_stv_val))
+        ($temp (cdr-atom $mk_stv_val))
+        ($confidence (car-atom $temp))
     )
-        ($mean $re_variance)
+        ($mode $confidence)     
 ))
 
 
@@ -152,9 +157,8 @@
 
 (=(eq_prob $db $patten_list )(
     let* (
-        ($tv (emp_tv_mem $patten_list $db))
-        ($beta_list (mk_distribution_list $tv))
-        ($prod_etv (avrg_tv $beta_list))
+        ($tv (emp_tv_mem $patten_list $db))  
+        ($prod_etv (avrg_tv $tv))
     )
         $prod_etv
 ))
