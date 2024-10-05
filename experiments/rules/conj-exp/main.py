@@ -1,18 +1,69 @@
-from hyperon import *
-from hyperon.ext import register_atoms
-import re
-import sys
-import os
-import random
-import string
-import time
+# from hyperon import *
+# from hyperon.ext import register_atoms
+# import re
+# import sys
+# import os
+# import random
+# import string
+# import time
 
-from hyperon.atoms import ExpressionAtom, E, GroundedAtom, OperationAtom, ValueAtom, NoReduceError, AtomType, MatchableObject, VariableAtom,\
-    G, S,V, Atoms, get_string_value, GroundedObject, SymbolAtom
-from hyperon.base import Tokenizer, SExprParser
-from hyperon.ext import register_atoms, register_tokens
-import hyperonpy as hp
+# from hyperon.atoms import ExpressionAtom, E, GroundedAtom, OperationAtom, ValueAtom, NoReduceError, AtomType, MatchableObject, VariableAtom,\
+#     G, S,V, Atoms, get_string_value, GroundedObject, SymbolAtom
+# from hyperon.base import Tokenizer, SExprParser
+# from hyperon.ext import register_atoms, register_tokens
+# import hyperonpy as hp
 
+# def combine_lists_op(metta: MeTTa, var1, var2):
+#     #($Y ($X ())) ($a  ($b ($c ())))
+#     input_str1 = str(var1)
+#     input_str2 = str(var2)
+    
+#     list1 = parse_list_structure(input_str1)
+#     list2 = parse_list_structure(input_str2) 
+
+#     combinations = combine_lists(list1, list2)
+    
+#     # unique_combos = unique_combinations(combinations, list1, list2)
+    
+#     # This generates dynamic combinations with a variable number of elements
+#     combined_pattern = " ".join(
+#         ["({})".format(" ".join(combo)) for combo in combinations]
+#     )
+
+#     combined_pattern_atoms = "(" + combined_pattern + ")"
+
+#     atoms = metta.parse_all(combined_pattern_atoms)
+#     return atoms
+
+# def format_list(metta: MeTTa, list):
+#     """
+#     Formats a flat list of elements into groups that end with "End", and then
+#     parses it into an Atom using the MeTTa instance.
+
+#     Args:
+#         metta (MeTTa): The MeTTa instance.
+#         list (Atom): The input nested list structure as an Atom.
+
+#     Returns:
+#         Atom: The formatted list of groups as an Atom.
+#     """
+    
+#     input_str = str(list)
+#     parsed_structure = parse_list_structure(input_str)
+
+#     flat_list = flatten_list(parsed_structure)
+
+#     grouped_list = []
+#     current_group = []
+
+#     # Group elements until you hit "End"
+#     for item in flat_list:
+#         if item == "End":
+#             if current_group:  # Ensure we're not appending empty groups
+#                 grouped_list.append(f"({' '.join(current_group)})")
+#             current_group = []  # Reset for the next group
+#         else:
+#             current_group.append(item)
 
 mapping = {}
     
@@ -206,4 +257,5 @@ def cnj_exp(metta):
         r"combine_lists": combineLists,
         r"genRandomVar": genRandomVar
     }
+
 
