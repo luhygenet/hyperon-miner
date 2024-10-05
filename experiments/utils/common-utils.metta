@@ -27,6 +27,12 @@
     )
 )
 
+(: counter (-> hyperon::space::DynSpace Atom Number))
+(= (counter $db ($link $x))
+    (let $result (collapse (match $db ($link $x) ($link $x)))
+        (tuple-count $result)
+    )
+)
 ; Count the number of instances of a given pattern
 (= (count $pattern $db)
     (let* (($dptrn (Debruijn2var $pattern (Cons $Xvar (Cons $Yvar Nil))))
