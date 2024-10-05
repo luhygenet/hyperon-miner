@@ -97,4 +97,3 @@
 ! (populate_uniform_inheritance_link 1 0 0)
 ! (out_of_index 3 4)
 ! (add_link_and_populate_uniform_inheritance_link 0 0 0 (py-list ( ( ''))))
- ; ! (get-atoms (db))
