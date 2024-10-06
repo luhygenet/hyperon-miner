@@ -5,7 +5,7 @@
 ! (register-module! ../../experiments)
  ; ! (import! &self experiments:tests:List)
 ! (import! &self  test-utils)
-
+! (import! &self  experiments:tests:List)
 ! (import str as ::str)
 ! (import json.loads)
 
@@ -89,7 +89,92 @@
         (populate_uniform_inheritance_link $n_cpts 0 0  $cpts ))
 )
 
- ;;test
+(= (subsmp $db $subsize )
+
+    ($db)
+
+)
+
+(= (emp_prob_subsmp $pattern $db $subsize)
+
+    (if (< $subsize (db_size $db))
+        ( emp_prob $pattern (subsmp $db $subsize))
+        (emp_prob $pattern $db)
+    )
+)
+
+( = (emp_prob_bs $pattern $db $n_resample $subsize)
+    (if (< $subsize (db_size $db))
+        (avrg (emp_prob_subsmp ($pattern $db  $subsize)))
+        (emp_prob $pattern $db)
+    )
+
+)
+
+(: sum (-> (List $a) Number))
+(= (sum Nil) 0)
+(= (sum (Cons $head $tail))  (+ $head (sum  $tail)))
+
+(: avrg (-> (List Number) Number))
+(= (avrg $lst)
+
+    (case (len $lst)
+        ( (0 0)
+            ($_ (/ (sum $lst) (len $lst))))
+    )
+)
+
+(: len (-> (List $a) Number))
+(= (len Nil) 1)
+(= (len (Cons $head $tail))  (+ 1 (len  $tail)))
+
+(= (emp-prob $pattern $db)
+    (let*
+        ( ( ($ucount ) ( (universe-count $pattern $db)))
+            ( ($ms) ($ucount))
+            ( ($sup) ( (sup $pattern $db)))
+
+        ) (/ $sup  $ucount)
+))
+(: abs (-> Number Number))
+(= (abs $x)
+    (if (>= $x 0)
+        $x
+        (* $x -1)
+    )
+)
+
+(: TS_ASSERT_DELTA (->  Number Number Number Bool))
+(= (TS_ASSERT_DELTA $x $y $delta)
+    (if (<= (abs (- $x $y)) $delta)
+        (True)
+        (False)
+    )
+)
+(= (test_emp_prob_bs_1 $pattern $db)
+    (let*
+        ( ( ($_ ) ( populate_uniform_inheritance_links (1000, 0.01)))
+            ( ($pattern) (Nil))
+            ( ($epr) ( (emp-prob $pattern $db)))
+            ( ($epr_bs) ( (emp_prob_bs $pattern $db 10 1000)) )
+        )
+    (TS_ASSERT_DELTA $epr  $epr_bs 0.1)))
+
+! ("============ sum ============ ")
+! (sum  (Cons 1 (Cons 1 (Cons 2 Nil))))
+! (sum  (Cons 3 (Cons 1 (Cons 2 Nil))))
+! (+ 1 (sum  (Cons 3 (Cons 1 (Cons 2 Nil)))))
+
+! ("============ len ============ ")
+! (len  (Cons 1 (Cons 1 (Cons 2 Nil))))
+! (len  (Cons 3 (Cons 1 (Cons 2 Nil))))
+
+! ("============ avrg ============ ")
+! (avrg  (Cons 1 (Cons 1 (Cons 2 Nil))))
+! (avrg  (Cons 3 (Cons 1 (Cons 2 Nil))))
+
+! ("============ TS_ASSERT_DELTA ============ ")
+! (TS_ASSERT_DELTA 1 2 0.1)
 
 ! (add_link_and_populate_uniform_inheritance_link 3 1 4 (py-list ( (''))))
 ! (populate_uniform_inheritance_links 1 2)
@@ -97,3 +182,4 @@
 ! (populate_uniform_inheritance_link 1 0 0)
 ! (out_of_index 3 4)
 ! (add_link_and_populate_uniform_inheritance_link 0 0 0 (py-list ( ( ''))))
+ ; ! (get-atoms (db) )
