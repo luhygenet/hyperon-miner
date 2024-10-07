@@ -13,7 +13,6 @@
 ! (bind! &cndpspace (new-space))
 ! (bind! &minedpspace (new-space))
 
-
 (= (depth) (fromNumber 1))
 
 ! (add-atom &cndpspace (CandidatePattern (Inheritance (VarIdx Z) (VarIdx (S Z)) )))
