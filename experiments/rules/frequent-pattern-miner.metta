@@ -20,11 +20,11 @@
 
 (= (cleanup-spaces $valspace $shabspace $spezspace) (
         superpose (
-            (match $valspace (ValuationOf $x $y) (remove-atom $valspace (ValuationOf $x $y)))
-            (match $shabspace (ShallowAbstractionOf $x $y) (remove-atom $shabspace (ShallowAbstractionOf $x $y)))
-            (match $spezspace (SpecializationOf $x $y) (remove-atom $spezspace (SpecializationOf $x $y)))
+            (remove-atom $valspace (ValuationOf $x $y))
+            (remove-atom $shabspace (ShallowAbstractionOf $x $y))
+            (remove-atom $spezspace (SpecializationOf $x $y))
         )
-)
+    )
 )
 
 (= (cleanup-cnd-spec $cndpspace) (
@@ -33,15 +33,16 @@
 )
 
 (= (init-miner $minsup $link $x $y $dbspace $valspace $shabspace $spezspace $cndpspace $minedpspace) (
-        (superpose (
-                (let ($link1 $s $t) (Debruijn2var ($link $x $y) (Cons $Xvar (Cons $Yvar Nil))) (valuation-set $link1 $s $t $dbspace $valspace))
-                (shallow-abstraction $valspace $shabspace)
-                (let ($link1 $s $t) (Debruijn2var ($link $x $y) (Cons $Xvar (Cons $Yvar Nil))) (specialize-pattern $link1 $s $t $shabspace $spezspace))
-                (cleanup-cnd-spec $cndpspace)
-                (candidate-pattern $dbspace $spezspace $minsup $cndpspace)
-                (add-mined-pattern $minedpspace $cndpspace)
-                (cleanup-spaces $valspace $shabspace $spezspace)
-            ))
+        (superpose(
+            (let ($link1 $s $t) (Debruijn2var ($link $x $y) (Cons $Xvar (Cons $Yvar Nil))) (valuation-set $link1 $s $t $dbspace $valspace))
+            (shallow-abstraction $valspace $shabspace)
+            (let ($link1 $s $t) (Debruijn2var ($link $x $y) (Cons $Xvar (Cons $Yvar Nil))) (specialize-pattern $link1 $s $t $shabspace $spezspace))
+            (cleanup-cnd-spec $cndpspace)
+            (candidate-pattern $dbspace $spezspace $minsup $cndpspace)
+            (add-mined-pattern $minedpspace $cndpspace)
+            (cleanup-spaces $valspace $shabspace $spezspace)
+            )
+        )
     )
 )
 
