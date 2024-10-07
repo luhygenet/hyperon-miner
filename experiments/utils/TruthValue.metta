@@ -170,6 +170,7 @@
     * (- 1 $mean) (- ( / (* $mean (- 1 $mean)) $variance) 1)
 ))
 
+
 ;;(: mk_stv (-> ))
 (=(mk_stv $mean $variance) (
    let* (

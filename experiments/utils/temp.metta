@@ -50,47 +50,8 @@
 
 
 
-(=(test_avrg_tv_1)(
-    let* (
-       ($tv_1 ((Inheritance Abe $x) (STV 0 0.1)))
-       ($tv_2 ((Inheritance John $x) (STV 0 0.1)))
-       ($result (avrg_tv ($tv_1 $tv_2)))
 
-    )
-    $result 
-))
-
-
-(=(test_avrg_tv_2)(
-    let* (
-       ($tv_1 ((Inheritance Abe $x) (STV 0 0.1)))
-       ($tv_2 ((Inheritance John $x) (STV 1 0.1)))
-       ($result (avrg_tv ($tv_1 $tv_2)))
-
-    )
-    $result 
-))
-
-(=(test_avrg_tv_3)(
-    let* (
-       ($tv_1 ((Inheritance Abe $x) (STV 1 0.001248)))
-       ($tv_2 ((Inheritance John $x) (STV 1 0.001248)))
-       ($tv_3 ((Inheritance John $x) (STV 0 0.001248)))
-       ($tv_4 ((Inheritance John $x) (STV 1 0.001248)))
-       ($tv_5 ((Inheritance John $x) (STV 1 0.001248)))
-       ($tv_6 ((Inheritance John $x) (STV 1 0.001248)))
-       ($tv_7 ((Inheritance John $x) (STV 1 0.001248)))
-       ($tv_8 ((Inheritance John $x) (STV 1 0.001248)))
-       ($tv_9 ((Inheritance John $x) (STV 1 0.001248)))
-       ($tv_10 ((Inheritance John $x) (STV 1 0.001248)))
-        
-       ($result (avrg_tv ($tv_1 $tv_2 $tv_3 $tv_4 $tv_5 )))
-
-    )
-    $result 
-))
-
-!(test_avrg_tv_1)
+;;!(test_avrg_tv_1)
 
 ;;!(confidence->count 0.8)
 ;;!(default_k)
@@ -109,3 +70,5 @@
 ;;!(find_beta 0.6 0.05) alpha 2.28 beta 1.52
 
 ;;!(mk_stv 0.6 0.05) (0.711111111111111 0.004727544165215228)
+
+!(mk_stv 0.011002444987775062 0.00011841900934533786) 
