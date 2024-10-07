@@ -54,6 +54,8 @@
     )
 )
 
+(= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
+
 (= (get_variables_for_tree $pattern)
     (if (== $pattern ())
         ()
@@ -233,4 +235,4 @@
 (INHERITANCE_LINK A D)
 
  ;(expand_conjunction_inputs cnjtion pattern db ms mv es)
- ; ! (expand_conjunction (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B) &self 0 2 False)
+! (expand_conjunction (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B) &self 0 2 False)
