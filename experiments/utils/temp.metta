@@ -88,11 +88,10 @@
     )
 )
 
-
+;; base case
+(=(get-clouses () ) ())
 
 (= (get-clouses $pattern)
-    (if (== $pattern ())
-        ()
         (let* (
                 ($head (car-atom $pattern)) 
                 ($tail (cdr-atom $pattern)))
@@ -104,11 +103,27 @@
 
                     (get-clouses $tail)))
     )
-)
-
- !(get-clouses  (Inheritance (Human $X (And $x $y)) (Inheritance $Y (Human $Z))))
 
 
+ ;; !(get-clouses  (Inheritance (Human $X (And $x $y)) (Inheritance $Y (Human $Z))))
+
+
+
+(=(combinatorial_insert $handle ()) ($handle))
+
+(=(combinatorial_insert $handle $seq_of_seq )(
+    let* (
+        ($head (car-atom $seq_of_seq))
+        ($tail (cdr-atom $seq_of_seq))
+        ($temp  (cons-atom $handle ($head)))
+        ($temp2 (concatTuple ($temp) $tail))
+        ($dummy (combinatorial_insert $handle $tail))
+
+    )
+          (cons-atom $temp2 $dummy)
+))
+
+ !(combinatorial_insert (AND $d $f) ((In $x $y)(In $x $z)(Hu $x)))
 
 ;;(Inheritance Bob (And human (Or zac Mike)))
 
