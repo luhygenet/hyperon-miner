@@ -9,18 +9,15 @@
 
 
 ;;define function which lists the each pattern in the pattern list
-(=(list-patterns $x) (
-    
+(=(list-patterns $x) (  
     if (== $x ()) () (  
       let* (
             ($head (car-atom $x))
             ($tail (cdr-atom $x))
-            ($tail_new (superpose(list-patterns $tail))))
-        
+            ($tail_new (superpose(list-patterns $tail))))   
         (cons-atom $head $tail_new ) 
     ))
 )
-
 
 ;define function which extract subpatterns or blocks from the given nested pattern
 ( = (get-subpatterns $pattern) 
@@ -29,12 +26,10 @@
     )  $pattern   
 ) )
 
-
 ;Return variables in the pattern, later used to check the joint variable.
 (=(get-variable ($link $var1 $var2)) (
     if (== $var1 $var2) $var1 ($var1 $var2)
 ))
-
 
 
 (=(find_max $num_list $max) (
@@ -45,8 +40,7 @@
             ($max_i (if (> $head $max) $head $max))
             ($dummy (find_max $tail $max_i))
         ) 
-            $dummy
-        
+            $dummy  
     )
 ))
 
@@ -56,15 +50,11 @@
         ($beta_mean (beta_mean $alpha $beta))
         ($beta_variance (beta_var $alpha $beta))
      )
-
      (Beta $beta_mean $beta_variance)
 ))
 
 
 ;;!(_beta_distribution 2 5)
-
-
-
 (=(mk_distribution_list $patten_list)(
     if (== $patten_list ()) () (
         let* (
@@ -78,7 +68,6 @@
     )
 ))
 
-
 ;;!(confidence->count 1.2)
 
 
@@ -91,15 +80,13 @@
 ;;without considering joint variables
  (=(emp_tv_mem $pattern_list $db) (
     if (== $pattern_list ()) () (
-        let* (
-              
+        let* (  
               ($head (car-atom $pattern_list))
               ($tail (cdr-atom $pattern_list))
              ; ($emp_value (emp-tv $head $db))
               ($set_emp ($head (EMPTV 1.0 0.05)))
               ($dummy (emp_tv_mem $tail $db))
-        )
-            
+        )  
             (cons-atom $set_emp $dummy)
     )
  ))
@@ -116,8 +103,7 @@
            ($temp2  (cdr-atom $temp));;((variance 57))
            ($var_tuple (car-atom $temp2 ));; (variance 57)
            ($var_temp (cdr-atom $var_tuple));; (57)
-           ($variance (car-atom $var_temp)) ;; 57
-           
+           ($variance (car-atom $var_temp)) ;; 57    
     )
       (
         if (== $key mean) $mean_value $variance
@@ -152,19 +138,18 @@
 ))
 
 
+
+
 ;!(avrg_tv ((Beta (mean 4) (variance 57)) (Beta (mean 6) (variance 57)) (Beta (mean 4) (variance 57))) )
 
 
-(=(eq_prob $db $patten_list )(
+(=(prod-etv $db $patten_list )(
     let* (
         ($tv (emp_tv_mem $patten_list $db))  
         ($prod_etv (avrg_tv $tv))
     )
         $prod_etv
 ))
-
-
-
 
 
 ;;A function that calculates the set of values that Xi can take when its corresponding component is matched against the database alone,
@@ -204,7 +189,7 @@
 
 ;;A function that calculates the probability product for each pattern recursively, the General formula used here is :P(X1=...=Xn) = Prod_{j=2}^n 1/M(Xj)
 
-(=(outer_temp $db $db_size $original $copy $i $count $prob) (
+(=(eq-prob $db $db_size $original $copy $i $count $prob) (
     if (> $count 1) (
           let* (
         ($tail (cdr-atom $copy))
@@ -212,8 +197,7 @@
         ($most_spec  (let $result (inner_temp $db $original $compJ $i) (find_max $result -1) ))
         ($M_xj (if (== $most_spec -1) $db_size $most_spec))
         ($prob_j (* $prob (/ 1 $M_xj)))  ;; from general formula
-        ($dummy (outer_temp $db $db_size $original $tail (+ $i 1) (- $count 1) $prob_j))
-
+        ($dummy (eq-prob $db $db_size $original $tail (+ $i 1) (- $count 1) $prob_j))
     )
          $dummy
     )  $prob
@@ -221,18 +205,20 @@
 ))
 
 
-;;A function that accepts space and pattern, and returns the estimated truth value between 0 and 1.
-(= (est_tv $db $pattern)
+;; Calculate the truth value estimate of each partition based on
+;; independent assumption of between each partition block, taking
+;; into account the linkage probability.
+(= (ji-est-tv $db $pattern)
 (
         let* (
             ($db_size  (db_size $db))
             ($pattern_list (get-subpatterns $pattern))
             ($list_length (count-atom-element $pattern_list))
-            ($prob_value (eq_prob $db $pattern_list))
+            ($prob_value (prod-etv $db $pattern_list))
             ($rp (car-atom $prob_value))
             ($temp_rc (cdr-atom $prob_value))
             ($rc (car-atom $prob_value))
-            ($rp_est (outer_temp $db $db_size $pattern_list $pattern_list 1 $list_length 1))
+            ($rp_est (eq-prob $db $db_size $pattern_list $pattern_list 1 $list_length 1))
             ($strength (* $rp $rp_est))
             ($confidence (* 1e-1 $rc))
         ) 

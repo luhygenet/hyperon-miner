@@ -18,6 +18,7 @@
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Parent Abe Nil ))
+! (add-atom (get-space)  (Inheritance Bob (And human (Or zac))) ) 
 
 ;! (emp-tv (Inheritance $x human) (get-space))
 
@@ -39,13 +40,13 @@
 
 
 
-;; !(eq_prob (get-space) ((Inheritance Abe human) (Inheritance Rio human) (Inheritance Bob human)) )
+ ;;!(prod-etv (get-space)  ((Inheritance Abe human) (Inheritance Rio human) (Inheritance Bob human)) )
 ;; !(emp_tv_mem   ((Inheritance Abe human) (Inheritance Rio human) (Inheritance Bob human)) (get-space))
 
 
 
 
-;; !(est_tv (get-space)  ((Inheritance $x human) (Inheritance $y human) (Inheritance $x $y)) )
+;; !(ji-est-tv (get-space)  ((Inheritance $x human) (Inheritance $y human) (Inheritance $x $y)) )
 ;; !(mk_distribution_list (((Inheritance $x human) (EMPTV 1.0 0.05)) ((Inheritance $y human) (EMPTV 1.0 0.05)) ((Inheritance $x human) (EMPTV 1.0 0.05))))
 
 
@@ -71,4 +72,50 @@
 
 ;;!(mk_stv 0.6 0.05) (0.711111111111111 0.004727544165215228)
 
-!(mk_stv 0.011002444987775062 0.00011841900934533786) 
+;;!(mk_stv 0.011002444987775062 0.00011841900934533786) 
+
+
+
+
+
+(= (concatTuple $xs $ys)
+    (if (== $xs ())
+        $ys
+        (let* ( ($head (car-atom $xs)) 
+                ($tail (cdr-atom $xs)) 
+                ($tailNew (concatTuple $tail $ys)))
+            (cons-atom $head $tailNew))  
+    )
+)
+
+
+
+(= (get-clouses $pattern)
+    (if (== $pattern ())
+        ()
+        (let* (
+                ($head (car-atom $pattern)) 
+                ($tail (cdr-atom $pattern)))
+           
+            (if (== (get-metatype $head) Expression)
+                (
+                   let $result  (concatTuple ($head)
+                    (get-clouses $tail)) (concatTuple $result (get-clouses $head)))
+
+                    (get-clouses $tail)))
+    )
+)
+
+ !(get-clouses  (Inheritance (Human $X (And $x $y)) (Inheritance $Y (Human $Z))))
+
+
+
+;;(Inheritance Bob (And human (Or zac Mike)))
+
+
+
+
+
+
+
+

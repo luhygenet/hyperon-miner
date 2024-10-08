@@ -59,7 +59,7 @@
 
 (=(compose ($link $x $y) $subPat) (
     let* (
-        ($new_x      (   
+        ($new_x      (  
                            case (get-metatype $x) 
                             (
                              (Expression (let $result_x (compose $x  $subPat) $result_x))
