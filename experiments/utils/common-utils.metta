@@ -28,6 +28,13 @@
 )
 
 
+(: counter (-> hyperon::space::DynSpace Atom Number))
+(= (counter $db ($link $x))
+    (let $result (collapse (match $db ($link $x) ($link $x)))
+        (tuple-count $result)
+    )
+)
+
 ; Count the number of instances of a given pattern
 (= (count $pattern $db)
     (let* (($dptrn (Debruijn2var $pattern (Cons $Xvar (Cons $Yvar Nil))))
@@ -224,7 +231,7 @@
 (= (is_variable_joint_with_clauses $variable $clauses)
     (if (== $clauses ())
         False ; If no clauses are left, return False
-        (let* (
+        (let* (<<<<<<< experiments
                 ($clause_vars (let $temp (car-atom $clauses) (get_variables $temp))) ; Extract variables from the current clause
             )
          ; Check if the variable is in the current clause's variables
