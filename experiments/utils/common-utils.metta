@@ -61,7 +61,7 @@
  ;;(: get-arity (-> $pattern) Number)
 (= (get-arity Nil ) 0 )
 (= (get-arity $pattern)
-    (- (count-atom-element $pattern) 1) )
+    (- (tuple-count $pattern) 1) )
 
 (= (n_conjuncts Nil) (0))
 (= (n_conjuncts $pattern)
@@ -74,7 +74,7 @@
  ;;db size
 (: db_size (-> hyperon::space::DynSpace  Number))
 (= (db_size $db)
-    (count-atom-element (collapse (get-atoms $db)))
+    (tuple-count (collapse (get-atoms $db)))
 )
 
  ;;abs accepts a number and returns an absolute value of a number
