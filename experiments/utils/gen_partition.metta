@@ -96,7 +96,8 @@
  ;;; - This function calls gen-partition with the subsets and the original pattern.
  ;;; generet-partition-without-pattern is genrete aa partition using python implmentation of gen-partion
 
+(: generet-partition-without-pattern (-> Expression Expression))
 (= (generet-partition-without-pattern $pattern)
-    (let $subsets (powerset $pattern)
+    (let $subsets (gen-subsets $pattern)
         (gen-partition $subsets $pattern)) ; gen-partition is registered
 )

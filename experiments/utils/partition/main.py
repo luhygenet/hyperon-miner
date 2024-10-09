@@ -27,7 +27,7 @@ def parseFromExpresstion(metta, expresion, dimention):
 
 def parseToExpression(metta, strings):
     strings = strings.replace("[", "(").replace("]", ")").replace(
-        ",", "").replace("\"", "")
+        ",", "").replace("\"", "").replace("'","")
 
     atom = metta.parse_all(strings)
     return atom
