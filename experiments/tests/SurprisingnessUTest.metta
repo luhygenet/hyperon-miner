@@ -2,10 +2,11 @@
  ;;;;;;;;;;
  ;; Imports ;;
  ;;;;;;;;;;
-! (register-module! ../../experiments)
- ; ! (import! &self experiments:tests:List)
-! (import! &self  test-utils)
-! (import! &self  experiments:tests:List)
+ ; ! (register-module! ../../experiments)
+ ;  ; ! (import! &self experiments:rules:emp-tv)
+ ; ! (import! &self  test-utils)
+ ; ! (import! &self  experiments:tests:List)
+
 ! (import str as ::str)
 ! (import json.loads)
 
@@ -136,6 +137,7 @@
 
         ) (/ $sup  $ucount)
 ))
+
 (: abs (-> Number Number))
 (= (abs $x)
     (if (>= $x 0)
@@ -153,12 +155,24 @@
 )
 (= (test_emp_prob_bs_1 $pattern $db)
     (let*
-        ( ( ($_ ) ( populate_uniform_inheritance_links (1000, 0.01)))
+        ( ( ($_ ) ( populate_uniform_inheritance_links 1 0.01))
             ( ($pattern) (Nil))
             ( ($epr) ( (emp-prob $pattern $db)))
             ( ($epr_bs) ( (emp_prob_bs $pattern $db 10 1000)) )
         )
     (TS_ASSERT_DELTA $epr  $epr_bs 0.1)))
+
+ ; (= (test_emp_prob_bs_1 $pattern $db)
+ ;     (let*
+ ;         ( ( ($_ ) (populate_uniform_inheritance_links 1 2))
+
+ ;         )
+ ;     (1111111)))
+
+! ("============ test_emp_prob_bs ============ ")
+! (populate_uniform_inheritance_links 1 2)
+! (emp-prob Nil (new-space))
+! (test_emp_prob_bs_1 Nil (new-space))
 
 ! ("============ sum ============ ")
 ! (sum  (Cons 1 (Cons 1 (Cons 2 Nil))))
