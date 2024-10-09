@@ -86,12 +86,30 @@
         )
 ))
 
+
+ ;TODO1
+ ;Check if the same variable with is used for replacement
+ ;if that is the case replace it with the replacement variabele
+ ;used for replacing that variable
+(= (find-replacement $var $variables)
+    (if (== $variables ())
+        $var
+        (if (== $var (car-atom $variables))
+            (genRandomVar $set)
+             ; $rand
+            (find-replacement $var (let* (
+                        ($temp (cdr-atom $variables))
+                        ($tail (car-atom $temp)))
+                    $tail)))
+    )
+
  ; Parse a list that is like:- (Inheritance ($X ($Y (End (Inheritance ($X ($Y (End  ...))))))))
  ; into ((Inheritance $X $Y) (Inheritance $X $Y) ...) FOR later combination with cnjtion and
  ; pattern matching against the db
 
 (= (parse_list ($x ($xs $xss)))
     (handle () (get_elements  () (reverse ($x ($xs $xss)))))
+
 
 )
 

@@ -27,12 +27,14 @@
     )
 )
 
+
 (: counter (-> hyperon::space::DynSpace Atom Number))
 (= (counter $db ($link $x))
     (let $result (collapse (match $db ($link $x) ($link $x)))
         (tuple-count $result)
     )
 )
+
 ; Count the number of instances of a given pattern
 (= (count $pattern $db)
     (let* (($dptrn (Debruijn2var $pattern (Cons $Xvar (Cons $Yvar Nil))))
@@ -99,23 +101,21 @@
 (: classify_integer_position (-> Number String))
 (= (classify_integer_position $x)
     (if (> $x 0)
-        ("Greater than zero")
+        1 ; Return 1 if x is greater than zero
         (case (equals-to-zero $x)
             (
-                (False "Less than zero")
-                (True "Equal to zero")))))
+                (False -1) ; Return -1 if x is less than zero
+                (True 0))))) ; Return 0 if x is equal to zero
  ;; pow is a function that calculates a to the power of b where a and b are numbers
 (: pow (-> Number Number Number))
 (= (pow $a $b)
     (case (classify_integer_position $b)
         (
-            ("Equal to zero" 1)
-            ("Less than zero" (/ 1 (pow $a (abs $b))))
+            (0 1)
+            (-1 (/ 1 (pow $a (abs $b))))
             ($_ (* $a (pow $a (- $b 1))))
         )
-)
-)
-
+))
  ;; universe count
 (= (universe-count $pattern $db)
     (pow (db_size $db) (n_conjuncts $pattern))
@@ -231,7 +231,7 @@
 (= (is_variable_joint_with_clauses $variable $clauses)
     (if (== $clauses ())
         False ; If no clauses are left, return False
-        (let* (
+        (let* (<<<<<<< experiments
                 ($clause_vars (let $temp (car-atom $clauses) (get_variables $temp))) ; Extract variables from the current clause
             )
          ; Check if the variable is in the current clause's variables
