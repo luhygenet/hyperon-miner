@@ -1,5 +1,16 @@
 ! (import! &self  partition)
 
+ ;  This function `get-clauses` takes an `Expression` as input and returns an `Expression`.
+ ;  It checks if the first element (link) of the input expression is `And`.
+ ;  If the link is `And`, it returns the rest of the elements (body) of the expression.
+ ;  Otherwise, it returns the input expression itself.
+(:get-clauses (-> Expression Expression))
+(= (get-clauses $element)
+    (let $link (car-atom $element)
+        (if (== $link And)
+            (cdr-atom $element)
+            $element )))
+
  ; Function: add-to-subsets
  ; Description: Adds an element to each subset in a list of subsets.
  ; Parameters:
@@ -9,6 +20,8 @@
  ; Notes:
  ;   - If the list of subsets is empty, it returns an empty list.
  ;   - Uses recursion to process each subset in the list.
+
+(: add-to-subsets (-> Expression Expression))
 
 (= (add-to-subsets $element $subsets)
     (if (== $subsets ())
@@ -98,6 +111,9 @@
 
 (: generet-partition-without-pattern (-> Expression Expression))
 (= (generet-partition-without-pattern $pattern)
-    (let $subsets (gen-subsets $pattern)
-        (gen-partition $subsets $pattern)) ; gen-partition is registered
+    (let* (
+            ($clause (get-clauses $pattern))
+            ($subsets (gen-subsets $clause))
+        )
+    (gen-partition $subsets $clause)) ; gen-partition is registered
 )

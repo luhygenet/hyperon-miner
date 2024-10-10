@@ -1,6 +1,17 @@
 ! (register-module! ../../../hyperon-miner)
 ! (import! &self hyperon-miner:experiments:utils:gen_partition)
 
+ ;;;;;;;;;;;;;;;;;;;;
+ ;;; get-clauses ;;;;
+ ;;;;;;;;;;;;;;;;;;;;
+ ;; It remove And link it it exist in the input expression
+ ;; and return the body of the expression
+ ;;;;;;;;;;;;;;;;;;;;
+ ;; input :  (And (Parent John Kalid) (Parent Jalid Beza) (Parent Nati Abis))
+ ;; output :  ( (Parent John Kalid) (Parent Jalid Beza) (Parent Nati Abis) )
+
+! (get-clauses (And (Parent John Kalid) (Parent Jalid Beza) (Parent Nati Abis)))
+
  ;;;;;;;;;;;;;;;;;;
  ;; gen-subsets ;;;
  ;;;;;;;;;;;;;;;;;;
