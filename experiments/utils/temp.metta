@@ -100,7 +100,6 @@
                 (
                    let $result  (concatTuple ($head)
                     (get-clouses $tail)) (concatTuple $result (get-clouses $head)))
-
                     (get-clouses $tail)))
     )
 
@@ -109,28 +108,51 @@
 
 
 
-(=(combinatorial_insert $handle ()) ($handle))
 
-(=(combinatorial_insert $handle $seq_of_seq )(
-    let* (
-        ($head (car-atom $seq_of_seq))
-        ($tail (cdr-atom $seq_of_seq))
-        ($temp  (cons-atom $handle ($head)))
-        ($temp2 (concatTuple ($temp) $tail))
-        ($dummy (combinatorial_insert $handle $tail))
-
-    )
-          (cons-atom $temp2 $dummy)
-))
-
- !(combinatorial_insert (AND $d $f) ((In $x $y)(In $x $z)(Hu $x)))
 
 ;;(Inheritance Bob (And human (Or zac Mike)))
 
+(=(push-back $atom ()) ($atom))
+(=(push-back $atom $list) (
+    let* (
+        ($head (car-atom $list))
+        ($tail (cdr-atom $list))
+        ($dummy (push-back $atom $tail))
+    ) 
+     (cons-atom $head $dummy)
+))
+
+(=(comp $main_head ()) ())
+(=(comp $main_head $list)(
+    let* (
+        ($x (car-atom $list))
+        ($tail (cdr-atom $list))
+        ($rst (push-back (push-back $main_head $x) (comp $main_head $tail)))
+        
+    ) 
+       $rst
+))
+;;!(push-back c (a b))
+
+;;!(comp a ((b) (c)))
+
+
+(=(combinatorial_insert $h ())((($h))))
+(=(combinatorial_insert $h $seq)(
+    let*(
+        ($head (car-atom $seq))
+        ($tail (cdr-atom $seq))
+        ($reslut (combinatorial_insert $h $tail))
+        ($comp_result (comp $head $reslut))
+        
+    )
+        (push-back (push-back (push-back $h $head) $tail) $comp_result)
+))
+
+!(combinatorial_insert D ((A) (B C)))
 
 
 
+(((E) (B C D) (A)), ((D) (E) (B C) (A)) ,((E D) (B C) (A)) ,((B C) (E) (A D)))
 
-
-
-
+(((B C D) (A)) ((D) (B C) (A)) ((B C) (A D)))
