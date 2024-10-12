@@ -35,14 +35,14 @@
     )
 )
 
-; Count the number of instances of a given pattern
+ ; Count the number of instances of a given pattern
 (= (count $pattern $db)
     (let* (($dptrn (Debruijn2var $pattern (Cons $Xvar (Cons $Yvar Nil))))
-           ($result (collapse (match $db $dptrn $dptrn))))
+            ($result (collapse (match $db $dptrn $dptrn))))
         (tuple-count $result)))
 
-;; Evaluate if the pattern has enough support
-;; Evaluate if the pattern has enough support
+ ;; Evaluate if the pattern has enough support
+ ;; Evaluate if the pattern has enough support
 (: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
 
 (= (sup-eval $db ($link $x $y) $ms)
@@ -61,7 +61,7 @@
         False
     )
 )
-
+(= (has-type $x ($y)) (== $x $y))
 (= (has-type $x Nil) False)
 (= (has-type $x ($l $head $tail)) (if (== $x $l) True (has-type $x $tail)))
 

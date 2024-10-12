@@ -117,7 +117,7 @@
     )
 
 )
- ;;TODO: implement Absent
+
  ; (: Absent (-> Atom Bool))
  ; (= (Absent $x) not (Present $x))
 
@@ -138,13 +138,15 @@
 
     ))
 
+(= (_gen-variables $a $nary)
+    ($cnj-bodies-0 $cnj-bodies-1))
  ;; Generate a rule to calculate the JSD-Surprisingness of a pattern
  ;; that is the conjunction of nary components.
 (= (gen-jsd-surprisingness-rule $nary $ms $f_vardecl $db)
 
     (if (> 1 $nary) ()
-        (let* ( ($cnj_bodies (gen-variables "$cnj-bodies" $nary))
-                ($f (make-pattern $f_vardecl))
+        (let* ( ($cnj_bodies (_gen-variables "$cnj-bodies" $nary))
+                ($f (gen-jsd-pattern $f_vardecl $cnj_bodies))
                 ($minsup_e (minsup-eval $f $db $ms))
                 ($jsd_e (jsd-eval $f $db))
                 ($surp_e (surp-eval 'jsdsurp $f $db))
@@ -177,7 +179,8 @@
     1)
 
 ! (gen-variables "$cnj-bodies" 4)
-! (Absent (A))
+
+!  (mapper PresentLink ($cnj-bodies-0 $cnj-bodies-1))
 !  (mapper PresentLink ($cnj-bodies-0 $cnj-bodies-1))
 
 ! (gt_zero_confidence_eval (STV 0.5 0.1) )
@@ -185,3 +188,6 @@
 ! (absolutely_true_eval  (STV 1 2))
 ! (Present (Person A))
 ! (Absent (Person A))
+
+! (gen-jsd-surprisingness-rule 1 2 (Person A) (Inheritance A B))
+! (gen-jsd-surprisingness-rule 1 2 (Person A) (new-space))
