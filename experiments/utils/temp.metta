@@ -149,10 +149,59 @@
         (push-back (push-back (push-back $h $head) $tail) $comp_result)
 ))
 
-!(combinatorial_insert D ((A) (B C)))
+;; !(combinatorial_insert D ((A) (B C)))
+
+(=(insert () $res) ($res))
+(=(insert $subparts $res)(
+      let* (
+            ($head (car-atom $subparts))
+            ($tail (cdr-atom $subparts))   
+      )  
+       (push-back $head (insert $tail $res))
+))
 
 
+(=(mk-combinatorial_insert $main_head ())(combinatorial_insert $main_head ()))
+(=(mk-combinatorial_insert $main_head $parts)(
+    let* (
+        ($part (car-atom $parts))
+        ($tail (cdr-atom $parts))
+        ($subparts (combinatorial_insert $main_head $part))
+    ) 
+       (insert $subparts (mk-combinatorial_insert $main_head $tail))
+))
 
-(((E) (B C D) (A)), ((D) (E) (B C) (A)) ,((E D) (B C) (A)) ,((B C) (E) (A D)))
 
-(((B C D) (A)) ((D) (B C) (A)) ((B C) (A D)))
+(=(partitions ())())
+(=(partitions $hs)(
+    let* (
+        ($head (car-atom $hs))
+        ($tail (cdr-atom $hs))
+        ($final_res (mk-combinatorial_insert $head (partitions $tail)))
+         )
+          $final_res 
+))
+
+!(partitions (A B))
+
+;!(mk-combinatorial_insert B (((c))))
+
+(=(partitions_without_pattern $partitions) (
+    let*(
+        ($head (car-atom $partitions))
+        ($tail (cdr-atom $partitions))
+        ($dummy ())
+    ) 
+))
+
+
+ (((A)) 
+ ((C) (B A)) 1
+ ((A) (C) (B)) 1
+ ((C A) (B)) 1
+ ((C B A)) 1
+ ((A) (C B)) 1
+ ((B A)) 
+ ((A) (B)))
+
+((((A))) ((B A)) ((A) (B)))
