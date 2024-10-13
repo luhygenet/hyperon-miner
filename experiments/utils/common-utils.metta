@@ -27,14 +27,14 @@
     )
 )
 
-; Count the number of instances of a given pattern
+ ; Count the number of instances of a given pattern
 (= (count $pattern $db)
-    (let* (($dptrn (Debruijn2var $pattern (Cons $Xvar (Cons $Yvar Nil))))
-           ($result (collapse (match $db $dptrn $dptrn))))
+    (let* ( ($dptrn (Debruijn2var $pattern (Cons $Xvar (Cons $Yvar Nil))))
+            ($result (collapse (match $db $dptrn $dptrn))))
         (tuple-count $result)))
 
-;; Evaluate if the pattern has enough support
-;; Evaluate if the pattern has enough support
+ ;; Evaluate if the pattern has enough support
+ ;; Evaluate if the pattern has enough support
 (: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
 
 (= (sup-eval $db ($link $x $y) $ms)
@@ -42,8 +42,6 @@
         (if (>= $sup $ms) (CandidatePattern (Var2Debruijn ($link $x $y))) (superpose ()))
     )
 )
-
-
 
  ;Check if expression is truth value or not
 (: cog-tv? (-> Atom Boolean))
@@ -295,58 +293,75 @@
  ;     )
  ; ))
 
-(= (is_subclause $clause $expr)
-    (if (== $expr ())
-        False
-        (if (== $clause (car-atom $expr)) ; If the clause matches the first element
-            True
-            (is_subclause $clause (cdr-atom $expr))) ; Otherwise, check the rest
+ ;helper function to concat two tuples
+(= (concatTuple $xs $ys)
+    (if (== $xs ())
+        $ys
+        (let* ( ($head (car-atom $xs))
+                ($tail (cdr-atom $xs))
+                ($tailNew (concatTuple $tail $ys)))
+            (cons-atom $head $tailNew))
     )
 )
 
- ;########################
- ; Remove Redundunt subclauses from the list of clauses
- ; It currently checks for subclauses in one depth.
- ; It can be extended to check for subclauses within subclauses
+ ;! (concatTuple (A B C) (D E F))
 
- ; Main function to process and remove redundant clauses from the expression
-(= (remove_redundant_subclauses $exp)
-    (process_expressions_for_redundant_subclauses $exp $exp)
-)
-
- ; Outer loop to process the entire expression list
-(= (process_expressions_for_redundant_subclauses $expr $original_expr)
-    (if (== $expr ()) ; No more clauses, return empty
+(= (is_subclause_helper $head $pattern)
+    (if (== $pattern ())
         ()
         (let* (
-                ($current_clause (car-atom $expr)) ; Get the current clause
-                ($remaining_expr (cdr-atom $expr))) ; Get the rest of the expression
-            (if (is_clause_redundant $current_clause $original_expr) ; Check if current clause is redundant
-                (process_expressions_for_redundant_subclauses $remaining_expr $original_expr) ; Skip redundant clause
-                ($current_clause (process_expressions_for_redundant_subclauses $remaining_expr $original_expr))))
+                ($headP (car-atom $pattern))
+                ($tail (cdr-atom $pattern)))
+
+            (if (== (get-metatype $headP) Expression)
+                (if (== $head $headP)
+                    (True)
+                    (concatTuple (is_subclause_helper $head $headP)
+                        (is_subclause_helper $head $tail)))
+                (is_subclause_helper $head $tail)
+            ))
+
+)
+)
+(= (is_subclause $pattern1 $pattern2)
+    (let $flag (is_subclause_helper $pattern1 $pattern2)
+        (if (== $flag ())
+            False
+            True)
     )
 )
 
- ; Check if the current clause is redundant by comparing with remaining expressions
-(= (is_clause_redundant $clause $remaining_expr)
-    (check_nested_subclauses $clause $remaining_expr) ; Check deeper for nested redundancy
-)
-
- ; Go deeper into the structure and check nested subclauses
-(= (check_nested_subclauses $clause $remaining_expr)
-    (if (== $remaining_expr ())
-        False
+(= (remove_current $current_clause $original_expr)
+    (if (== $original_expr ())
+        ()
         (let* (
-                ($next_clause (car-atom $remaining_expr)) ; Get the next clause
-                ($remaining_rest (cdr-atom $remaining_expr))
-                ($is_redundant (or
-                        (is_subclause $clause $next_clause) ; Check for subclause in the nested list
-                        (check_nested_subclauses $clause $remaining_rest))))
-            $is_redundant )
+                ($head (car-atom $original_expr))
+                ($tail (cdr-atom $original_expr)))
+            (if (== $head $current_clause)
+                (remove_current $current_clause $tail)
+                (concatTuple ($head) (remove_current $current_clause $tail))))
     )
 )
 
- ; ! (remove_redundant_subclauses ( (Mortal $W) (Implies (Human $X) (Mortal $X))  (Human $X) ))
+(= (remove_redundant_subclauses $exp)
+    (remove_redundant_subclauses_helper $exp $exp)
+)
+
+(= (remove_redundant_subclauses_helper $expr $original_expr)
+    (if (== $expr ())
+        ()
+        (let* (
+                ($current_clause (car-atom $expr))
+                ($remaining_expr (cdr-atom $expr))
+                ($ori_exp_without_current (remove_current $current_clause $original_expr)))
+            (if (is_subclause $current_clause $ori_exp_without_current)
+                (remove_redundant_subclauses_helper $remaining_expr $original_expr)
+                (concatTuple ($current_clause ) (remove_redundant_subclauses_helper $remaining_expr $original_expr))))
+    )
+)
+
+ ; ! (is_subclause (Implies $x $y) (Implies (Human (Implies $x $y)) (Mortal $X)))
+ ; ! (remove_redundant_subclauses (, (Implies $x $W) (Implies (Human (Implies $x $y) (Mortal $X))) (Mortal $X) ))
 
  ; ##############################
 (= (is_more_abstract ($link1 $x1 $y1) ($link2 $x2 $y2) $relative_var)
