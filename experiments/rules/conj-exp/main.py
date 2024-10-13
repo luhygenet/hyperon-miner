@@ -95,6 +95,8 @@ def flatten_list(nested_list):
             flat_list.append(current)
     return flat_list
 
+# Permutations not implemented yet and also the conjunction vars must be returned with the
+# generated combinations
 def combine_lists_recursive(list1, list2, length, current_combination=None, index1=0, index2=0):
     if current_combination is None:
         current_combination = []
@@ -112,29 +114,29 @@ def combine_lists_recursive(list1, list2, length, current_combination=None, inde
         new_combination = current_combination + [list2[j]]
         combinations.extend(combine_lists_recursive(list1, list2, length, new_combination, index1, j + 1))
 
-    return combinations
+    return (unique_combinations(combinations, list1, list2))
 
 def combine_lists(list1, list2):
-    length = max(len(list1), len(list2))
+    length = len(list2)
     return combine_lists_recursive(list1, list2, length)
 
 
-# def unique_combinations(combinations, list1, list2):
-#     flat_list1 = flatten_list(list1)
-#     flat_list2 = flatten_list(list2)
+def unique_combinations(combinations, list1, list2):
+    flat_list1 = flatten_list(list1)
+    flat_list2 = flatten_list(list2)
     
-#     seen = set()
-#     unique_combos = []
-#     list1_set = set(str(item) for item in flat_list1)
-#     list2_set = set(str(item) for item in flat_list2)
+    seen = set()
+    unique_combos = []
+    list1_set = set(str(item) for item in flat_list1)
+    list2_set = set(str(item) for item in flat_list2)
 
-#     for combo in combinations:
-#         sorted_combo = tuple(sorted(str(item) for item in combo))
-#         combo_set = set(sorted_combo)
-#         if sorted_combo not in seen and combo_set != list1_set and combo_set != list2_set:
-#             seen.add(sorted_combo)
-#             unique_combos.append(combo)
-#     return unique_combos
+    for combo in combinations:
+        sorted_combo = tuple(sorted(str(item) for item in combo))
+        combo_set = set(sorted_combo)
+        if sorted_combo not in seen and combo_set != list1_set and combo_set != list2_set:
+            seen.add(sorted_combo)
+            unique_combos.append(combo)
+    return unique_combos
 
 @register_atoms(pass_metta=True)
 def cnj_exp(metta):
