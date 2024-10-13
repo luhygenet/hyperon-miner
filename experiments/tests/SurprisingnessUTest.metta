@@ -7,6 +7,10 @@
  ; ! (import! &self  test-utils)
  ; ! (import! &self  experiments:tests:List)
 
+ ;;
+
+! (import! &self  test-utils)
+
 ! (import str as ::str)
 ! (import json.loads)
 
@@ -92,22 +96,22 @@
 
 (= (subsmp $db $subsize )
 
-    ($db)
+    $db
 
 )
 
 (= (emp_prob_subsmp $pattern $db $subsize)
 
     (if (< $subsize (db_size $db))
-        ( emp_prob $pattern (subsmp $db $subsize))
-        (emp_prob $pattern $db)
+        ( emp-prob $pattern (subsmp $db $subsize))
+        (emp-prob $pattern $db)
     )
 )
 
 ( = (emp_prob_bs $pattern $db $n_resample $subsize)
     (if (< $subsize (db_size $db))
         (avrg (emp_prob_subsmp ($pattern $db  $subsize)))
-        (emp_prob $pattern $db)
+        (emp-prob $pattern $db)
     )
 
 )
@@ -161,6 +165,25 @@
             ( ($epr_bs) ( (emp_prob_bs $pattern $db 10 1000)) )
         )
     (TS_ASSERT_DELTA $epr  $epr_bs 0.1)))
+ ;categories subsize it categorizes into two categories
+(= (categorize_subsize $db $ts)
+    (if (< $subsize (/ $ts 2))
+        1
+        2)
+
+)
+
+ ;;TODO: add n atoms to the database
+
+ ;;TODO: remove n atoms from the database
+
+(= (subsample $db $subsize)
+    (if (>= (db_size $db) $subsize)
+        $db
+        (case (categorize_subsize $db (db_size $db))
+            (
+                (1 (add_n_atoms_to_db $db $subsize)) ; if it is in group 1 add atoms to the database
+                (2 (remove_n_atoms_to_db $db $subsize)))))) ; if it is in group 2 remove atoms from the database
 
  ; (= (test_emp_prob_bs_1 $pattern $db)
  ;     (let*
@@ -170,30 +193,46 @@
  ;     (1111111)))
 
 ! ("============ test_emp_prob_bs ============ ")
-! (populate_uniform_inheritance_links 1 2)
-! (emp-prob Nil (new-space))
-! (test_emp_prob_bs_1 Nil (new-space))
+! (sup Abebe (new-space))
+! (emp-prob (Parent A) (new-space))
 
-! ("============ sum ============ ")
-! (sum  (Cons 1 (Cons 1 (Cons 2 Nil))))
-! (sum  (Cons 3 (Cons 1 (Cons 2 Nil))))
-! (+ 1 (sum  (Cons 3 (Cons 1 (Cons 2 Nil)))))
+ ; ! ("============ test_emp_prob_bs ============ ")
+ ; ! (populate_uniform_inheritance_links 1 2)
+ ; ! (emp-prob Nil (new-space))
+ ; ! (test_emp_prob_bs_1 Nil (new-space))
 
-! ("============ len ============ ")
-! (len  (Cons 1 (Cons 1 (Cons 2 Nil))))
-! (len  (Cons 3 (Cons 1 (Cons 2 Nil))))
+ ; ! ("============ sum ============ ")
+ ; ! (sum  (Cons 1 (Cons 1 (Cons 2 Nil))))
+ ; ! (sum  (Cons 3 (Cons 1 (Cons 2 Nil))))
+ ; ! (+ 1 (sum  (Cons 3 (Cons 1 (Cons 2 Nil)))))
 
-! ("============ avrg ============ ")
-! (avrg  (Cons 1 (Cons 1 (Cons 2 Nil))))
-! (avrg  (Cons 3 (Cons 1 (Cons 2 Nil))))
+ ; ! ("============ len ============ ")
+ ; ! (len  (Cons 1 (Cons 1 (Cons 2 Nil))))
+ ; ! (len  (Cons 3 (Cons 1 (Cons 2 Nil))))
 
-! ("============ TS_ASSERT_DELTA ============ ")
-! (TS_ASSERT_DELTA 1 2 0.1)
+ ; ! ("============ avrg ============ ")
+ ; ! (avrg  (Cons 1 (Cons 1 (Cons 2 Nil))))
+ ; ! (avrg  (Cons 3 (Cons 1 (Cons 2 Nil))))
 
-! (add_link_and_populate_uniform_inheritance_link 3 1 4 (py-list ( (''))))
-! (populate_uniform_inheritance_links 1 2)
-! (biased_randbool 100)
-! (populate_uniform_inheritance_link 1 0 0)
-! (out_of_index 3 4)
-! (add_link_and_populate_uniform_inheritance_link 0 0 0 (py-list ( ( ''))))
- ; ! (get-atoms (db) )
+ ; ! ("============ TS_ASSERT_DELTA ============ ")
+ ; ! (TS_ASSERT_DELTA 1 2 0.1)
+
+ ; ! (add_link_and_populate_uniform_inheritance_link 3 1 4 (py-list ( (''))))
+ ; ! (populate_uniform_inheritance_links 1 2)
+ ; ! (biased_randbool 100)
+ ; ! (populate_uniform_inheritance_link 1 0 0)
+ ; ! (out_of_index 3 4)
+ ; ! (add_link_and_populate_uniform_inheritance_link 0 0 0 (py-list ( ( ''))))
+ ;  ; ! (get-atoms (db) )
+ ; ! (biased_randbool 100)
+ ; ! (biased_randbool 0)
+ ; ! (test_emp_prob_bs_1 )
+
+ ; ! ("============ test_emp_prob_bs ============ ")
+ ; ! (populate_uniform_inheritance_links 1 2)
+ ; ! (emp-prob Nil (new-space))
+ ; ! (test_emp_prob_bs_1 Nil (new-space))
+
+ ; ! ("============ test_emp_prob_bs ============ ")
+ ; ! (emp_prob_bs Person $db 10 1000)
+ ; ! (emp-prob Person $db)
