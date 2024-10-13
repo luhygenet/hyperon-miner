@@ -44,16 +44,6 @@
     )
 )
 
-(= (concatTuple $xs $ys)
-    (if (== $xs ())
-        $ys
-        (let* ( ($head (car-atom $xs))
-                ($tail (cdr-atom $xs))
-                ($tailNew (concatTuple $tail $ys)))
-            (cons-atom $head $tailNew))
-    )
-)
-
 (= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
 
 (= (get_variables_for_tree $pattern)
@@ -75,7 +65,7 @@
     )
 )
 
- ; ! (get_variables_for_tree (Inheritance (Human $X) (Inheritance $Y (Human $Z))))
+ ;! (get_variables_for_tree  (Inheritance (Human $X) (Inheritance $Y (Human $Z))))
 
 (= (substitute $pattern $variables)
     (if (== $variables ())
@@ -101,7 +91,7 @@
     )
 )
 
- ; ! (substitute (Inheritance (Human $X) (Inheritance $Y (Human $Z))) ($A $B $C))
+ ;! (substitute (Inheritance (Human $X) (Inheritance $Y (Human $Z))) ($A $B $C))
 
  ;############################################################
  ;###############   alpha convert  ###########################
@@ -130,6 +120,8 @@
             (does_exist $var (cdr-atom $list_vars)))
     )
 )
+
+ ; ! (address_conflict ($A $B $F $A $F) ($A $C $D $F))
 
 (= (consolidate_keys $input_list)
     (let* (
@@ -181,7 +173,7 @@
     )
 )
 
- ; ! (alpha_convert ($A $B $F $A $F) ($A $C $D $F))
+ ;! (alpha_convert ($A $B $F $A $F) ($A $C $D $F))
  ; ! (alpha_convert ($A $B $C ) ($X $Y $Z))
 
  ;#############################################################
@@ -194,7 +186,7 @@
 )
 
 (= (expand_conjunction_connect $cnjtion $pattern $cv $pv)
-    (replace_pattern $cnjtion $pattern (combine_lists $cv $pv))
+    (let $list (replace_pattern $cnjtion $pattern (combine_lists $cv $pv)) (remove_alpha_similar $list))
 )
 
 (= (replace_pattern $cnjtion $pattern $pv2cv)
@@ -221,9 +213,41 @@
     )
 )
 
+(= (remove_alpha_similar $list)
+    (remove_alpha_similar_helper $list ())
+)
+
+(= (remove_alpha_similar_helper ($listHead $listTail) $seen_list)
+    (if (== $listTail ())
+        ()
+        (let* (
+                ($matched (collapse (match &self $listHead $listHead)))
+                ($seen_list_new (concatTuple ($matched) $seen_list)))
+            (if (or (== $matched ()) (does_exist $matched $seen_list)) ;(or (== $matched ()) )but supp evaluation will check this
+                (remove_alpha_similar_helper $listTail $seen_list)
+                ( $listHead (remove_alpha_similar_helper $listTail $seen_list_new))))
+    )
+)
+
 (= (expand_conjunction_es_rec $cnjtion $apat $db $ms)
     (pass)
 )
+
+(= ( expand_conjunction_disconnect $cnjtion $pattern ) (
+        let* (
+            ($cnjtion_vars (get_variables_for_tree $cnjtion))
+            ($pat_vars  (get_variables_for_tree $pattern))
+            ($acvar (alpha_convert $pat_vars $cnjtion_vars))
+            ($acpat (let $pat (substitute $pattern $acvar) (car-atom $pat)))
+            ($npat (append_pat $cnjtion $acpat))
+            ($nclause (remove_redundant_subclauses $npat))
+        ) $nclause
+))
+
+(= ( append_pat $pat $conj) ( , $pat $conj))
+
+! (expand_conjunction_disconnect (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B))
+
  ;##############
  ;# Test cases #
  ;##############
@@ -231,8 +255,13 @@
  ;Populate the Atomspace with some data
 
 (INHERITANCE_LINK A B)
+(LIST_LINK A B)
+(List_LINK A C)
 (LIST_LINK B C)
 (INHERITANCE_LINK A D)
+(INHERITANCE_LINK X Y)
+(LIST_LINK Y C)
+(INHERITANCE_LINK X D)
 
  ;(expand_conjunction_inputs cnjtion pattern db ms mv es)
-! (expand_conjunction (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B) &self 0 2 False)
+ ;! (expand_conjunction (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B) &self 1 2 False)
