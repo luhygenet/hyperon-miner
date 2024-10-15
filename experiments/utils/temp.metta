@@ -180,44 +180,49 @@
 
 
 (=(is-symbol $var) 
-   (== (get-metatype $link) Symbol)
+   (== (get-metatype $var) Symbol)
 )
 
 (=(is-variable $var) 
-   (== (get-metatype $link) Variable)
+   (== (get-metatype $var) Variable)
 )
 
 (=(is-expression $var) 
-   (== (get-metatype $link) Expression)
+   (== (get-metatype $var) Expression)
 )
 
 (=(is-pattern $expr) (
+    collapse(
  or (unify $expr ($link $x $y) (
        and (is-symbol $link) (
-        and (or (is-variable $x) (is-expression $x))
+        or (or (is-variable $x) (is-expression $x))
              (or (is-variable $y) (is-expression $y)))) False)
     (unify $expr ($link $x) 
        (and (is-symbol $link) 
         (or (is-variable $x) 
-            (is-expression $x))) False )  )
+            (is-expression $x))) False )  ))
 )
 
 
 (=(mk-body ()) ())
 (=(mk-body $block) (
     let ($head $tail) (decons-atom $block) (
-        if (is-pattern $head) (
-            AND $head (mk-body $tail)) 
-            (mk-body $tail)
+        if (let $res (is-pattern $head) (car-atom $res)) 
+           (if (== $tail ()) $head 
+               (let $temp (mk-body $tail) (if (== $temp ()) $head (AND $head $temp)))) 
+           (if (and (not (== $head ()))  (== $tail ())) (mk-body $head) 
+               (let $res2 (mk-body $head) (mk-body ($res2 $tail)) ))
     ) 
 ))
 
 
-!(mk-body ((C) (B A)))
 
+!(mk-body ( (Human $x) ((Inheritance $x abe) (Parent $x)) (Child $g)))
+(AND (AND (Inheritance $x abe) (Parent $x)) )
+(((Inheritance $x abe) (Parent $x)) (Child $g))
+((Inheritance $x abe) (Parent $x)) 
 
-;!(is-pattern (human (OR N D)))
-
+;!(is-pattern (Inheritance $d abe))
 
 ;!(partitions_without_pattern (A B))
 ;!(partitions (A B))
