@@ -107,7 +107,7 @@
                 ($head (car-atom $pattern_vars))
                 ($tail (cdr-atom $pattern_vars)))
             (if (does_exist $head $cnjtion_vars)
-                (concatTuple ( ($head (generateRandomVar $set))) (address_conflict $tail $cnjtion_vars ))
+                (concatTuple ( ($head (generateRandomVar))) (address_conflict $tail $cnjtion_vars ))
                 (concatTuple ( ($head $head)) (address_conflict $tail $cnjtion_vars))))
     )
 )
@@ -246,7 +246,7 @@
 
 (= ( append_pat $pat $conj) ( , $pat $conj))
 
-! (expand_conjunction_disconnect (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B))
+ ; ! (expand_conjunction_disconnect (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B))
 
  ;##############
  ;# Test cases #
@@ -256,7 +256,7 @@
 
 (INHERITANCE_LINK A B)
 (LIST_LINK A B)
-(List_LINK A C)
+(LIST_LINK A C)
 (LIST_LINK B C)
 (INHERITANCE_LINK A D)
 (INHERITANCE_LINK X Y)
@@ -264,4 +264,5 @@
 (INHERITANCE_LINK X D)
 
  ;(expand_conjunction_inputs cnjtion pattern db ms mv es)
- ;! (expand_conjunction (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B) &self 1 2 False)
+! (expand_conjunction (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B) &self 1 2 False)
+ ; ! (match &self (, (INHERITANCE_LINK $X $Y) (LIST_LINK $A $Y)) (, (INHERITANCE_LINK $X $Y) (LIST_LINK $A $Y))) ; This is alpha similar to (X Y) (X Y) COMB
