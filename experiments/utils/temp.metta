@@ -34,23 +34,11 @@
 ;!(get_tv_conf (STV 12 34))
 
 
-
-
-
-
-
-
  ;;!(prod-etv (get-space)  ((Inheritance Abe human) (Inheritance Rio human) (Inheritance Bob human)) )
 ;; !(emp_tv_mem   ((Inheritance Abe human) (Inheritance Rio human) (Inheritance Bob human)) (get-space))
 
-
-
-
 ;; !(ji-est-tv (get-space)  ((Inheritance $x human) (Inheritance $y human) (Inheritance $x $y)) )
 ;; !(mk_distribution_list (((Inheritance $x human) (EMPTV 1.0 0.05)) ((Inheritance $y human) (EMPTV 1.0 0.05)) ((Inheritance $x human) (EMPTV 1.0 0.05))))
-
-
-
 
 ;;!(test_avrg_tv_1)
 
@@ -215,9 +203,25 @@
     ) 
 ))
 
+(=(add-subpatterns () $space) ())
+(=(add-subpatterns $partition $space)(
+    let* ((($head $tail) (decons-atom $partition))
+           ($subpattern (mk-body $head))
+           ($dummy (add-subpatterns $tail $space))
+            )
+            (let () (add-atom $space (pattern $subpattern)) (cons-atom $subpattern $dummy))
+))
+
+! (add-reduct &self (= (temp-space) (new-space)))
 
 
-!(mk-body ( (Human $x) ((Inheritance $x abe) (Parent $x)) (Child $g)))
+
+
+!(add-subpatterns (((Human $x) ((Inheritance $x abe) (Parent $x)) (Child $g)) ((Inheritance $f z) (Human $z))) (temp-space))
+
+!(match (temp-space) $x  $x)
+
+;!(mk-body ( (Human $x) ((Inheritance $x abe) (Parent $x)) (Child $g)))
 (AND (AND (Inheritance $x abe) (Parent $x)) )
 (((Inheritance $x abe) (Parent $x)) (Child $g))
 ((Inheritance $x abe) (Parent $x)) 
