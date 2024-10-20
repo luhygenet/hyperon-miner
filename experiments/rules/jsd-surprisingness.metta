@@ -90,6 +90,7 @@
 )
 
  ;; make-pattern a helper function to create a pattern from a variable declaration and a list of bodies
+ ;;this function generatesspecific pattern for jsd surprisingness
 (: make-pattern (-> Atom Atom))
 (= (make-pattern $f_vardecl)
     (quote
@@ -108,7 +109,6 @@
     (Inheritance $x $y)
 )
 
- ;;TODO: implement Present
  ;;Present accepts an atom and checks if it is present in the db
 (: Present (-> Atom Bool))
 (= (Present $x)
@@ -140,33 +140,64 @@
 
 (= (_gen-variables $a $nary)
     ($cnj-bodies-0 $cnj-bodies-1))
+
+ ;;check if the index is out of range
+(: out_of_index (-> Number Number Boolean))
+(= (out_of_index $n_cpts $x) (>= $x $n_cpts))
+
+ ;;add link and populate uniform inheritance link
+(= (add_link_and_populate_uniform_inheritance_link $n_cpts $i $j $cpts)
+    (let $_  (add-atom (db) (Inheritance_Link (get_index (py-list ( $cpts)) $i) (get_index (py-list ( $cpts)) $j)) )
+        (populate_uniform_inheritance_link $n_cpts $i $j $cpts))
+)
+
+ ;;populate uniform inheritance link
+(= (populate_uniform_inheritance_link  $n_cpts $i $j $cpts)
+    (if (>= $i $n_cpts)
+        ()
+        (case (out_of_index $j $n_cpts)
+            (
+                ($x (add_link_and_populate_uniform_inheritance_link $n_cpts (+ $i 1) $j $cpts))
+                ($y  (add_link_and_populate_uniform_inheritance_link $n_cpts $i (+ $j 1)$cpts))
+
+            )
+
+    ))
+
+)
+
+ ;;populate uniform inheritance links
+(= (populate_uniform_inheritance_links $n_cpts $ip)
+    (let $cpts ( populate_concept 2)
+        (populate_uniform_inheritance_link $n_cpts 0 0  $cpts ))
+)
+
  ;; Generate a rule to calculate the JSD-Surprisingness of a pattern
  ;; that is the conjunction of nary components.
-(= (gen-jsd-surprisingness-rule $nary $ms $f_vardecl $db)
+ ; (= (gen-jsd-surprisingness-rule $nary $ms $f_vardecl $db)
 
-    (if (> 1 $nary) ()
-        (let* ( ($cnj_bodies (_gen-variables "$cnj-bodies" $nary))
-                ($f (gen-jsd-pattern $f_vardecl $cnj_bodies))
-                ($minsup_e (minsup-eval $f $db $ms))
-                ($jsd_e (jsd-eval $f $db))
-                ($surp_e (surp-eval 'jsdsurp $f $db))
-            )
-         ;;check jsd-surprisingness-criteria
-        (jsd-surprisingness-formula $surp_e $minsup_e $jsd_e )
+ ;     (if (> 1 $nary) ()
+ ;         (let* ( ($cnj_bodies (_gen-variables "$cnj-bodies" $nary))
+ ;                 ($f (gen-jsd-pattern $f_vardecl $cnj_bodies))
+ ;                 ($minsup_e (minsup-eval $f $db $ms))
+ ;                 ($jsd_e (jsd-eval $f $db))
+ ;                 ($surp_e (surp-eval 'jsdsurp $f $db))
+ ;             )
+ ;          ;;check jsd-surprisingness-criteria
+ ;         (jsd-surprisingness-formula $surp_e $minsup_e $jsd_e )
 
-    )
-))
+ ;     )
+ ; ))
 
-(= (jsd-surprisingness-formula $surp_e $minsup_e $jsd_e  )
+ ; (= (jsd-surprisingness-formula $surp_e $minsup_e $jsd_e  )
 
-    (let* ( ($jsdsurp-e $surp_e)
-            ($surp ($cog-mean $jsd_e))
-            ($tv  (cog-set-tv $jsdsurp-e (stv $surp 1)))
-
-        )
-    (cog-tv $jsdsurp-e)
-)
-)
+ ;     (let* ( ($jsdsurp-e $surp_e)
+ ;             ($surp ($cog-mean $jsd_e))
+ ;             ($tv  (cog-set-tv $jsdsurp-e (stv $surp 1)))
+ ;         )
+ ;     (cog-tv $jsdsurp-e)
+ ; )
+ ; )
 
  ;;Test
 (Person A)
@@ -189,5 +220,12 @@
 ! (Present (Person A))
 ! (Absent (Person A))
 
-! (gen-jsd-surprisingness-rule 1 2 (Person A) (Inheritance A B))
-! (gen-jsd-surprisingness-rule 1 2 (Person A) (new-space))
+ ; ! (gen-jsd-surprisingness-rule 1 2 (Person A) (Inheritance A B))
+ ; ! (gen-jsd-surprisingness-rule 1 2 (Person A) (new-space))
+
+! (gen-variables "$cnj-bodies" 4)
+! ( collapse (gen-variables "$cnj-bodies" 4))
+! ( superpose (gen-variables "$cnj-bodies" 4))
+(= (get-gen-variables $n)
+    (collapse (gen-variables "$cnj-bodies" $n)))
+! (get-gen-variables 4)

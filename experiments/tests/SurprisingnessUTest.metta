@@ -1,238 +1,99 @@
+! (register-module! ../../../hyperon-miner)
+! (import! &database hyperon-miner:experiments:data:sample-data)
+! (import! &self hyperon-miner:experiments:utils:common-utils)
+! (import! &self hyperon-miner:experiments:tests:testUtils)
+! (import! &self  hyperon-miner:experiments:utils:SurprisingnessUtils)
 
- ;;;;;;;;;;
- ;; Imports ;;
- ;;;;;;;;;;
- ; ! (register-module! ../../experiments)
- ;  ; ! (import! &self experiments:rules:emp-tv)
- ; ! (import! &self  test-utils)
- ; ! (import! &self  experiments:tests:List)
+ ;; check if count-atom-element returns number childrens in the
+! (tuple-count (abebe, abebe, abebe)) ;; 3
+! (tuple-count (abebe abebe abebe))
 
- ;;
+! (tuple-count (abebe, abebe, abebe)) ;; 3
+! (tuple-count (abebe abebe abebe))
+ ;; check if the count function returns the number of instances of a given pattern
+! (counter &database abebe) ;; 2
 
-! (import! &self  test-utils)
+ ;; check if the sup-eval function returns True when a pattern's support is greater than minimum support
+! (sup-eval $database abebe 1) ;; True
 
-! (import str as ::str)
-! (import json.loads)
+ ;; Test has-type
+! (has-type lambda (lambda x y))
+ ;; Test get-arity
+! (get-arity (lambda  (Parent $x Nil)  (Parent $x Nil)))
 
-! (import os.getenv as get_env)
-! (import dotenv.load_dotenv as load_dotenv)
-! (import requests.post as POST)
+ ;; TEST n_conjuncts
+! (n_conjuncts (lambda   (Parent $x Nil) (Parent $x Nil)) )
 
- ; JsonAtom means: wrapped python dictionary / list
-(: ::JSON (-> Any JsonAtom))
-(= (::JSON $x) (py-atom (json.loads $x)))
+ ;;test db size
+ ; ! (add-reduct &self (= (get-space) (new-space)))
+! (let $space (new-space)
+    (add-atom &self (= (get-space) $space)))
+! (add-atom (get-space) (Inheritance Abe human))
+! (add-atom (get-space) (Inheritance Rio human))
+! (add-atom (get-space) (Inheritance Bob human))
+! (add-atom (get-space) (Inheritance Mike human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Inheritance Mike human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Inheritance Rio human))
+! (add-atom (get-space) (Inheritance Bob human))
+! (add-atom (get-space) (Inheritance Mike human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Inheritance Mike human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Inheritance Rio human))
+! (add-atom (get-space) (Inheritance Bob human))
 
-(: get (-> JsonAtom String JsonAtom))
-(= (get $dict $key)
-    ( (py-dot (py-atom $dict) get) $key))
+! (let $space (new-space)
+    (add-atom &self (= (space) $space)))
+! (add-atom (space) (Inheritance Zac human))
 
-(: get_index (-> JsonAtom Number JsonAtom))
-(= (get_index $list $index)
-    ( (py-dot (py-atom $list) __getitem__) $index))
+! ("get-atoms")
+! (get-atoms (space))
+! (get-atoms (get-space))
 
-(= (rget $x ()) (empty))
- ; ----------------------
+! (db_size (get-space))
 
- ; traverse as list
-(= (rget $list (>> $index ()))
-    (get_index $list $index))
-(= (rget $list (>> $x $xs))
-    (rget (get_index $list $x) $xs))
+! (universe-count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))
 
- ; traverse as dict
-(= (rget $dict (:: $path ()))
-    (get $dict $path))
-(= (rget $dict (:: $x $xs))
-    (rget (get $dict $x) $xs))
-
-! (import getattr)
-
-(= (inspect $x) (getattr $x "__dict__"))
-
-(= (import $y as $x)
-    (bind! $x (py-atom $y)))
-(= (import $x)
-    (import $x as $x))
-
- ; > Python imports
- ; --------------
-
-! (import str as ::str)
-
- ;database setup
-! (add-reduct &self (= (get-space) (new-space)))
-(= (db) (get-space))
- ;;check if the index is out of range
-(: out_of_index (-> Number Number Boolean))
-(= (out_of_index $n_cpts $x) (>= $x $n_cpts))
-
- ;;add link and populate uniform inheritance link
-(= (add_link_and_populate_uniform_inheritance_link $n_cpts $i $j $cpts)
-    (let $_  (add-atom (db) (Inheritance_Link (get_index (py-list ( $cpts)) $i) (get_index (py-list ( $cpts)) $j)) )
-        (populate_uniform_inheritance_link $n_cpts $i $j $cpts))
-)
-
- ;;populate uniform inheritance link
-
-(= (populate_uniform_inheritance_link  $n_cpts $i $j $cpts)
-    (if (>= $i $n_cpts)
-        ()
-        (case (out_of_index $j $n_cpts)
-            (
-                ($x (add_link_and_populate_uniform_inheritance_link $n_cpts (+ $i 1) $j $cpts))
-                ($y  (add_link_and_populate_uniform_inheritance_link $n_cpts $i (+ $j 1)$cpts))
-
-            )
-
-    ))
-
-)
-
- ;;populate uniform inheritance links
-(= (populate_uniform_inheritance_links $n_cpts $ip)
-    (let $cpts ( populate_concept 2)
-        (populate_uniform_inheritance_link $n_cpts 0 0  $cpts ))
-)
-
-(= (subsmp $db $subsize )
-
-    $db
-
-)
-
-(= (emp_prob_subsmp $pattern $db $subsize)
-
-    (if (< $subsize (db_size $db))
-        ( emp-prob $pattern (subsmp $db $subsize))
-        (emp-prob $pattern $db)
-    )
-)
-
-( = (emp_prob_bs $pattern $db $n_resample $subsize)
-    (if (< $subsize (db_size $db))
-        (avrg (emp_prob_subsmp ($pattern $db  $subsize)))
-        (emp-prob $pattern $db)
-    )
-
-)
-
-(: sum (-> (List $a) Number))
-(= (sum Nil) 0)
-(= (sum (Cons $head $tail))  (+ $head (sum  $tail)))
-
-(: avrg (-> (List Number) Number))
-(= (avrg $lst)
-
-    (case (len $lst)
-        ( (0 0)
-            ($_ (/ (sum $lst) (len $lst))))
-    )
-)
-
-(: len (-> (List $a) Number))
-(= (len Nil) 1)
-(= (len (Cons $head $tail))  (+ 1 (len  $tail)))
-
-(= (emp-prob $pattern $db)
-    (let*
-        ( ( ($ucount ) ( (universe-count $pattern $db)))
-            ( ($ms) ($ucount))
-            ( ($sup) ( (sup $pattern $db)))
-
-        ) (/ $sup  $ucount)
-))
-
-(: abs (-> Number Number))
-(= (abs $x)
-    (if (>= $x 0)
-        $x
-        (* $x -1)
-    )
-)
-
-(: TS_ASSERT_DELTA (->  Number Number Number Bool))
-(= (TS_ASSERT_DELTA $x $y $delta)
-    (if (<= (abs (- $x $y)) $delta)
-        (True)
-        (False)
-    )
-)
-(= (test_emp_prob_bs_1 $pattern $db)
-    (let*
-        ( ( ($_ ) ( populate_uniform_inheritance_links 1 0.01))
-            ( ($pattern) (Nil))
-            ( ($epr) ( (emp-prob $pattern $db)))
-            ( ($epr_bs) ( (emp_prob_bs $pattern $db 10 1000)) )
-        )
-    (TS_ASSERT_DELTA $epr  $epr_bs 0.1)))
- ;categories subsize it categorizes into two categories
-(= (categorize_subsize $db $ts)
-    (if (< $subsize (/ $ts 2))
-        1
-        2)
-
-)
-
- ;;TODO: add n atoms to the database
-
- ;;TODO: remove n atoms from the database
-
-(= (subsample $db $subsize)
-    (if (>= (db_size $db) $subsize)
-        $db
-        (case (categorize_subsize $db (db_size $db))
-            (
-                (1 (add_n_atoms_to_db $db $subsize)) ; if it is in group 1 add atoms to the database
-                (2 (remove_n_atoms_to_db $db $subsize)))))) ; if it is in group 2 remove atoms from the database
-
- ; (= (test_emp_prob_bs_1 $pattern $db)
- ;     (let*
- ;         ( ( ($_ ) (populate_uniform_inheritance_links 1 2))
-
- ;         )
- ;     (1111111)))
-
+ ;;test pow
+! (pow 5 3)
+! (pow 100000 -7)
+! (pow 5 3)
+! (pow 1 0)
+! (+ (abs -5) 10) ; 15
+! (universe-count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))
+Pattern
+(Pattern)
+(lambda   (Parent $x Nil) (Parent $x Nil))
+(Abebe)
 ! ("============ test_emp_prob_bs ============ ")
-! (sup Abebe (new-space))
-! (emp-prob (Parent A) (new-space))
+! (universe-count (Parent) (get-space))
+! (sup Pattern &self)
+! (sup (lambda   (Parent $x Nil) (Parent $x Nil)) &self)
+! (universe-count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))
+ ; (= (emp-prob $pattern $db)
+ ;     (let*
+ ;         ( ( ($ucount ) ( (universe-count $pattern $db)))
+ ;             ( ($ms) ($ucount))
+ ;             ( ($sup) ( (sup $pattern $db)))
 
- ; ! ("============ test_emp_prob_bs ============ ")
- ; ! (populate_uniform_inheritance_links 1 2)
- ; ! (emp-prob Nil (new-space))
- ; ! (test_emp_prob_bs_1 Nil (new-space))
+ ;         ) (/ $sup  $ucount)
+ ; ))
+ ; ! (emp-prob (Nil) &self)
+! (emp-prob (lambda   (Parent $x Nil) (Parent $x Nil)) &self)
+! (db_size &self)
+ ; ! (emp-prob (lambda   (Parent $x Nil) (Parent $x Nil)) &self)
+ ; ! (emp_prob_bs  (lambda   (Parent $x Nil) (Parent $x Nil)) &self 1 2)
+! (emp_prob_subsmp  (lambda   (Parent $x Nil) (Parent $x Nil)) &self 2)
+! (emp-prob (lambda (Parent $x Nil) (Parent $x Nil)) &self)
 
- ; ! ("============ sum ============ ")
- ; ! (sum  (Cons 1 (Cons 1 (Cons 2 Nil))))
- ; ! (sum  (Cons 3 (Cons 1 (Cons 2 Nil))))
- ; ! (+ 1 (sum  (Cons 3 (Cons 1 (Cons 2 Nil)))))
-
- ; ! ("============ len ============ ")
- ; ! (len  (Cons 1 (Cons 1 (Cons 2 Nil))))
- ; ! (len  (Cons 3 (Cons 1 (Cons 2 Nil))))
-
- ; ! ("============ avrg ============ ")
- ; ! (avrg  (Cons 1 (Cons 1 (Cons 2 Nil))))
- ; ! (avrg  (Cons 3 (Cons 1 (Cons 2 Nil))))
-
- ; ! ("============ TS_ASSERT_DELTA ============ ")
- ; ! (TS_ASSERT_DELTA 1 2 0.1)
-
- ; ! (add_link_and_populate_uniform_inheritance_link 3 1 4 (py-list ( (''))))
- ; ! (populate_uniform_inheritance_links 1 2)
- ; ! (biased_randbool 100)
- ; ! (populate_uniform_inheritance_link 1 0 0)
- ; ! (out_of_index 3 4)
- ; ! (add_link_and_populate_uniform_inheritance_link 0 0 0 (py-list ( ( ''))))
- ;  ; ! (get-atoms (db) )
- ; ! (biased_randbool 100)
- ; ! (biased_randbool 0)
- ; ! (test_emp_prob_bs_1 )
-
- ; ! ("============ test_emp_prob_bs ============ ")
- ; ! (populate_uniform_inheritance_links 1 2)
- ; ! (emp-prob Nil (new-space))
- ; ! (test_emp_prob_bs_1 Nil (new-space))
-
- ; ! ("============ test_emp_prob_bs ============ ")
- ; ! (emp_prob_bs Person $db 10 1000)
- ; ! (emp-prob Person $db)
+! ("============ test_subsample ============ ")
+! (db_size (get-space))
+! (get-atoms (get-space))
+! (subsample (get-space) 10)
+! (categorize_subsize 10  (db_size (get-space)))
+! (categorize_subsize 2  (db_size (get-space)))
+! (db_size (get-space))
+! (>= (db_size (get-space)) 6)
+! (get-atoms (subsample (get-space) 2))
