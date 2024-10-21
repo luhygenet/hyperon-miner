@@ -20,7 +20,7 @@
 )
 
 ;define function which extract subpatterns or blocks from the given nested pattern
-( = (get-subpatterns $pattern) 
+( = (get-subpatterns-old $pattern) 
     (if (== , (car-atom $pattern)) (
          let $result  (list-patterns (cdr-atom $pattern)) $result
     )  $pattern   

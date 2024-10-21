@@ -75,26 +75,18 @@
         (let* ( (($head $tail) (decons-atom $xs))
                 ($tailNew (concatTuple $tail $ys)))
                  (cons-atom $head $tailNew))  ))
+(=(is-symbol $var) 
+   (== (get-metatype $var) Symbol)
+)
 
-;; base case
-(=(get-clouses () ) ())
+(=(is-variable $var) 
+   (== (get-metatype $var) Variable)
+)
 
-(= (get-clouses $pattern)
-        (let* (
-                (($head $tail) (decons-atom $pattern)))
-            (if (== (get-metatype $head) Expression)
-                (   let $result  (concatTuple ($head)
-                    (get-clouses $tail)) (concatTuple $result (get-clouses $head)))
-                    (get-clouses $tail))) )
-
-
- ;; !(get-clouses  (Inheritance (Human $X (And $x $y)) (Inheritance $Y (Human $Z))))
-
-
-
-
-
-;;(Inheritance Bob (And human (Or zac Mike)))
+(=(is-expression $var) 
+  (== (get-metatype $var) Expression)
+  ;; (if (== $var ()) False (== (get-metatype $var) Expression))
+)
 
 (=(push-back $atom ()) ($atom))
 (=(push-back $atom $list) (
@@ -105,52 +97,11 @@
      (cons-atom $head $dummy)
 ))
 
-(=(comp $main_head ()) ())
-(=(comp $main_head $list)(
-    let* (
-        (($x $tail) (decons-atom $list))
-        ($rst (push-back (push-back $main_head $x) (comp $main_head $tail)))   
-    ) $rst
-))
-
-(=(combinatorial_insert $h ())((($h))))
-(=(combinatorial_insert $h $seq)(
-    let*(
-        (($head $tail) (decons-atom $seq))
-        ($reslut (combinatorial_insert $h $tail))
-        ($comp_result (comp $head $reslut))    
-    )
-        (push-back (push-back (push-back $h $head) $tail) $comp_result)
-))
-
-(=(insert () $res) ($res))
-(=(insert $subparts $res)(
-      let ($head $tail) (decons-atom $subparts) (push-back $head (insert $tail $res))
-))
-
-(=(mk-combinatorial_insert $main_head ())(combinatorial_insert $main_head ()))
-(=(mk-combinatorial_insert $main_head $parts)(
-    let* (
-        (($part $tail) (decons-atom $parts))
-        ($subparts (combinatorial_insert $main_head $part))
-    ) 
-       (insert $subparts (mk-combinatorial_insert $main_head $tail))
-))
-
-
-(=(partitions ())())
-(=(partitions $hs)(
-    let* (
-        (($head $tail) (decons-atom $hs))
-        ($final_res (mk-combinatorial_insert $head (partitions $tail)))
-         )
-          $final_res 
-))
-
 (=(reverse-list ()) ())
 (=(reverse-list $subparts)(
       let ($head $tail) (decons-atom $subparts) (push-back $head (reverse-list $tail))
 ))
+
 
 (=(remove-element $element ())())
 (=(remove-element $element $list) (
@@ -162,22 +113,45 @@
 ))
 
 
-(=(partitions_without_pattern $pattern) (
-    let  $prts (partitions $pattern) (remove-element ((reverse-list $pattern)) $prts))
+(=(append-list $atom ()) ($atom))
+(=(append-list $atom $list) (
+    let* (
+        (($head $tail) (decons-atom $list))
+        ($dummy (append-list $head $tail))
+    ) 
+     (cons-atom $atom $dummy)
+))
+
+(=(append-list-v2 $atom ()) ($atom))
+(=(append-list-v2 $atom $list) (
+    let* (
+        (($head $tail) (decons-atom $list))
+        ($dummy ((append-list $head $tail)))
+    ) 
+     (cons-atom $atom $dummy)
+))
+
+(=(insert () $res) $res)
+(=(insert $subparts $res)(
+      let ($head $tail) (decons-atom $subparts) (let $temp (push-back $head $res) (insert $tail $temp))
+))
+
+(=(is-present $atom ()) False)
+(=(is-present $atom $list) (
+    if (is-expression $list) (
+    let ($head $tail) (decons-atom $list) (
+        if (== $atom $head) True  (or (is-present $atom $head) (is-present $atom $tail))
+    )) (if (== $atom $head) True False)
+))
+
+(=(is-valid () $partion) True)
+(=(is-valid $clous $partion)(
+    let ($head $tail) (decons-atom $clous)  (and (is-present $head $partion) (is-valid $tail $partion)) 
+)
 )
 
-
-(=(is-symbol $var) 
-   (== (get-metatype $var) Symbol)
-)
-
-(=(is-variable $var) 
-   (== (get-metatype $var) Variable)
-)
-
-(=(is-expression $var) 
-   (== (get-metatype $var) Expression)
-)
+;;!(is-valid ((A) (B)) (((A) (C))))
+;;!(is-valid ((Parent $x) (Human $y)) ((Parent $x) (Human $y)))
 
 (=(is-pattern $expr) (
     collapse(
@@ -189,6 +163,80 @@
        (and (is-symbol $link) 
         (or (is-variable $x) 
             (is-expression $x))) False )  ))
+)
+
+(=(comp $main_head ()) ())
+(=(comp $main_head $list)(
+    let* (
+        (($x $tail) (decons-atom $list))
+        ($rst (append-list (append-list $main_head $x) (comp $main_head $tail)))   
+    ) $rst
+))
+
+;; !(get-clouses  (Inheritance (Human $X (And $x $y)) (Inheritance $Y (Human $Z))))
+;;(Inheritance Bob (And human (Or zac Mike)))
+;!(apend-list a (b c)) 
+;;!(insert  (4 5 6) (1 2 3) )
+;;!(push-back 4 (1 2 3))
+
+
+(=(combinatorial_insert $h ())((($h))))
+(=(combinatorial_insert $h $seq)(
+    let*(
+        (($head $tail) (decons-atom $seq))
+        ($reslut (combinatorial_insert $h $tail))
+        ($comp_result (comp $head $reslut))    
+    )
+       (append-list (append-list (append-list $h $head) $tail) $comp_result)
+ 
+))
+
+
+;!(combinatorial_insert (Bob $x) ((Human $x) (Parent $x)))
+;!(combinatorial_insert D ((A) (B) (C)))
+
+((((Bob $x) (Human $x)) ((Parent $x))) (((Human $x)) ((Bob $x) (Parent $x))) (((Human $x)) ((Parent $x)) ((Bob $x))))
+
+(=(mk-combinatorial_insert $main_head ())(combinatorial_insert $main_head ()))
+(=(mk-combinatorial_insert $main_head $parts)(
+    let* (
+        (($part $tail) (decons-atom $parts))
+        ($subparts (combinatorial_insert $main_head $part))
+    ) 
+       (insert  $subparts (mk-combinatorial_insert $main_head $tail))
+))
+
+
+
+;;!(is-present A ((A) (B C)))
+
+
+(=(partitions ()) ())
+(=(partitions $hs)(
+    let* (
+        (($head $tail) (decons-atom $hs))
+        ($res (mk-combinatorial_insert $head (partitions $tail)))
+         )
+          $res
+))
+
+;;!(partitions ((Human $x)  (Parent $x)))
+((((Human $x))) (((Human $x) (Parent $x))) (((Parent $x)) ((Human $x))))
+
+(=(valid-partitions $hs ())())
+(=(valid-partitions $hs $partitions) (
+    let ($head $tail) (decons-atom $partitions) (
+        if (not (let $res (collapse (is-valid $hs $head)) (car-atom $res))) (valid-partitions $hs $tail) (
+            let $dummy (valid-partitions $hs $tail) (cons-atom $head $dummy)
+        )
+    )
+))
+
+;; !(valid-partitions ((Human $x) (Parent $x)) ((((Human $x))) (((Human $x) (Parent $x))) ((Parent $x) (Human $x))))
+
+
+(=(partitions_without_pattern $pattern) (
+    let  $prts (partitions $pattern) (valid-partitions $pattern $prts))
 )
 
 
@@ -203,6 +251,8 @@
     ) 
 ))
 
+
+
 (=(add-subpatterns () $space) ())
 (=(add-subpatterns $partition $space)(
     let* ((($head $tail) (decons-atom $partition))
@@ -212,16 +262,47 @@
             (let () (add-atom $space (pattern $subpattern)) (cons-atom $subpattern $dummy))
 ))
 
+
+
+;; base case
+(=(get-clouses () ) ())
+(= (get-clouses $pattern)
+        (let* (
+                (($head $tail) (decons-atom $pattern)))
+            (if (== (get-metatype $head) Expression)
+                (   let $result  (concatTuple ($head)
+                    (get-clouses $tail)) (concatTuple $result (get-clouses $head)))
+                    (get-clouses $tail))) )
+
+ ;;!(get-clouses (AND (Human $x) (Inheritance (Parent $x) Bob)))
+;;!(partitions_without_pattern ((Human $x)  (Parent $x) (Inheritance (Parent $x))))
+
+
 ! (add-reduct &self (= (temp-space) (new-space)))
 
+(=(get-subpatterns $pattern $space) (
+    let $parts (partitions_without_pattern (get-clouses $pattern))
+         (add-subpatterns $parts $space )) )
+    
+!(get-subpatterns (AND (Human $x) (Inheritance (Parent $x) Bob)) (temp-space))      
 
 
 
-!(add-subpatterns (((Human $x) ((Inheritance $x abe) (Parent $x)) (Child $g)) ((Inheritance $f z) (Human $z))) (temp-space))
 
-!(match (temp-space) $x  $x)
 
-;!(mk-body ( (Human $x) ((Inheritance $x abe) (Parent $x)) (Child $g)))
+
+
+
+
+
+
+
+
+;;!(add-subpatterns (((Human $x) ((Inheritance $x abe) (Parent $x)) (Child $g)) ((Inheritance $f z) (Human $z))) (temp-space))
+
+;;!(match (temp-space) $x  $x)
+
+(mk-body ( (Human $x) ((Inheritance $x abe) (Parent $x)) (Child $g)))
 (AND (AND (Inheritance $x abe) (Parent $x)) )
 (((Inheritance $x abe) (Parent $x)) (Child $g))
 ((Inheritance $x abe) (Parent $x)) 
