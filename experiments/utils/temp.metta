@@ -195,7 +195,7 @@
 ;!(combinatorial_insert (Bob $x) ((Human $x) (Parent $x)))
 ;!(combinatorial_insert D ((A) (B) (C)))
 
-((((Bob $x) (Human $x)) ((Parent $x))) (((Human $x)) ((Bob $x) (Parent $x))) (((Human $x)) ((Parent $x)) ((Bob $x))))
+
 
 (=(mk-combinatorial_insert $main_head ())(combinatorial_insert $main_head ()))
 (=(mk-combinatorial_insert $main_head $parts)(
@@ -235,9 +235,12 @@
 ;; !(valid-partitions ((Human $x) (Parent $x)) ((((Human $x))) (((Human $x) (Parent $x))) ((Parent $x) (Human $x))))
 
 
-(=(partitions_without_pattern $pattern) (
-    let  $prts (partitions $pattern) (valid-partitions $pattern $prts))
+
+(=(partitions_without_pattern $clouses) (
+    let  $prts (partitions $clouses) (valid-partitions $clouses $prts))
 )
+
+
 
 
 (=(mk-body ()) ())
@@ -274,8 +277,8 @@
                     (get-clouses $tail)) (concatTuple $result (get-clouses $head)))
                     (get-clouses $tail))) )
 
- ;;!(get-clouses (AND (Human $x) (Inheritance (Parent $x) Bob)))
-;;!(partitions_without_pattern ((Human $x)  (Parent $x) (Inheritance (Parent $x))))
+;!(get-clouses (AND (Human $x) (Inheritance (Parent $x) Bob)))
+;;!(partitions_without_pattern ((Human $x)  (Parent $x)))
 
 
 ! (add-reduct &self (= (temp-space) (new-space)))
@@ -284,7 +287,7 @@
     let $parts (partitions_without_pattern (get-clouses $pattern))
          (add-subpatterns $parts $space )) )
     
-!(get-subpatterns (AND (Human $x) (Inheritance (Parent $x) Bob)) (temp-space))      
+ ;!(get-subpatterns (AND (Human $x) (Inheritance (Parent $x) Bob)) (temp-space))      
 
 
 
@@ -296,34 +299,6 @@
 
 
 
-
-
-;;!(add-subpatterns (((Human $x) ((Inheritance $x abe) (Parent $x)) (Child $g)) ((Inheritance $f z) (Human $z))) (temp-space))
-
-;;!(match (temp-space) $x  $x)
-
-(mk-body ( (Human $x) ((Inheritance $x abe) (Parent $x)) (Child $g)))
-(AND (AND (Inheritance $x abe) (Parent $x)) )
-(((Inheritance $x abe) (Parent $x)) (Child $g))
-((Inheritance $x abe) (Parent $x)) 
-
-;!(is-pattern (Inheritance $d abe))
-
-;!(partitions_without_pattern (A B))
-;!(partitions (A B))
-
-!!(if (is-pattern (a $x)) yes no)
-
-((((((A))) 
-((C) (B A))     ..... (AND C (AND B A))
-((A) (C) (B))
- ((C A) (B))) 
- ((C B A)) 
- ((A) (C B))) 
-
- (((B) A)) ((A) ((B))))
-
-((((A))) ((B A)) ((A) (B)))
 
 
 
