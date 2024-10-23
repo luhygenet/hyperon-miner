@@ -335,20 +335,20 @@
              (joint-variables $tail $partion))         
 ))
 
-(=(mk-uniuqe ()) ())
-(=(mk-uniuqe $vars) (
-    let ($head $tail) (decons-atom $vars) (let $dummy (mk-uniuqe (remove-element $head $vars)) (cons-atom $head $dummy))
+(=(mk-unique ()) ())
+(=(mk-unique $vars) (
+    let ($head $tail) (decons-atom $vars) (let $dummy (mk-unique (remove-element $head $vars)) (cons-atom $head $dummy))
 ))
 
-;!(mk-uniuqe ($x $y $x $y $z))
+;!(mk-unique ($x $y $x $y $z))
 ;!(remove-element $x ($x $y $x $y $z))
-(=(get-uniuqe-vars $pattern)(
-    let $vars (get-variables $pattern) (mk-uniuqe $vars) 
+(=(get-unique-vars $pattern)(
+    let $vars (get-variables $pattern) (mk-unique $vars) 
 ))
 ;!(joint-variables ($x $z $y) ((Human $x $y) (Man $x) (Inheritance $y $z)))
 
 (=(joint-variables-init $pattern $partion)(
-      let $vars (get-uniuqe-vars $pattern) (
+      let $vars (get-unique-vars $pattern) (
         joint-variables $vars $partion   
       )
 ))
