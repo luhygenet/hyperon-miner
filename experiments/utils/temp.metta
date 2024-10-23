@@ -77,7 +77,6 @@
                  (cons-atom $head $tailNew))  ))
 
 
-(= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
 
 (= (get-variables $pattern)
     (if (== $pattern ())
@@ -98,7 +97,7 @@
     )
 )
 
-! (get-variables  (Inheritance (Human $X) (Inheritance $Y (Human $Z))))
+
 (=(is-symbol $var) 
    (== (get-metatype $var) Symbol)
 )
@@ -128,6 +127,7 @@
         )
     )
 ))
+
 
 
 (=(append-list $atom ()) ($atom))
@@ -160,6 +160,7 @@
         if (== $atom $head) True  (or (is-present $atom $head) (is-present $atom $tail))
     )) (if (== $atom $head) True False)
 ))
+
 
 (=(is-valid () $partion) True)
 (=(is-valid $clous $partion)(
@@ -302,10 +303,10 @@
                     (get-clouses $tail))) )
 
 ;!(get-clouses (AND (Human $x) (Inheritance (Parent $x) Bob)))
-!(partitions_without_pattern ((Human $x $y)  (Parent $z $y) (Inheritance (Parent $x) Bob)))
+;!(partitions_without_pattern ((Human $x $y)  (Parent $z $y) (Inheritance (Parent $x) Bob)))
 
 
-! (add-reduct &self (= (temp-space) (new-space)))
+;! (add-reduct &self (= (temp-space) (new-space)))
 
 (=(get-subpatterns $pattern $space) (
     let $parts (partitions_without_pattern (get-clouses $pattern))
@@ -314,21 +315,43 @@
  ;!(get-subpatterns (AND (Human $x) (Inheritance (Parent $x) Bob)) (temp-space))      
 
 
-(=(joint-variables $pattern $partion)(
-      let $vars (get-variables $pattern) ()
+
+(=(var-appers $var ()) ())
+(=(var-appers $var $blk) (
+     let* (
+          (($head $tail) (decons-atom $blk))
+           ($is_present (let $temp (collapse (is-present $var $head)) (car-atom $temp)))
+     )
+           (
+            if $is_present  (let $dummy (var-appers $var $tail) (cons-atom $var $dummy)) (var-appers $var $tail)
+           )))
+
+
+(=(joint-variables () $partion) ())
+(=(joint-variables $vars  $partion )(
+    let ($head $tail)    (decons-atom $vars)
+       (if   (>= (count-atom-element (var-appers $head $partion)) 2) 
+             (let $dummy (joint-variables $tail $partion) (cons-atom $head $dummy)) 
+             (joint-variables $tail $partion))         
 ))
 
-(((Human $x $y) (Parent $z $y))) 
-(((Parent $z $y)) ((Human $x $y)))
+(=(mk-uniuqe ()) ())
+(=(mk-uniuqe $vars) (
+    let ($head $tail) (decons-atom $vars) (let $dummy (mk-uniuqe (remove-element $head $vars)) (cons-atom $head $dummy))
+))
 
-((((Human $x $y) (Inheritance (Parent $x) Bob)) ((Parent $z $y))) 
-(((Inheritance (Parent $x) Bob)) ((Human $x $y) (Parent $z $y)))
- (((Inheritance (Parent $x) Bob)) ((Parent $z $y)) ((Human $x $y))) (((Human $x $y) (Parent $z $y) (Inheritance (Parent $x) Bob))) (((Parent $z $y) (Inheritance (Parent $x) Bob)) ((Human $x $y))))
+;!(mk-uniuqe ($x $y $x $y $z))
+;!(remove-element $x ($x $y $x $y $z))
+(=(get-uniuqe-vars $pattern)(
+    let $vars (get-variables $pattern) (mk-uniuqe $vars) 
+))
+;!(joint-variables ($x $z $y) ((Human $x $y) (Man $x) (Inheritance $y $z)))
 
+(=(joint-variables-init $pattern $partion)(
+      let $vars (get-uniuqe-vars $pattern) (
+        joint-variables $vars $partion   
+      )
+))
 
-
-
-
-
-
-
+!(joint-variables-init (AND (Human $x $y) (OR (Man $x) (Inheritance $y $z))) ((Human $x $y) (Man $y) (Inheritance $x $z)))
+;!(get-variables (AND (Human $x $y) (OR (Man $x) (Inheritance $y $z))))
