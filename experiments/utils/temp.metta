@@ -75,6 +75,30 @@
         (let* ( (($head $tail) (decons-atom $xs))
                 ($tailNew (concatTuple $tail $ys)))
                  (cons-atom $head $tailNew))  ))
+
+
+(= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
+
+(= (get-variables $pattern)
+    (if (== $pattern ())
+        ()
+        (let* (
+                ($head (car-atom $pattern))
+                ($tail (cdr-atom $pattern)))
+
+            (if (== (get-metatype $head) Expression)
+                (concatTuple (get-variables $head)
+                    (get-variables $tail))
+                (if (== (get-metatype $head) Variable)
+                    (concatTuple
+                        ($head)
+                        (get-variables $tail))
+
+                    (get-variables $tail))))
+    )
+)
+
+! (get-variables  (Inheritance (Human $X) (Inheritance $Y (Human $Z))))
 (=(is-symbol $var) 
    (== (get-metatype $var) Symbol)
 )
@@ -88,14 +112,7 @@
   ;; (if (== $var ()) False (== (get-metatype $var) Expression))
 )
 
-(=(push-back $atom ()) ($atom))
-(=(push-back $atom $list) (
-    let* (
-        (($head $tail) (decons-atom $list))
-        ($dummy (push-back $atom $tail))
-    ) 
-     (cons-atom $head $dummy)
-))
+
 
 (=(reverse-list ()) ())
 (=(reverse-list $subparts)(
@@ -221,7 +238,14 @@
 ))
 
 ;;!(partitions ((Human $x)  (Parent $x)))
-((((Human $x))) (((Human $x) (Parent $x))) (((Parent $x)) ((Human $x))))
+(=(push-back $atom ()) ($atom))
+(=(push-back $atom $list) (
+    let* (
+        (($head $tail) (decons-atom $list))
+        ($dummy (push-back $atom $tail))
+    ) 
+     (cons-atom $head $dummy)   
+))((((Human $x))) (((Human $x) (Parent $x))) (((Parent $x)) ((Human $x))))
 
 (=(valid-partitions $hs ())())
 (=(valid-partitions $hs $partitions) (
@@ -278,7 +302,7 @@
                     (get-clouses $tail))) )
 
 ;!(get-clouses (AND (Human $x) (Inheritance (Parent $x) Bob)))
-;;!(partitions_without_pattern ((Human $x)  (Parent $x)))
+!(partitions_without_pattern ((Human $x $y)  (Parent $z $y) (Inheritance (Parent $x) Bob)))
 
 
 ! (add-reduct &self (= (temp-space) (new-space)))
@@ -290,10 +314,16 @@
  ;!(get-subpatterns (AND (Human $x) (Inheritance (Parent $x) Bob)) (temp-space))      
 
 
+(=(joint-variables $pattern $partion)(
+      let $vars (get-variables $pattern) ()
+))
 
+(((Human $x $y) (Parent $z $y))) 
+(((Parent $z $y)) ((Human $x $y)))
 
-
-
+((((Human $x $y) (Inheritance (Parent $x) Bob)) ((Parent $z $y))) 
+(((Inheritance (Parent $x) Bob)) ((Human $x $y) (Parent $z $y)))
+ (((Inheritance (Parent $x) Bob)) ((Parent $z $y)) ((Human $x $y))) (((Human $x $y) (Parent $z $y) (Inheritance (Parent $x) Bob))) (((Parent $z $y) (Inheritance (Parent $x) Bob)) ((Human $x $y))))
 
 
 
