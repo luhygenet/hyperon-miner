@@ -14,26 +14,28 @@
 )
 
 (= (get-element $index $list)
-    (if (= $index 0)
+    (if (== $index 1)
         (car-atom $list) ; Return the first element if index is 0
         (get-element (- $index 1) (cdr-atom $list))))
 
-(= (gen-random-subsample $db $subsize)
-    ( if (= (db_size $db) $subsize)
-        (collapse (get-atoms $db))
-        (if (= $subsize 0)
+(= (gen-random-subsample $db $subsize $space) ; must return a space which conteten the subsample only
+    ( if (== (db_size $db) $subsize)
+        $db
+        (if (== $subsize 0)
             () ; Return an empty list if the sample size is 0
             (let* (
                     ($db-element (collapse (get-atom $db)))
                     ($random-index (gen-random $subsize)) ; Get a random index
-                    ($element (get-element $random-index $db-element)) ; Get the element from the list
-                    ($tail (gen-random-subsample $db (- $subsize 1))) ; Recursively generate the rest of the subsample
+                    ($element (get-element $random-index $db-element))
+                    ($_ (println! $element))
+                    ($_ (add-atom $space $element)) ; Get the element from the list
+                    ($tail (gen-random-subsample $db (- $subsize 1)) $space) ; Recursively generate the rest of the subsample
                 )
-            (cons-atom $element  $tail)))) ; Add the element to the subsample
+            $space))) ; Add the element to the subsample TODO: add the created subsample of the
 )
 
 (= (emp-tv-subsmp $pattern $db $subsize) (
-        emp-tv $pattern (gen-random-subsample $db $subsize)
+        emp-tv $pattern (gen-random-subsample $db $subsize new-space)
     ))
 
  ; Helper function to repeatedly resample and collect empirical truth values
@@ -204,8 +206,10 @@
 
  ;!(collapse (get-atoms &self))
 
-! (generet_random_subsample ( (Parent Eyob Derese)
-        (Parent Meti Derese)
-        (Parent Zeni Derese)
-        (Parent Zeni Bekele)
-        (Parent babi Derese)) 4)
+ ; ! (generet_random_subsample ( (Parent Eyob Derese)
+ ;         (Parent Meti Derese)
+ ;         (Parent Zeni Derese)
+ ;         (Parent Zeni Bekele)
+ ;         (Parent babi Derese)) 4)
+
+! (match (gen-random-subsample &self 2 (new-space)) (Parent Zeni $x) $x)
