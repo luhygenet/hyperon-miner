@@ -8,6 +8,7 @@
 ! (register-module! ../../../hyperon-miner)
 ! (import! &self hyperon-miner:experiments:rules:emp-tv-bs)
 ! (import! &self hyperon-miner:experiments:rules:emp-tv)
+! (import! &self hyperon-miner:experiments:utils:common-utils)
 ! (bind! &space (new-space))
 ! (bind! np-rnd (py-atom numpy.random))
 (= (gen-random $max-value)  (
@@ -32,16 +33,17 @@
                     ($_ (add-atom $space $element)) ; Get the element from the list
                     ($tail (gen-random-subsample $db (- $subsize 1) $space) ) ; Recursively generate the rest of the subsample
                 )
-            $space))) ; Add the element to the subsample TODO: add the created subsample of the
+            $space))) ; Add the element to the subsample
 )
 
 (= (emp-tv-subsmp $pattern $db $subsize) (
-        emp-tv $pattern (gen-random-subsample $db $subsize (new-space))
+        let* ( ($space (gen-random-subsample $db $subsize (new-space))))
+        ( emp-tv $pattern $space)
     ))
 
  ; Helper function to repeatedly resample and collect empirical truth values
 (= (emp-tv-bs-helper $pattern $db $n-resample $subsize)
-    (if (= $n-resample 0)
+    (if (== $n-resample 0)
         () ; Base case: no more resampling, return an empty list
         (let* (
                 ($subsample-tv (emp-tv-subsmp $pattern $db $subsize)) ; Compute empirical truth value for subsample
@@ -52,10 +54,10 @@
  ; Function to calculate empirical truth value with bootstrapping (resampling)
 (= (emp-tv-bs $pattern $db $n-resample $subsize)
     (if (< $subsize (db_size $db))
-        (let (
+        (let* (
                 ($esstvs (emp-tv-bs-helper $pattern $db $n-resample $subsize))
             )
-        (avrg-tv $esstvs)) ; Return average of the empirical truth values
+        (mean-tv $esstvs)) ; Return average of the empirical truth values
     (emp-tv $pattern $db))) ; If subsize >= db size, directly return empirical truth value
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -195,6 +197,8 @@
 ))
  ; ! (mean-tv ( (EMPTV 0.6 0.3) (EMPTV 0.5 0.2) (EMPTV 0.7 0.2) (EMPTV 0.4 1)))
  ;   (EMPTV 0.5499999999999999 0.356474358974359)
+ ; ! (mean-tv ( (EMPTV 0.0 0.05) (EMPTV 0.0 0.05)))
+ ; ! (avrg-tv ( (EMPTV 0.0 0.05) (EMPTV 0.0 0.05)))
 
  ; ! (map variance-β-dis ( (0.18 0.12) (0.1 0.1) (0.13999999999999999 0.06000000000000001) (0.4 0.6)))
  ; ! (variance-β-dis (0.18 0.12))
@@ -213,4 +217,7 @@
  ;         (Parent Zeni Bekele)
  ;         (Parent babi Derese)) 4)
 
- ; !(gen-random-subsample &space 4 (new-space))
+ ; ! (get-atoms (gen-random-subsample &space 4 (new-space)))
+ ; ! (emp-tv-subsmp (Parent $x Nil) &space 4)
+ ; ! (emp-tv-bs-helper (Parent $x Nil) &space 2 4)
+ ; ! (emp-tv-bs (Parent $x Nil) &space 2 4)
