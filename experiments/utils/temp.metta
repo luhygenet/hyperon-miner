@@ -353,5 +353,23 @@
       )
 ))
 
-!(joint-variables-init (AND (Human $x $y) (OR (Man $x) (Inheritance $y $z))) ((Human $x $y) (Man $y) (Inheritance $x $z)))
+;!(joint-variables-init (AND (Human $x $y) (OR (Man $x) (Inheritance $y $z))) ((Human $x $y) (Man $y (child $x $y)) (Inheritance $x $z)))
 ;!(get-variables (AND (Human $x $y) (OR (Man $x) (Inheritance $y $z))))
+
+
+(=(connected-subpatterns-with-var () $var) ())
+(=(connected-subpatterns-with-var $partion $var)(
+    let* (
+        (($head $tail) (decons-atom $partion) )
+       ($is_pattern (let $pat_temp  (is-pattern $head) (car-atom $pat_temp)))
+        ($is_connected (let $temp (collapse (is-present $var $head)) (car-atom $temp))))
+
+        (  if  (and $is_pattern $is_connected)
+               (let $dummy (connected-subpatterns-with-var $tail $var ) (cons-atom $head $dummy)) 
+                (if $is_pattern (connected-subpatterns-with-var $tail $var) (concatTuple  (connected-subpatterns-with-var $head $var) (connected-subpatterns-with-var $tail $var)) ))
+             ))
+
+;;!(connected-subpatterns-with-var (((Inheritance $x $y) (Inheritance $z $a)) ((Inheritance $x $b) (Inheritance $z $y))) $y)
+
+;;!(is-pattern ((Inheritance $x $y) (Inheritance $z $a)))
+;!(let $pat_temp  (is-pattern (Inheritance $x $y)  ) (car-atom $pat_temp))
