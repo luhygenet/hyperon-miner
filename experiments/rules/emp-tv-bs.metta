@@ -7,14 +7,15 @@
 
 ! (register-module! ../../../hyperon-miner)
 ! (import! &self hyperon-miner:experiments:rules:emp-tv-bs)
-
+! (import! &self hyperon-miner:experiments:rules:emp-tv)
+! (bind! &space (new-space))
 ! (bind! np-rnd (py-atom numpy.random))
 (= (gen-random $max-value)  (
         (py-dot np-rnd randint) $max-value)
 )
 
 (= (get-element $index $list)
-    (if (== $index 1)
+    (if (== $index 0)
         (car-atom $list) ; Return the first element if index is 0
         (get-element (- $index 1) (cdr-atom $list))))
 
@@ -22,20 +23,20 @@
     ( if (== (db_size $db) $subsize)
         $db
         (if (== $subsize 0)
-            () ; Return an empty list if the sample size is 0
+            $space ; Return an empty list if the sample size is 0
             (let* (
-                    ($db-element (collapse (get-atom $db)))
+                    ($db-element (collapse (get-atoms $db)))
                     ($random-index (gen-random $subsize)) ; Get a random index
                     ($element (get-element $random-index $db-element))
                     ($_ (println! $element))
                     ($_ (add-atom $space $element)) ; Get the element from the list
-                    ($tail (gen-random-subsample $db (- $subsize 1)) $space) ; Recursively generate the rest of the subsample
+                    ($tail (gen-random-subsample $db (- $subsize 1) $space) ) ; Recursively generate the rest of the subsample
                 )
             $space))) ; Add the element to the subsample TODO: add the created subsample of the
 )
 
 (= (emp-tv-subsmp $pattern $db $subsize) (
-        emp-tv $pattern (gen-random-subsample $db $subsize new-space)
+        emp-tv $pattern (gen-random-subsample $db $subsize (new-space))
     ))
 
  ; Helper function to repeatedly resample and collect empirical truth values
@@ -198,18 +199,18 @@
  ; ! (map variance-β-dis ( (0.18 0.12) (0.1 0.1) (0.13999999999999999 0.06000000000000001) (0.4 0.6)))
  ; ! (variance-β-dis (0.18 0.12))
 
-! (add-atom &self (Parent Eyob Derese))
-! (add-atom &self (Parent Meti Derese))
-! (add-atom &self (Parent Zeni Derese))
-! (add-atom &self (Parent Zeni Bekele))
-! (add-atom &self (Parent babi Derese))
+! (add-atom &space (Parent Eyob FSds))
+! (add-atom &space (Parent Meti Beeea))
+! (add-atom &space (Parent Zeni Ayalew))
+! (add-atom &space (Parent Zeni Bekele))
+! (add-atom &space (Parent babi Derese))
 
  ;!(collapse (get-atoms &self))
 
- ; ! (generet_random_subsample ( (Parent Eyob Derese)
+ ; !(generet_random_subsample ( (Parent Eyob Derese)
  ;         (Parent Meti Derese)
  ;         (Parent Zeni Derese)
  ;         (Parent Zeni Bekele)
  ;         (Parent babi Derese)) 4)
 
-! (match (gen-random-subsample &self 2 (new-space)) (Parent Zeni $x) $x)
+ ; !(gen-random-subsample &space 4 (new-space))
