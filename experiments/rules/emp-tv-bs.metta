@@ -31,15 +31,27 @@
                     ($db-element (collapse (get-atoms $db)))
                     ($random-index (gen-random $subsize)) ; Get a random index
                     ($element (get-element $random-index $db-element))
-                    ($_ (println! $element))
                     ($_ (add-atom $space $element)) ; Get the element from the list
                     ($tail (gen-random-subsample $db (- $subsize 1) $space) ) ; Recursively generate the rest of the subsample
                 )
             $space))) ; Add the element to the subsample
 )
 
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;;;;; subsample-py : subsample with python binding ;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(= (subsample-py $db $subsize )
+    (let* (
+            ($db-content (collapse (get-atoms $db)))
+            ($space (copy-db  (new-space) (generet_random_subsample $db-content $subsize) ))
+        )
+    $space
+)
+)
+
 (= (emp-tv-subsmp $pattern $db $subsize) (
-        let* ( ($space (gen-random-subsample $db $subsize (new-space))))
+        let* ( ($space (subsample-py $db $subsize (new-space))))
         ( emp-tv $pattern $space)
     ))
 
@@ -213,13 +225,17 @@
 
  ;!(collapse (get-atoms &self))
 
- ; !(generet_random_subsample ( (Parent Eyob Derese)
- ;         (Parent Meti Derese)
- ;         (Parent Zeni Derese)
+ ; ! (generet_random_subsample ( (Parent Eyob Derese)
+ ;         (Parent Meti Dgsg)
+ ;         (Parent Zeni Defsdaf)
  ;         (Parent Zeni Bekele)
- ;         (Parent babi Derese)) 4)
+ ;         (Parent babi Derese)) 3)
 
  ; ! (get-atoms (gen-random-subsample &space 4 (new-space)))
  ; ! (emp-tv-subsmp (Parent $x Nil) &space 4)
  ; ! (emp-tv-bs-helper (Parent $x Nil) &space 2 4)
  ; ! (emp-tv-bs (Parent $x Nil) &space 2 4)
+
+ ;  here both do the same job but the second one has a python binding and it is way far fast
+! (gen-random-subsample &space 4 (new-space))
+! (subsample-py &space 4)
