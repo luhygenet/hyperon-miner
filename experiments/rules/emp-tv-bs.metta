@@ -19,7 +19,9 @@
     (if (== $index 0)
         (car-atom $list) ; Return the first element if index is 0
         (get-element (- $index 1) (cdr-atom $list))))
-
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;;;;; Implmented Before ;;;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (= (gen-random-subsample $db $subsize $space) ; must return a space which conteten the subsample only
     ( if (== (db_size $db) $subsize)
         $db
