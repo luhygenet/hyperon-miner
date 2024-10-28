@@ -34,14 +34,9 @@
 
 (=(find_max $num_list $max) (
     if (== $num_list ()) $max (
-        let* (
-            ($head (car-atom $num_list))
-            ($tail (cdr-atom $num_list))
-            ($max_i (if (> $head $max) $head $max))
-            ($dummy (find_max $tail $max_i))
-        ) 
-            $dummy  
-    )
+        let* ((($head $tail)(decons-atom $num_list))
+            ($dummy (find_max $tail (if (> $head $max) $head $max)))) 
+            $dummy  )
 ))
 
 
@@ -57,14 +52,11 @@
 ;;!(_beta_distribution 2 5)
 (=(mk_distribution_list $patten_list)(
     if (== $patten_list ()) () (
-        let* (
-            ($head (car-atom $patten_list))
-            ($tail (cdr-atom $patten_list))
+        let*(( ($head $tail)(decons-atom $patten_list))
             ($beta_dist (mk_distribution $head))
             ($dummy (mk_distribution_list $tail))
         )
-              (cons-atom $beta_dist $dummy)
-           
+              (cons-atom $beta_dist $dummy)       
     )
 ))
 
@@ -81,9 +73,8 @@
  (=(emp_tv_mem $pattern_list $db) (
     if (== $pattern_list ()) () (
         let* (  
-              ($head (car-atom $pattern_list))
-              ($tail (cdr-atom $pattern_list))
-             ; ($emp_value (emp-tv $head $db))
+              (($head $tail) (cons-atom $pattern_list))
+             ;($emp_value (emp-tv $head $db))
               ($set_emp ($head (EMPTV 1.0 0.05)))
               ($dummy (emp_tv_mem $tail $db))
         )  
@@ -130,11 +121,9 @@
        ($mean (let $sum (mean_accumulater $tv_list 0) (/ $sum $size)))
        ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (/ $var_sum $size)))
         ($mk_stv_val (mk_stv $mean $re_variance))
-        ($mode (car-atom $mk_stv_val))
-        ($temp (cdr-atom $mk_stv_val))
-        ($confidence (car-atom $temp))
+        (($mode $confidence)  (decons-atom $mk_stv_val))
     )
-        ($mode $confidence)     
+        ($mode (car-atom $confidence) )    
 ))
 
 
@@ -143,9 +132,9 @@
 ;!(avrg_tv ((Beta (mean 4) (variance 57)) (Beta (mean 6) (variance 57)) (Beta (mean 4) (variance 57))) )
 
 
-(=(prod-etv $db $patten_list )(
+(=(pro_prob_without_joint $db $subpatterns )(
     let* (
-        ($tv (emp_tv_mem $patten_list $db))  
+        ($tv (emp_tv_mem $subpatterns $db))  
         ($prod_etv (avrg_tv $tv))
     )
         $prod_etv
@@ -170,13 +159,13 @@
       False      
 ))
 
+
 ;;A function to set the value of |V(Xi)| of the component_J with regard to components_i where i < j. 
 ;;It sets -1 if there is no abstraction or sets the value to estimate_v_xi.
 (=(inner_temp $db $original $compJ $i) (
     if (== $i 0) () (
         let* (
-             ($head (car-atom $original))
-             ($tail (cdr-atom $original))
+             ( ($head $tail) (decons-atom $original))
              ($bool_value  (is_more_abstract $head $compJ)) 
              ($v_xi  (if $bool_value (estimate_v_xi $db $head) -1))
              ($dummy (inner_temp $db $tail $compJ (- $i 1)))
@@ -204,27 +193,41 @@
    
 ))
 
+(=(prob-with-joint $db $db_size $partion $joint_vars $p)(
+    if (== $joint_vars ()) $p
+ (let* ((($head $tail) (decons-atom $joint_vars))
+        ($patterns (connected-subpatterns-with-var $partion $head))
+        ($prob (eq-prob $db $db_size $patterns $patterns 1 (count-atom-element $patterns) $p))
+        ))
+
+        (pro_prob_without_joint $db $db_size $tail  $joint_vars $prob)
+))
+
+(= (ji-est-tv $db $db_size $pattern $partions)
+(   
+    if(== $partions ()) () (
+        let* (
+            (($head $tail) (decons-atom $partions))
+            ($partion (get-subpatterns $head))
+            ($prod_etv (pro_prob_without_joint $db $partion))
+            (($rp $rc) (decons-atom $prod_etv))
+            ($rp_est (prob-with-joint $db $db_size $partion (joint-variables-init $pattern $partion) 1))
+            (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
+            ($dummy (ji-est-tv $db $db_size $pattern $tail))
+        ) 
+         (cons-atom (STV $strength $confidence)  $dummy)
+    ))
+)
+
 
 ;; Calculate the truth value estimate of each partition based on
 ;; independent assumption of between each partition block, taking
 ;; into account the linkage probability.
-(= (ji-est-tv $db $pattern)
-(
-        let* (
-            ($db_size  (db_size $db))
-            ($pattern_list (get-subpatterns $pattern))
-            ($list_length (count-atom-element $pattern_list))
-            ($prob_value (prod-etv $db $pattern_list))
-            ($rp (car-atom $prob_value))
-            ($temp_rc (cdr-atom $prob_value))
-            ($rc (car-atom $prob_value))
-            ($rp_est (eq-prob $db $db_size $pattern_list $pattern_list 1 $list_length 1))
-            ($strength (* $rp $rp_est))
-            ($confidence (* 1e-1 $rc))
-        ) 
-          (STV $strength $confidence)
-    )
-)
+(=(ji-tv-est-init $db $pattern) (
+    let $prtns (partitions_without_pattern $pattern)
+        ( let ($strength $confidence) (avrg_tv(ji-est-tv $db (db_size $db) $pattern $partions)) 
+           (STV $strength $confidence))
+))
 
 
 
