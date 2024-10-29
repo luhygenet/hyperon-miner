@@ -27,7 +27,6 @@
     )
 )
 
-
 (: counter (-> hyperon::space::DynSpace Atom Number))
 (= (counter $db ($link $x))
     (let $result (collapse (match $db ($link $x) ($link $x)))
@@ -37,7 +36,7 @@
 
  ; Count the number of instances of a given pattern
 (= (count $pattern $db)
-    (let* (($dptrn (Debruijn2var $pattern (Cons $Xvar (Cons $Yvar Nil))))
+    (let* ( ($dptrn (Debruijn2var $pattern (Cons $Xvar (Cons $Yvar Nil))))
             ($result (collapse (match $db $dptrn $dptrn))))
         (tuple-count $result)))
 
@@ -51,8 +50,6 @@
     )
 )
 
-
-
  ;Check if expression is truth value or not
 (: cog-tv? (-> Atom Boolean))
 (= (cog-tv? $EXP)
@@ -61,22 +58,31 @@
         False
     )
 )
-(= (has-type $x ($y)) (== $x $y))
+(= (has-type $x $y) (== $x (car-atom $y)))
 (= (has-type $x Nil) False)
-(= (has-type $x ($l $head $tail)) (if (== $x $l) True (has-type $x $tail)))
 
  ;;(: get-arity (-> $pattern) Number)
+ ;; we substruct 1 since the get-arity count the all tuple and we don't want to count
+ ;; the "AND LINK" as a part of the arity
 (= (get-arity Nil ) 0 )
 (= (get-arity $pattern)
     (- (tuple-count $pattern) 1) )
 
-(= (n_conjuncts Nil) (0))
-(= (n_conjuncts $pattern)
-    (if (not (has-type lambda $pattern))
-        0
-        (if (or (has-type and $pattern) (has-type Present $pattern))
-            (get-arity (cdr-atom $pattern))
-            1)))
+ ;     for pattern type Nil will run both implmentation of  n_conjucts
+(= (n_conjuncts Nil) 0)
+ ; (= (n_conjuncts $pattern)
+ ;     (if (not (has-type lambda $pattern))
+ ;         0
+ ;         (if (or (has-type and $pattern) (has-type Present $pattern))
+ ;             (get-arity (cdr-atom $pattern))
+ ;             1)))
+
+(= (n_conjuncts $pattern) (
+        if (has-type , $pattern)
+        (get-arity $pattern)
+        1
+    )
+)
 
  ;;db size
 (: db_size (-> hyperon::space::DynSpace  Number))
@@ -411,3 +417,18 @@
  ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $X B)) (Inheritance $Z A) $X) ; [False]
  ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $Y B)) (Inheritance $X A) $X) ; [True]
  ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $Y B)) (, (Inheritance $X $Y) (Inheritance $X C0)) $X) ; [True]
+
+! (add-reduct &self (= (get-space) (new-space)))
+! (add-atom (get-space) (Inheritance Abe human))
+! (add-atom (get-space) (Inheritance Rio human))
+! (add-atom (get-space) (Inheritance Bob human))
+! (add-atom (get-space) (Inheritance Mike human))
+! (add-atom (get-space) (Inheritance Mike Nil))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Parent Abe Nil ))
+ ; ! (db_size (get-space))
+ ; ! ( , (, (Inheritance Zac $x) (Parent Eyob Derese)))
+ ;! (n_conjuncts (Inheritance Zac $x))
+ ; ! (has-type lam (Parent Eyob Derese))
+! (universe-count (Inheritance Zac $x) (get-space))
