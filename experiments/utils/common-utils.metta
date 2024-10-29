@@ -77,11 +77,16 @@
  ;             (get-arity (cdr-atom $pattern))
  ;             1)))
 
+ ; TODO: import is-pattern function from other branch, it implmented in est branch
 (= (n_conjuncts $pattern) (
-        if (has-type , $pattern)
-        (get-arity $pattern)
-        1
-    )
+        if (not (is-pattern $pattern))
+        0
+        (if (has-type and $pattern)
+            (get-arity $pattern)
+            1
+        )
+
+)
 )
 
  ;;db size
@@ -427,8 +432,3 @@
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Parent Abe Nil ))
- ; ! (db_size (get-space))
- ; ! ( , (, (Inheritance Zac $x) (Parent Eyob Derese)))
- ;! (n_conjuncts (Inheritance Zac $x))
- ; ! (has-type lam (Parent Eyob Derese))
-! (universe-count (Inheritance Zac $x) (get-space))

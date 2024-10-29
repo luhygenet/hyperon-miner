@@ -16,6 +16,7 @@
 (: EMPTV (-> $a $b TruthValue))
 
 (= (Default_k) 1)
+(= (DEFAULT_K)  800.0)
 
  ;The count_to_confidence function calculates the confidence value based on a given count ($x).
  ;The confidence value is determined using a formula that incorporates a default constant (Default_k).
@@ -106,12 +107,6 @@
  ;;ji_tv_est_mem this function is used to estimate the joint probability of a pattern.
  ;;ji_tv_est_mem is going to implemented in est-tv rule.
 (= (ji_tv_est_mem) (1 1))
-
- ;;TODO: it should be updated.
-(= (emp_tv_bs $pattern $db)
-    ( emp_tv $pattern $db)
-
-)
 
  ;The categorize_subsize function categorizes a given subset size ($subsize) based on a threshold size ($ts).
  ;Parameters
@@ -224,3 +219,278 @@
             ($jte  (ji_tv_est_mem $pattern $db_sequence)))
         (support_estimate_calculator  $pattern $db $jte $db_ratio))
 )
+
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(= (gen-random $max-value)  (
+        (py-dot np-rnd randint) $max-value)
+)
+
+(= (get-element $index $list)
+    (if (== $index 0)
+        (car-atom $list) ; Return the first element if index is 0
+        (get-element (- $index 1) (cdr-atom $list))))
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;;;;; Implmented Before ;;;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(= (gen-random-subsample $db $subsize $space) ; must return a space which conteten the subsample only
+    ( if (== (db_size $db) $subsize)
+        $db
+        (if (== $subsize 0)
+            $space ; Return an empty list if the sample size is 0
+            (let* (
+                    ($db-element (collapse (get-atoms $db)))
+                    ($random-index (gen-random $subsize)) ; Get a random index
+                    ($element (get-element $random-index $db-element))
+                    ($_ (add-atom $space $element)) ; Get the element from the list
+                    ($tail (gen-random-subsample $db (- $subsize 1) $space) ) ; Recursively generate the rest of the subsample
+                )
+            $space))) ; Add the element to the subsample
+)
+
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;;;;; subsample-py : subsample with python binding ;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(= (subsample-py $db $subsize )
+    (let* (
+            ($db-content (collapse (get-atoms $db)))
+            ($space (copy-db  (new-space) (generet_random_subsample $db-content $subsize) ))
+        )
+    $space
+)
+)
+
+(= (emp-tv-subsmp $pattern $db $subsize) (
+        let* ( ($space (subsample-py $db $subsize (new-space))))
+        ( emp-tv $pattern $space)
+    ))
+
+ ; Helper function to repeatedly resample and collect empirical truth values
+(= (emp-tv-bs-helper $pattern $db $n-resample $subsize)
+    (if (== $n-resample 0)
+        () ; Base case: no more resampling, return an empty list
+        (let* (
+                ($subsample-tv (emp-tv-subsmp $pattern $db $subsize)) ; Compute empirical truth value for subsample
+                ($remaining-esstvs (emp-tv-bs-helper $pattern $db (- $n-resample 1) $subsize)) ; Recursive call
+            )
+        (cons-atom $subsample-tv $remaining-esstvs)))) ; Add the result to the list and continue
+
+ ; Function to calculate empirical truth value with bootstrapping (resampling)
+
+ ;;TODO: it should be updated.
+
+(= (emp-tv-bs $pattern $db $n-resample $subsize)
+    (if (< $subsize (db_size $db))
+        (let* (
+                ($esstvs (emp-tv-bs-helper $pattern $db $n-resample $subsize))
+            )
+        (mean-tv $esstvs)) ; Return average of the empirical truth values
+    (emp-tv $pattern $db))) ; If subsize >= db size, directly return empirical truth value
+
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;
+ ;;;;;;;  avrg-tv     ;;;;;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+ ; Calculate the average of EMTV:
+ ; 1. Convert each TV into a β distribution.
+ ; 2. Calculate the mean of each β distribution.
+ ; 3. Calculate the variance of each β distribution.
+ ; 4. Calculate the average of the means of the β distributions.
+ ; 5. Calculate the relative variance of each variance using the Mixture distribution.
+ ; 6. Calculate the average of the relative variances.
+
+ ; A function to get the beta distribution (α and β) from a truth value
+ ;  // Formul from PLN book.
+ ; confidence_t cf = std::min(_value[CONFIDENCE], 0.9999998);
+ ; return static_cast<count_t>(DEFAULT_K * cf / (1.0 - cf));
+
+(= (max $a $b) (if (> $a $b) $a $b))
+(= (min $a $b) (if (< $a $b) $a $b))
+
+(= (get-strength (EMPTV $strength $confidence)) $strength)
+(= (get-confidence (EMPTV $strength $confidence)) $confidence)
+
+(= (get-count $confidence) (
+        let $cf (min 0.9999998 $confidence)
+        (/ (* (DEFAULT_K) $cf)  (- 1.0 $cf))
+    ))
+
+ ; This function calculates the parameters of a Beta distribution based on the given empirical TV (emptv) data.
+ ; It extracts the strength, confidence, and count from the empirical data, then computes the positive count
+ ; and uses prior alpha and beta values (both set to 1.0) to calculate the final alpha and beta parameters
+ ; for the Beta distribution. The final alpha is the sum of the prior alpha and the positive count, while the
+ ; final beta is the sum of the prior beta and the difference between the count and the positive count.
+
+(= (BetaDistribution $emptv)
+    (let* (
+
+            ($strength (get-strength $emptv))
+            ($confidence (get-confidence $emptv))
+            ($count (get-count $confidence))
+            ($pos_count (* $strength $count))
+            ($p_alpha 1.0)
+            ($p_beta 1.0)
+            ($alpha (+ $p_alpha $pos_count))
+            ($beta (+ $p_beta (- $count $pos_count)))
+             ; ($α (* $strength $confidence))
+             ; ($β (* (- 1 $strength) $confidence))
+        )
+    ($alpha $beta)
+))
+
+ ; Function to compute the mean of the Beta distribution
+(= (mean-β-dis ($α $β))
+
+    (/ $α (+ $α $β))
+)
+
+ ; Function to compute the variance of the Beta distribution
+(= (variance-β-dis ($α $β))
+
+    (/ (* $α $β)
+        (*
+            (* (+ $α $β) (+ $α $β))
+            (+ (+ $α $β) 1)
+        )
+)
+)
+
+ ; Function to calculate the average mean
+(= (avrg-means $means)
+    (/ (sum $means) (length $means))
+)
+
+ ; Function to calculate the average variance
+(= (avrg-variances $variances)
+    (/ (sum $variances) (length $variances))
+)
+
+ ; Function to compute the relative variances
+
+(= (relative-variance $means $variances $mean)
+    (let
+         ; Use map to iterate over means and variances simultaneously
+        $adjusted-variances
+        (relateive-varaince-helper
+            $means
+            $variances
+            $mean
+        )
+     ; Return the adjusted variances
+    $adjusted-variances
+)
+)
+
+(= (relateive-varaince-helper $means $variances $mean)
+    (if (or (== $means ()) (== $variances ())) ()
+        (let* ( ($meanHead (car-atom $means))
+                ($meanTail (cdr-atom $means))
+                ($varianceHead (car-atom $variances))
+                ($varianceTail (cdr-atom $variances))
+                ($head-new  (+ $varianceHead (* (- $meanHead $mean) (- $meanHead $mean))))
+                ($tail-new (relateive-varaince-helper $meanTail $varianceTail $mean))
+            )
+        (cons-atom $head-new $tail-new)
+    )
+)
+)
+
+(= (combine-varaince $variances $relateive-varaince)
+    (if (or (== $relateive-varaince ()) (== $variances ())) ()
+        (let* ( ($varianceHead (car-atom $variances))
+                ($varianceTail (cdr-atom $variances))
+                ($reVarHead (car-atom $relateive-varaince))
+                ($reVarTail (cdr-atom $relateive-varaince))
+
+                ($head-new  (+ $varianceHead $reVarHead))
+                ($tail-new (combine-varaince $varianceTail $reVarTail))
+            )
+        (cons-atom $head-new $tail-new)
+    )
+)
+)
+
+ ; This function `mk-stv` creates a standard truth value (STV) using the provided mean and variance.
+ ; It calculates the alpha and beta parameters based on the mean and variance.
+ ; It then computes the count and confidence values using these parameters.
+ ; The mode is determined based on the values of alpha and beta, following specific conditions.
+ ; Finally, it returns an EMPTV (mode, confidence) pair.
+(= (mk-stv $mean $variance)
+    (let* (
+            ($alpha (* $mean (/ (* $mean (- 1 $mean)) $variance)))
+            ($beta (* (- 1 $mean) (/ (* $mean (- 1 $mean)) $variance)))
+            ($p_alpha 1.0)
+            ($p_beta 1.0)
+            ($count (max 0.1 (- (- (+ $alpha $beta ) $p_alpha) $p_beta)))
+            ($confidence (/ $count (+ $count (DEFAULT_K))))
+            ($mode  (
+                    if (and (> $alpha 1) (> $beta 1))
+                    (/ (- $alpha 1) (- (+ $alpha $beta) 2))
+                    (if (and (<= 1 $alpha) (<= 1 $beta))
+                        1
+                        (if (and (< $alpha 1) (<= 1 $beta))
+                            0
+                            (if (and (<= 1 $alpha) (< $beta 1))
+                                1
+                                $mean
+                            )
+                    )
+            )
+    ))
+
+)
+(EMPTV $mode $confidence))
+
+)
+
+ ; Orchestrating the overall process to calculate the average truth value
+
+ ;  * This function calculates the average truth value from a list of truth values.
+ ;  *
+ ;  * Steps followed in the calculation:
+ ;  *
+ ;  * 1. Extract Beta distributions from the given truth values.
+ ;  * 2. Calculate the mean for each Beta distribution.
+ ;  * 3. Calculate the variances for each Beta distribution.
+ ;  * 4. Calculate the overall average mean from the individual means.
+ ;  * 5. Calculate the relative variances using the individual means, variances, and the overall average mean.
+ ;  * 6. Combine the original variances with the relative variances.
+ ;  * 7. Calculate the average variance from the combined variances.
+ ;  * 8. Create the final truth value using the average mean and variance.
+ ;  * 9. Return the final truth value.
+
+(= (avrg-tv $tvs)
+    (let* (
+             ; Extract Beta distributions from truth values
+            ($beta-dists (mapper BetaDistribution $tvs))
+
+            ($_ (println! (Beta-distribution-is $beta-dists)))
+
+             ; Calculate the mean for each Beta distribution
+            ($means (mapper mean-β-dis $beta-dists))
+            ($_ (println! (means-is $means)))
+
+             ; Calculate the variances for each Beta distribution
+            ($variances (mapper variance-β-dis $beta-dists))
+            ($_ (println! (variance-is $variances)))
+
+             ; Calculate the overall average mean
+            ($mean (avrg-means $means))
+            ($_ (println! (mean-is $mean)))
+
+             ; Calculate relative variances
+            ($relative-variances (relative-variance $means $variances $mean))
+
+             ; Add relative variances to the variances
+            ($combined-variances (combine-varaince $variances $relative-variances))
+             ; Calculate the average variance
+            ($variance (avrg-variances $combined-variances))
+
+             ; Create the final truth value with the average mean and variance
+            ($_ (println! ($mean $variance)))
+            ($final-tv (mk-stv $mean $variance))
+             ; ($final-tv (mk-stv $mean $variance))
+        )
+    $final-tv
+))
