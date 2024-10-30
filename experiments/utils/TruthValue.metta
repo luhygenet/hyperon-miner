@@ -1,22 +1,374 @@
+;; Simple Truth Value.  A Second order probability TV constructor,
+;; i.e. probability and confidence.  The probability is in fact the
+;; mode of the corresponding beta distribution.
+(: STV (-> Number Number TruthValue))
+
+
+;;;;;;;;;;;;;;;
+;; Constants ;;
+;;;;;;;;;;;;;;;
+
+;; For now the underlying beta distributions have a Jeffreys prior,
+(: prior-alpha (-> Number))
+(= (prior-alpha) 1.0)
+
+(: prior-beta (-> Number))
+(= (prior-beta) 1.0)
+
+;; Default K value , as sated on "openCog/atomps/simpleTruthValue.h"
+(: default_k (-> Number))
+(= (default_k) 800.0)
+
+;; Lookahead
+(: lookahead (-> Number))
+(= (lookahead) 1.0)
+
+
+;; Maximum supported count (till +inf is supported, possibly).
+(: max-count (-> Number))
+(= (max-count) 1e9)
+
+
+;;;;;;;;;;;;;
+;; Methods ;;
+;;;;;;;;;;;;;
+
+;; Convert count to confidence using the formula
+;;
+;; confidence = count / (count + lookahead)
+(: count->confidence (-> Number Number))
+(= (count->confidence $cnt) (/ $cnt (+ $cnt (lookahead))))
+
+;; Convert confidence to count using the formula
+;;
+;; count = (confidence * default_k) / (1 - confidence)
+(: confidence->count (-> Number Number))
+;;(= (confidence->count $conf) (if (approxEq 1.0 $conf 1e-9)(max-count)(/ (* $conf (lookahead)) (- 1.0 $conf))))
+
+(=(confidence->count $conf) (
+    let* (
+       ( $cf (min $conf 0.9999998))
+       ( $count (/ (* (default_k) $cf) (- 1.0 $cf)))
+
+    )
+      $count
+))
 
 
 
 
-;; Collection of functions operating on numbers
+;;;;;;;;;;;;;;;;;;
+;; Common Utils ;;
+;;;;;;;;;;;;;;;;;;
 
-(: abs (-> $a $a))
-(= (abs $x) (if (< $x 0) (* -1 $x) $x))
+(= (decons-atom $exp)
+    ((car-atom $exp) (cdr-atom $tail))
+)
 
-;; Define <=
-(: <= (-> $a $a Bool))
-(= (<= $x $y) (or (< $x $y) (== $x $y)))
+(= (concatTuple $xs $ys)
+    (if (== $xs ())
+        $ys
+        (let* ( (($head $tail) (decons-atom $xs))
+                ($tailNew (concatTuple $tail $ys)))
+                 (cons-atom $head $tailNew))  ))
 
-;; Define >=
-(: >= (-> $a $a Bool))
-(= (>= $x $y) (or (> $x $y) (== $x $y)))
-(: approxEq (-> $a $a $a Bool))
-(= (approxEq $x $y $epsilon) (<= (abs (- $x $y)) $epsilon))
 
+
+(= (get-variables $pattern)
+    (if (== $pattern ())
+        ()
+        (let* (
+                ($head (car-atom $pattern))
+                ($tail (cdr-atom $pattern)))
+
+            (if (== (get-metatype $head) Expression)
+                (concatTuple (get-variables $head)
+                    (get-variables $tail))
+                (if (== (get-metatype $head) Variable)
+                    (concatTuple
+                        ($head)
+                        (get-variables $tail))
+
+                    (get-variables $tail))))
+    )
+)
+
+
+(=(is-symbol $var) 
+   (== (get-metatype $var) Symbol)
+)
+
+(=(is-variable $var) 
+   (== (get-metatype $var) Variable)
+)
+
+(=(is-expression $var) 
+  (== (get-metatype $var) Expression)
+)
+
+(=(reverse-list ()) ())
+(=(reverse-list $subparts)(
+      let ($head $tail) (decons-atom $subparts) (push-back $head (reverse-list $tail))
+))
+
+
+(=(remove-element $element ())())
+(=(remove-element $element $list) (
+    let ($head $tail) (decons-atom $list) (
+        if (== $element $head) (remove-element $element $tail) (
+            let $dummy (remove-element $element $tail) (cons-atom $head $dummy)))))
+
+
+
+(=(append-list $atom ()) ($atom))
+(=(append-list $atom $list) (
+    let* (
+        (($head $tail) (decons-atom $list))
+        ($dummy (append-list $head $tail))
+    ) 
+     (cons-atom $atom $dummy)))
+
+
+(=(append-list-v2 $atom ()) ($atom))
+(=(append-list-v2 $atom $list) (
+    let* (
+        (($head $tail) (decons-atom $list))
+        ($dummy ((append-list $head $tail)))
+    ) 
+     (cons-atom $atom $dummy)))
+
+(=(insert () $res) $res)
+(=(insert $subparts $res)(
+      let ($head $tail) (decons-atom $subparts) (let $temp (push-back $head $res) (insert $tail $temp))))
+
+(=(is-present $atom ()) False)
+(=(is-present $atom $list) (
+    if (is-expression $list) (
+    let ($head $tail) (decons-atom $list) (
+        if (== $atom $head) True  (or (is-present $atom $head) (is-present $atom $tail))
+    )) (if (== $atom $head) True False)))
+
+
+(=(is-valid () $partion) True)
+(=(is-valid $clous $partion)(
+    let ($head $tail) (decons-atom $clous)  (and (is-present $head $partion) (is-valid $tail $partion)) ))
+
+
+
+(=(is-pattern $expr) (
+    collapse(
+ or (unify $expr ($link $x $y) (
+       and (is-symbol $link) (
+        or (or (is-variable $x) (is-expression $x))
+             (or (is-variable $y) (is-expression $y)))) False)
+    (unify $expr ($link $x) 
+       (and (is-symbol $link) 
+        (or (is-variable $x) 
+            (is-expression $x))) False )  )))
+
+(=(comp $main_head ()) ())
+(=(comp $main_head $list)(
+    let* (
+        (($x $tail) (decons-atom $list))
+        ($rst (append-list (append-list $main_head $x) (comp $main_head $tail)))   
+    ) $rst))
+
+
+(=(get-clouses () ) ())
+(= (get-clouses $pattern)
+        (let* (
+                (($head $tail) (decons-atom $pattern)))
+            (if (== (get-metatype $head) Expression)
+                (   let $result  (concatTuple ($head)
+                    (get-clouses $tail)) (concatTuple $result (get-clouses $head)))
+                    (get-clouses $tail))) )
+
+
+(=(list-patterns $x) (  
+    if (== $x ()) () (  
+      let* (
+            ($head (car-atom $x))
+            ($tail (cdr-atom $x))
+            ($tail_new (superpose(list-patterns $tail))))   
+        (cons-atom $head $tail_new ) )))
+
+
+(=(find_max $num_list $max) (
+    if (== $num_list ()) $max (
+        let* ((($head $tail)(decons-atom $num_list))
+            ($dummy (find_max $tail (if (> $head $max) $head $max)))) 
+            $dummy  )))
+
+
+
+
+;;;;;;;;;;;;;;;;;
+;; Miner Utils ;;
+;;;;;;;;;;;;;;;;;
+
+
+(=(combinatorial_insert $h ())((($h))))
+(=(combinatorial_insert $h $seq)(
+    let*((($head $tail) (decons-atom $seq))
+        ($reslut (combinatorial_insert $h $tail))
+        ($comp_result (comp $head $reslut))  )
+       (append-list (append-list (append-list $h $head) $tail) $comp_result)))
+
+
+;!(combinatorial_insert (Bob $x) ((Human $x) (Parent $x)))
+;!(combinatorial_insert D ((A) (B) (C)))
+
+
+(=(mk-combinatorial_insert $main_head ())(combinatorial_insert $main_head ()))
+(=(mk-combinatorial_insert $main_head $parts)(
+    let* (
+        (($part $tail) (decons-atom $parts))
+        ($subparts (combinatorial_insert $main_head $part))) 
+       (insert  $subparts (mk-combinatorial_insert $main_head $tail))))
+
+
+(=(partitions ()) ())
+(=(partitions $hs)(
+    let* (
+        (($head $tail) (decons-atom $hs))
+        ($res (mk-combinatorial_insert $head (partitions $tail))))
+          $res))
+
+
+(=(push-back $atom ()) ($atom))
+(=(push-back $atom $list) (
+    let* ((($head $tail) (decons-atom $list))
+        ($dummy (push-back $atom $tail))) 
+     (cons-atom $head $dummy)))
+
+
+(=(valid-partitions $hs ())())
+(=(valid-partitions $hs $partitions) (
+    let ($head $tail) (decons-atom $partitions) (
+        if (not (let $res (collapse (is-valid $hs $head)) (car-atom $res))) (valid-partitions $hs $tail) (
+            let $dummy (valid-partitions $hs $tail) (cons-atom $head $dummy)))))
+
+
+;; !(valid-partitions ((Human $x) (Parent $x)) ((((Human $x))) (((Human $x) (Parent $x))) ((Parent $x) (Human $x))))
+
+(=(partitions_without_pattern $clouses) (
+    let  $prts (partitions $clouses) (valid-partitions $clouses $prts)))
+
+
+(=(mk-body ()) ())
+(=(mk-body $block) (
+    let ($head $tail) (decons-atom $block) (
+        if (let $res (is-pattern $head) (car-atom $res)) 
+           (if (== $tail ()) $head 
+               (let $temp (mk-body $tail) (if (== $temp ()) $head (AND $head $temp)))) 
+           (if (and (not (== $head ()))  (== $tail ())) (mk-body $head) 
+               (let $res2 (mk-body $head) (mk-body ($res2 $tail)) ))
+    ) 
+))
+
+
+(=(connected-subpatterns-with-var () $var) ())
+(=(connected-subpatterns-with-var $partion $var)(
+    let* (
+        (($head $tail) (decons-atom $partion) )
+       ($is_pattern (let $pat_temp  (is-pattern $head) (car-atom $pat_temp)))
+        ($is_connected (let $temp (collapse (is-present $var $head)) (car-atom $temp))))
+
+        (  if  (and $is_pattern $is_connected)
+               (let $dummy (connected-subpatterns-with-var $tail $var ) (cons-atom $head $dummy)) 
+                (if $is_pattern (connected-subpatterns-with-var $tail $var) (concatTuple  (connected-subpatterns-with-var $head $var) (connected-subpatterns-with-var $tail $var)) ))))
+
+
+(=(is_more_abstract ($link1 $x1 $y1) ($link2 $x2 $y2)) (
+    if(== $link1 $link2)
+     ( if (or (== $x1 $x2) (== $y1 $y2)) 
+      True
+      False) 
+      False      
+))
+
+
+
+;;;;;;;;;;;;;;;;;;;;
+;; Surprisingness ;;
+;;;;;;;;;;;;;;;;;;;;
+
+
+(=(add-subpatterns () $space) ())
+(=(add-subpatterns $partition $space)(
+    let* ((($head $tail) (decons-atom $partition))
+           ($subpattern (mk-body $head))
+           ($dummy (add-subpatterns $tail $space))
+            )
+            (let () (add-atom $space (pattern $subpattern)) (cons-atom $subpattern $dummy))
+))
+
+
+(=(get-subpatterns $pattern $space) (
+    let $parts (partitions_without_pattern (get-clouses $pattern))
+         (add-subpatterns $parts $space )) )
+
+
+(=(var-appers $var ()) ())
+(=(var-appers $var $blk) (
+     let* ((($head $tail) (decons-atom $blk))
+           ($is_present (let $temp (collapse (is-present $var $head)) (car-atom $temp))))
+           (if $is_present  (let $dummy (var-appers $var $tail) (cons-atom $var $dummy)) (var-appers $var $tail))))
+
+
+(=(joint-variables () $partion) ())
+(=(joint-variables $vars  $partion )(
+    let ($head $tail)    (decons-atom $vars)
+       (if   (>= (count-atom-element (var-appers $head $partion)) 2) 
+             (let $dummy (joint-variables $tail $partion) (cons-atom $head $dummy)) 
+             (joint-variables $tail $partion))         
+))
+
+(=(mk-unique ()) ())
+(=(mk-unique $vars) (
+    let ($head $tail) (decons-atom $vars) (let $dummy (mk-unique (remove-element $head $vars)) (cons-atom $head $dummy))))
+
+(=(get-unique-vars $pattern)(
+    let $vars (get-variables $pattern) (mk-unique $vars) 
+))
+
+
+(=(joint-variables-init $pattern $partion)(
+      let $vars (get-unique-vars $pattern) (
+        joint-variables $vars $partion   
+      )
+))
+
+
+ (=(emp_tv_mem $pattern_list $db) (
+    if (== $pattern_list ()) () (
+        let* (  
+              (($head $tail) (cons-atom $pattern_list))
+             ;($emp_value (emp-tv $head $db))
+              ($set_emp ($head (EMPTV 1.0 0.05)))
+              ($dummy (emp_tv_mem $tail $db))
+        )  
+            (cons-atom $set_emp $dummy)
+    )
+ ))
+
+
+(=(avrg_tv $tv)(
+    let* (
+        ($tv_list (mk_distribution_list $tv))
+        ($size (count-atom-element $tv_list))
+       ($mean (let $sum (mean_accumulater $tv_list 0) (/ $sum $size)))
+       ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (/ $var_sum $size)))
+        ($mk_stv_val (mk_stv $mean $re_variance))
+        (($mode $confidence)  (decons-atom $mk_stv_val))
+    )
+        ($mode (car-atom $confidence) )    
+))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Beta distributions from URE ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 (=(beta_mean $alpha $beta) (
@@ -44,8 +396,6 @@
     )
         (variance $var)
 ))
-
-
 
 
 (=(mean_accumulater $tv_list $pre_value)(
@@ -79,71 +429,6 @@
 ))
 
 
-
-
-
-;; Simple Truth Value.  A Second order probability TV constructor,
-;; i.e. probability and confidence.  The probability is in fact the
-;; mode of the corresponding beta distribution.
-(: STV (-> Number Number TruthValue))
-
-;;;;;;;;;;;;;;;
-;; Constants ;;
-;;;;;;;;;;;;;;;
-
-;; For now the underlying beta distributions have a Jeffreys prior,
-;; i.e. the prior alpha and beta are 0.5.
-(: prior-alpha (-> Number))
-(= (prior-alpha) 1.0)
-
-(: prior-beta (-> Number))
-(= (prior-beta) 1.0)
-
-
-;; Default K value , as sated on "openCog/atomps/simpleTruthValue.h"
-(: default_k (-> Number))
-(= (default_k) 800.0)
-
-
-;; Lookahead
-(: lookahead (-> Number))
-(= (lookahead) 1.0)
-
-
-
-
-;; Maximum supported count (till +inf is supported, possibly).
-(: max-count (-> Number))
-(= (max-count) 1e9)
-
-;;;;;;;;;;;;;
-;; Methods ;;
-;;;;;;;;;;;;;
-
-;; Convert count to confidence using the formula
-;;
-;; confidence = count / (count + lookahead)
-(: count->confidence (-> Number Number))
-(= (count->confidence $cnt) (/ $cnt (+ $cnt (lookahead))))
-
-;; Convert confidence to count using the formula
-;;
-;; count = (confidence * default_k) / (1 - confidence)
-(: confidence->count (-> Number Number))
-;;(= (confidence->count $conf) (if (approxEq 1.0 $conf 1e-9)(max-count)(/ (* $conf (lookahead)) (- 1.0 $conf))))
-
-(=(confidence->count $conf) (
-    let* (
-       ( $cf (min $conf 0.9999998))
-       ( $count (/ (* (default_k) $cf) (- 1.0 $cf)))
-
-    )
-      $count
-))
-
-
-
-
 (=(get_tv_mean $tv) (
     let*(
         ($tail (cdr-atom $tv))
@@ -152,15 +437,14 @@
     $mean
 ))
 
-
 (=(get_tv_conf $tv) (
     let*(
         ($tail (cdr-atom $tv))
         ($temp (cdr-atom $tail))
         ($conf (car-atom $temp))
     )
-    $conf
-))
+    $conf))
+
 
 (= (find_alpha $mean $variance) (
     * $mean (- (/ (* $mean (- 1 $mean) ) $variance) 1)
@@ -212,9 +496,38 @@
 ))
 
 
-;;;;;;;;;;;;;;;;;
-;; Miner Utils ;;
-;;;;;;;;;;;;;;;;;
+(=(_beta_distribution $alpha $beta)(
+     let*(
+        ($beta_mean (beta_mean $alpha $beta))
+        ($beta_variance (beta_var $alpha $beta))
+     )
+     (Beta $beta_mean $beta_variance)
+))
 
 
+;;!(_beta_distribution 2 5)
+(=(mk_distribution_list $patten_list)(
+    if (== $patten_list ()) () (
+        let*(( ($head $tail)(decons-atom $patten_list))
+            ($beta_dist (mk_distribution $head))
+            ($dummy (mk_distribution_list $tail))
+        )
+              (cons-atom $beta_dist $dummy))
+))
 
+(=(get_beta_mean_var $beta $key)(
+    let* (
+           ($temp (cdr-atom $beta));;((mean 54) (variance 57))
+           ($mean_tuple (car-atom $temp));; (mean 54)
+           ($mean_temp (cdr-atom $mean_tuple)) ;; (54)
+           ($mean_value (car-atom $mean_temp)) ;; 54
+           ($temp2  (cdr-atom $temp));;((variance 57))
+           ($var_tuple (car-atom $temp2 ));; (variance 57)
+           ($var_temp (cdr-atom $var_tuple));; (57)
+           ($variance (car-atom $var_temp)) ;; 57    
+    )
+      (
+        if (== $key mean) $mean_value $variance
+      )
+      
+))
