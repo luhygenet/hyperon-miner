@@ -10,14 +10,20 @@ from hyperon.ext import register_atoms, register_tokens
 import hyperonpy as hp
 import numpy as np
 
+DEFAULT_K = 800.0
+
 
 def get_beta_distribution(emp_tv):
-    emp_tv = emp_tv.get_children()
-
+    emp_tv = emp_tv.get_children()  # cdr-atom
     strength = float(str(emp_tv[1]))  # car-atom
     confidence = float(str(emp_tv[2]))  # cdr-atom
-    alpha = strength * confidence
-    beta = (1 - strength) * confidence
+    cf = min(0.9999998, confidence)
+    count = DEFAULT_K*cf / (1-cf)
+    pos_count = strength * count
+    p_alpha = 1.0
+    p_beta = 1.0
+    alpha = p_alpha + pos_count
+    beta = p_beta + (count - pos_count)
     return (alpha, beta)
 
 

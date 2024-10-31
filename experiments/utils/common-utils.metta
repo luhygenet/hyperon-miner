@@ -58,8 +58,9 @@
         False
     )
 )
-(= (has-type $x $y) (== $x (car-atom $y)))
+
 (= (has-type $x Nil) False)
+(= (has-type $x $y) (== $x (car-atom $y)))
 
  ;;(: get-arity (-> $pattern) Number)
  ;; we substruct 1 since the get-arity count the all tuple and we don't want to count
@@ -81,7 +82,7 @@
 (= (n_conjuncts $pattern) (
         if (not (is-pattern $pattern))
         0
-        (if (has-type and $pattern)
+        (if (has-type , $pattern)
             (get-arity $pattern)
             1
         )
