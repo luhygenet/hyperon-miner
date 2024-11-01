@@ -14,7 +14,7 @@
 (=(pro_prob_without_joint $db $subpatterns )(
     let* (
         ($tv (emp_tv_mem $subpatterns $db))  
-        ($prod_etv (avrg_tv $tv))
+       ($prod_etv (avrg_tv $tv))
     )
         $prod_etv
 ))
@@ -62,28 +62,34 @@
          $dummy)  $prob))
 
 
+
 (=(prob-with-joint $db $db_size $partion $joint_vars $p)(
     if (== $joint_vars ()) $p
  (let* ((($head $tail) (decons-atom $joint_vars))
         ($patterns (connected-subpatterns-with-var $partion $head))
-        ($prob (eq-prob $db $db_size $patterns $patterns 1 (count-atom-element $patterns) $p))
-        ))
+        ($prob (eq-prob $db $db_size $patterns $patterns 1 (tuple-count $patterns) $p))
+        )
 
-        (pro_prob_without_joint $db $db_size $tail  $joint_vars $prob)
+        (prob-with-joint $db $db_size $tail  $tail $prob))
 ))
 
 
-(= (ji-est-tv $db $db_size $pattern $partions)
-(   if(== $partions ()) () (
-        let* ((($head $tail) (decons-atom $partions))
-            ($partion (get-subpatterns $head))
-            ($prod_etv (pro_prob_without_joint $db $partion))
+
+
+(= (ji-est-tv $db $db_size $pattern $partitions)
+(   if (== $partitions ()) () (
+        let* ((($head $tail) (decons-atom $partitions))
+            ($subparts (add-subpatterns $head $db))
+           ($prod_etv (pro_prob_without_joint $db $subparts))
             (($rp $rc) (decons-atom $prod_etv))
-            ($rp_est (prob-with-joint $db $db_size $partion (joint-variables-init $pattern $partion) 1))
-            (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
-            ($dummy (ji-est-tv $db $db_size $pattern $tail))) 
-         (cons-atom (STV $strength $confidence)  $dummy)))
+          ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $head) (joint-variables-init $pattern (remove-parenthesis $head)) 1))
+          (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
+          ($dummy (ji-est-tv $db $db_size $pattern $tail))
+              ) 
+         (cons-atom ((remove-parenthesis $head) (STV $strength $confidence))  $dummy) 
+         ))
 )
+
 
 
 ;; Calculate the truth value estimate of each partition based on
@@ -91,11 +97,10 @@
 ;; into account the linkage probability.
 
 (=(ji-tv-est-init $db $pattern) (
-    let $prtns (partitions_without_pattern $pattern)
-        ( let ($strength $confidence) (avrg_tv(ji-est-tv $db (db_size $db) $pattern $partions)) 
-           (STV $strength $confidence))
+    let $prtns (partitions_without_pattern (get-clouses $pattern))  
+        ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns)) 
+      ($pattern  (STV $strength $confidence)))
 ))
-
 
 
 

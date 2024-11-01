@@ -72,6 +72,9 @@
                 ($tailNew (concatTuple $tail $ys)))
                  (cons-atom $head $tailNew))  ))
 
+(=(remove-parenthesis $x) (
+    let ($head $tail) (decons-atom $x) (if (== $tail ()) (remove-parenthesis $head) $x)
+))
 
 
 (= (get-variables $pattern)
@@ -137,6 +140,14 @@
     ) 
      (cons-atom $atom $dummy)))
 
+
+(=(push-back $atom ()) ($atom))
+(=(push-back $atom $list) (
+    let* ((($head $tail) (decons-atom $list))
+        ($dummy (push-back $atom $tail))) 
+     (cons-atom $head $dummy)))
+
+
 (=(insert () $res) $res)
 (=(insert $subparts $res)(
       let ($head $tail) (decons-atom $subparts) (let $temp (push-back $head $res) (insert $tail $temp))))
@@ -147,12 +158,6 @@
     let ($head $tail) (decons-atom $list) (
         if (== $atom $head) True  (or (is-present $atom $head) (is-present $atom $tail))
     )) (if (== $atom $head) True False)))
-
-
-(=(is-valid () $partion) True)
-(=(is-valid $clous $partion)(
-    let ($head $tail) (decons-atom $clous)  (and (is-present $head $partion) (is-valid $tail $partion)) ))
-
 
 
 (=(is-pattern $expr) (
@@ -166,11 +171,15 @@
         (or (is-variable $x) 
             (is-expression $x))) False )  )))
 
+(=(is-valid () $partion) True)
+(=(is-valid $clous $partion)(
+    let ($head $tail) (decons-atom $clous)  (and (is-present $head $partion) (is-valid $tail $partion)) ))            
+
 (=(comp $main_head ()) ())
 (=(comp $main_head $list)(
     let* (
         (($x $tail) (decons-atom $list))
-        ($rst (append-list (append-list $main_head $x) (comp $main_head $tail)))   
+        ($rst (append-list (append-list $main_head  $x) (comp  $main_head $tail)))   
     ) $rst))
 
 
@@ -235,12 +244,6 @@
           $res))
 
 
-(=(push-back $atom ()) ($atom))
-(=(push-back $atom $list) (
-    let* ((($head $tail) (decons-atom $list))
-        ($dummy (push-back $atom $tail))) 
-     (cons-atom $head $dummy)))
-
 
 (=(valid-partitions $hs ())())
 (=(valid-partitions $hs $partitions) (
@@ -249,7 +252,7 @@
             let $dummy (valid-partitions $hs $tail) (cons-atom $head $dummy)))))
 
 
-;; !(valid-partitions ((Human $x) (Parent $x)) ((((Human $x))) (((Human $x) (Parent $x))) ((Parent $x) (Human $x))))
+
 
 (=(partitions_without_pattern $clouses) (
     let  $prts (partitions $clouses) (valid-partitions $clouses $prts)))
@@ -279,12 +282,19 @@
                 (if $is_pattern (connected-subpatterns-with-var $tail $var) (concatTuple  (connected-subpatterns-with-var $head $var) (connected-subpatterns-with-var $tail $var)) ))))
 
 
-(=(is_more_abstract ($link1 $x1 $y1) ($link2 $x2 $y2)) (
+
+(=(is_more_abstract_est ($link1 $x1 $y1) ($link2 $x2 $y2)) (
     if(== $link1 $link2)
      ( if (or (== $x1 $x2) (== $y1 $y2)) 
       True
       False) 
       False      
+))
+
+(=(is_more_abstract $x $y) (
+   if (and ( let $res (unify $x ($link $z $w) True False) $res) (let $res2 (unify $y ($link $a $b) True False) $res2) )
+       (is_more_abstract_est $x $y)
+       False
 ))
 
 
@@ -319,7 +329,7 @@
 (=(joint-variables () $partion) ())
 (=(joint-variables $vars  $partion )(
     let ($head $tail)    (decons-atom $vars)
-       (if   (>= (count-atom-element (var-appers $head $partion)) 2) 
+       (if   (>= (tuple-count (var-appers $head $partion)) 2) 
              (let $dummy (joint-variables $tail $partion) (cons-atom $head $dummy)) 
              (joint-variables $tail $partion))         
 ))
@@ -343,7 +353,7 @@
  (=(emp_tv_mem $pattern_list $db) (
     if (== $pattern_list ()) () (
         let* (  
-              (($head $tail) (cons-atom $pattern_list))
+              (($head $tail) (decons-atom $pattern_list))
              ;($emp_value (emp-tv $head $db))
               ($set_emp ($head (EMPTV 1.0 0.05)))
               ($dummy (emp_tv_mem $tail $db))
@@ -356,13 +366,13 @@
 (=(avrg_tv $tv)(
     let* (
         ($tv_list (mk_distribution_list $tv))
-        ($size (count-atom-element $tv_list))
+        ($size (tuple-count $tv_list))
        ($mean (let $sum (mean_accumulater $tv_list 0) (/ $sum $size)))
        ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (/ $var_sum $size)))
-        ($mk_stv_val (mk_stv $mean $re_variance))
-        (($mode $confidence)  (decons-atom $mk_stv_val))
+       ($mk_stv_val (mk_stv $mean $re_variance))
+       (($mode $confidence)  (decons-atom $mk_stv_val))
     )
-        ($mode (car-atom $confidence) )    
+     ($mode (car-atom $confidence) )        
 ))
 
 
