@@ -243,13 +243,16 @@
         ($res (mk-combinatorial_insert $head (partitions $tail))))
           $res))
 
-
+(=(is-partions-clouse $part $clauses) (
+    let $res (collapse (is-present $part $clauses)) (or (car-atom $res) (== $part $clauses))
+))
 
 (=(valid-partitions $hs ())())
 (=(valid-partitions $hs $partitions) (
     let ($head $tail) (decons-atom $partitions) (
-        if (not (let $res (collapse (is-valid $hs $head)) (car-atom $res))) (valid-partitions $hs $tail) (
-            let $dummy (valid-partitions $hs $tail) (cons-atom $head $dummy)))))
+        if (and (let $res (collapse (is-valid $hs $head)) (car-atom $res)) (not  (is-partions-clouse (remove-parenthesis $head) $hs) ))  
+        (let $dummy (valid-partitions $hs $tail) (cons-atom (remove-parenthesis $head) $dummy))
+            (valid-partitions $hs $tail))))
 
 
 
@@ -355,7 +358,7 @@
         let* (  
               (($head $tail) (decons-atom $pattern_list))
              ;($emp_value (emp-tv $head $db))
-              ($set_emp ($head (EMPTV 1.0 0.05)))
+              ($set_emp ($head (EMPTV 0.5 0.5)))
               ($dummy (emp_tv_mem $tail $db))
         )  
             (cons-atom $set_emp $dummy)

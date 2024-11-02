@@ -58,11 +58,16 @@
 ;!(let $pat_temp  (is-pattern (Inheritance $x $y)  ) (car-atom $pat_temp))
 
 
-!(ji-tv-est-init (get-space) (Inheritance (Or Bob $x) (Human $x)))
+!(ji-tv-est-init (get-space) (Inheritance (Or Bob $x) (Human $x $y)))
+;!(ji-tv-est-init (get-space) (Inheritance Abe (Human $x (Or Bob $x))))
+
+;!(add-subpatterns ((((Or Bob $x)) ((Human $x (Or Bob $x))))) (get-space))
 
 ;!(unify (Human $x $y) ($link $z $w) True False)
 
 ;!(joint-variables-init  (Inheritance (Or Bob $x) (Human $x)) (remove-parenthesis (((Or Bob $x) (Human $x)))))
+
+;!(joint-variables-init  (Inheritance Abe (Human $x (Or Bob $x)))  (remove-parenthesis (((Or Bob $x)) ((Human $x (Or Bob $x))))) )
 
 ;!(remove-parenthesis (((Or Bob $y) (Human $x))))
 
@@ -89,5 +94,16 @@
 ;!(add-subpatterns (((Or $x) (And $y))) (get-space))
 
 ;!(partitions_without_pattern (get-clouses (Inheritance (Or Bob $y) (Human $x))))
+;!(partitions_without_pattern (get-clouses (Inheritance Abe (Human $x (Or Bob $y)))))
+;!(get-clouses (Inheritance (Or Bob $y) (Human $x)))
+
+;!(partitions (get-clouses (Inheritance Abe (Human $x (Or Bob $y)))))
+;!(get-clouses (Inheritance Abe (Human $x (Or Bob $y))))
+
+;!(is-present (remove-parenthesis ((((Human $x (Or Bob $z)))))) ((Human $x (Or Bob $y)) (Or Bob $y)))
+
+( (((Human $x)) ((Or Bob $y))))
+
+;!(get-clouses (Inheritance (Or Bob $y) (Human $x)))
 
 
