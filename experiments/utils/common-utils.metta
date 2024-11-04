@@ -111,3 +111,9 @@
         False
     )
 )
+(= (is-expression $x)
+    (if (== (get-metatype $x) Expression)
+        True
+        False
+    )
+)
