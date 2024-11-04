@@ -1,9 +1,77 @@
-! (register-module! ../../../hyperon-miner)
-! (import! &dbspace hyperon-miner:experiments:data:sample-data)
-! (bind! &nwspace (new-space))
-(= (try)
-    (match &dbspace $x (superpose ( (remove-atom &nwspace $x) (add-atom &nwspace $x))))
-)
+ ; ! (register-module! ../../../hyperon-miner)
+ ; ! (import! &dbspace hyperon-miner:experiments:data:sample-data)
+ ; ! (bind! &nwspace (new-space))
+ ; (= (try)
+ ;     (match &dbspace $x (superpose ( (remove-atom &nwspace $x) (add-atom &nwspace $x))))
+ ; )
 
-! (try)
-! (match &nwspace $x $x)
+ ; ! (try)
+ ; ! (match &nwspace $x $x)
+
+[ (ShallowAbstractionOf Y (Or (And T $u#129387) (And $k#129388 M))), (ShallowAbstractionOf Y (Or (And T $u#129389) (And $z#129390 M))),
+(ShallowAbstractionOf Y (Or (And T $w#129391) (And $z#129392 M))), (ShallowAbstractionOf Y (Or (And T $w#129393) (And $k#129394 M))),
+(ShallowAbstractionOf Y (Or (And $z#129395 S) (And N M))), (ShallowAbstractionOf Y (Or (And $k#129396 S) (And N M))),
+(ShallowAbstractionOf Y (Or $z#129397 (And N $u#129398))), (ShallowAbstractionOf Y (Or $z#129399 (And N $u#129400))),
+(ShallowAbstractionOf Y (Or $z#129401 (And N $u#129402))), (ShallowAbstractionOf Y (Or $z#129403 (And N $w#129404))),
+(ShallowAbstractionOf Y (Or $z#129405 (And N $u#129406))), (ShallowAbstractionOf Y (Or $z#129407 (And N $w#129408))),
+(ShallowAbstractionOf Y (Or $z#129409 (And N $w#129410))), (ShallowAbstractionOf Y (Or $z#129411 (And N $u#129412))),
+(ShallowAbstractionOf Y (Or $z#129413 (And N $w#129414))), (ShallowAbstractionOf Y (Or $z#129415 (And N $w#129416))),
+(ShallowAbstractionOf Y (Or $z#129417 (And N $u#129418))), (ShallowAbstractionOf Y (Or $z#129419 (And N $w#129420))),
+(ShallowAbstractionOf Y (Or (And $z#129421 S) (And N $w#129422))), (ShallowAbstractionOf Y (Or (And $k#129423 S) (And N $w#129424))),
+(ShallowAbstractionOf Y (Or (And $z#129425 S) (And N $u#129426))), (ShallowAbstractionOf Y (Or (And $k#129427 S) (And N $u#129428))),
+(ShallowAbstractionOf Y (Or (And T S) (And $k#129429 M))), (ShallowAbstractionOf Y (Or (And T S) (And $k#129430 M))),
+(ShallowAbstractionOf Y (Or (And T S) (And $z#129431 M))), (ShallowAbstractionOf Y (Or (And T S) (And $z#129432 M))),
+(ShallowAbstractionOf Y (Or $z#129433 (And $z#129434 M))), (ShallowAbstractionOf Y (Or $z#129435 (And $z#129436 M))),
+(ShallowAbstractionOf Y (Or $z#129437 (And $k#129438 M))), (ShallowAbstractionOf Y (Or $z#129439 (And $z#129440 M))),
+(ShallowAbstractionOf Y (Or $z#129441 (And $k#129442 M))), (ShallowAbstractionOf Y (Or $z#129443 (And $k#129444 M))),
+(ShallowAbstractionOf Y (Or $z#129445 (And $k#129446 M))), (ShallowAbstractionOf Y (Or $z#129447 (And $z#129448 M))),
+(ShallowAbstractionOf Y (Or $z#129449 (And $k#129450 M))), (ShallowAbstractionOf Y (Or $z#129451 (And $k#129452 M))),
+(ShallowAbstractionOf Y (Or $z#129453 (And $z#129454 M))), (ShallowAbstractionOf Y (Or $z#129455 (And $z#129456 M))),
+(ShallowAbstractionOf Y (Or (And T $u#129457) (And N $w#129458))), (ShallowAbstractionOf Y (Or (And T $w#129459) (And N $w#129460))),
+(ShallowAbstractionOf Y (Or (And T $u#129461) (And N $u#129462))), (ShallowAbstractionOf Y (Or (And T $w#129463) (And N $u#129464))),
+(ShallowAbstractionOf Y (Or $z#129465 (And N M))), (ShallowAbstractionOf Y (Or $k#129466 (And N M))),
+(ShallowAbstractionOf Y (Or (And T S) (And N M))), (ShallowAbstractionOf Y (Or (And $z#129467 S) (And $k#129468 M))),
+(ShallowAbstractionOf Y (Or (And $z#129469 S) (And $z#129470 M))), (ShallowAbstractionOf Y (Or (And $k#129471 S) (And $z#129472 M))),
+(ShallowAbstractionOf Y (Or (And $k#129473 S) (And $k#129474 M))), (ShallowAbstractionOf Y (Or (And T $u#129475) $w#129476)),
+(ShallowAbstractionOf Y (Or (And T $w#129477) $w#129478)), (ShallowAbstractionOf Y (Or (And T S) $u#129479)),
+(ShallowAbstractionOf Y (Or (And T S) $w#129480)), (ShallowAbstractionOf Y (Or (And T $u#129481) (And N M))),
+(ShallowAbstractionOf Y (Or (And T $w#129482) (And N M))), (ShallowAbstractionOf Y (Or (And $k#129483 S) $w#129484)),
+(ShallowAbstractionOf Y (Or (And $z#129485 S) $w#129486)), (ShallowAbstractionOf Y (Or (And T S) (And N $u#129487))),
+(ShallowAbstractionOf Y (Or (And T S) (And N $w#129488))), (ShallowAbstractionOf Y (Or (And T S) (And N $w#129489))),
+(ShallowAbstractionOf Y (Or (And T S) (And N $u#129490))), (ShallowAbstractionOf X (And (And C D) (Or $z#129491 G))),
+(ShallowAbstractionOf X (And (And C D) (Or $z#129492 G))), (ShallowAbstractionOf X (And (And C D) (Or $k#129493 G))),
+(ShallowAbstractionOf X (And (And C D) (Or $k#129494 G))), (ShallowAbstractionOf X (And (And C $u#129495) (Or $z#129496 G))),
+(ShallowAbstractionOf X (And (And C $u#129497) (Or $k#129498 G))), (ShallowAbstractionOf X (And (And C $w#129499) (Or $k#129500 G))),
+(ShallowAbstractionOf X (And (And C $w#129501) (Or $z#129502 G))), (ShallowAbstractionOf X (And (And $z#129503 D) (Or P $u#129504))),
+(ShallowAbstractionOf X (And (And $z#129505 D) (Or P $w#129506))), (ShallowAbstractionOf X (And (And $k#129507 D) (Or P $u#129508))),
+(ShallowAbstractionOf X (And (And $k#129509 D) (Or P $w#129510))), (ShallowAbstractionOf X (And (And C D) (Or P G))),
+(ShallowAbstractionOf X (And (And $k#129511 D) $w#129512)), (ShallowAbstractionOf X (And (And $z#129513 D) $w#129514)),
+(ShallowAbstractionOf X (And (And C $u#129515) (Or P $u#129516))), (ShallowAbstractionOf X (And (And C $w#129517) (Or P $u#129518))),
+(ShallowAbstractionOf X (And (And C $u#129519) (Or P $w#129520))), (ShallowAbstractionOf X (And (And C $w#129521) (Or P $w#129522))),
+(ShallowAbstractionOf X (And $z#129523 (Or P $u#129524))), (ShallowAbstractionOf X (And $z#129525 (Or P $u#129526))),
+(ShallowAbstractionOf X (And $z#129527 (Or P $u#129528))), (ShallowAbstractionOf X (And $z#129529 (Or P $w#129530))),
+(ShallowAbstractionOf X (And $z#129531 (Or P $u#129532))), (ShallowAbstractionOf X (And $z#129533 (Or P $w#129534))),
+(ShallowAbstractionOf X (And $z#129535 (Or P $u#129536))), (ShallowAbstractionOf X (And $z#129537 (Or P $w#129538))),
+(ShallowAbstractionOf X (And $z#129539 (Or P $w#129540))), (ShallowAbstractionOf X (And $z#129541 (Or P $w#129542))),
+(ShallowAbstractionOf X (And $z#129543 (Or P $u#129544))), (ShallowAbstractionOf X (And $z#129545 (Or P $w#129546))),
+(ShallowAbstractionOf X (And $z#129547 (Or $k#129548 G))), (ShallowAbstractionOf X (And $z#129549 (Or $z#129550 G))),
+(ShallowAbstractionOf X (And $z#129551 (Or $z#129552 G))), (ShallowAbstractionOf X (And $z#129553 (Or $z#129554 G))),
+(ShallowAbstractionOf X (And $z#129555 (Or $z#129556 G))), (ShallowAbstractionOf X (And $z#129557 (Or $k#129558 G))),
+(ShallowAbstractionOf X (And $z#129559 (Or $z#129560 G))), (ShallowAbstractionOf X (And $z#129561 (Or $k#129562 G))),
+(ShallowAbstractionOf X (And $z#129563 (Or $k#129564 G))), (ShallowAbstractionOf X (And $z#129565 (Or $k#129566 G))),
+(ShallowAbstractionOf X (And $z#129567 (Or $k#129568 G))), (ShallowAbstractionOf X (And $z#129569 (Or $z#129570 G))),
+(ShallowAbstractionOf X (And (And $z#129571 D) (Or $z#129572 G))), (ShallowAbstractionOf X (And (And $k#129573 D) (Or $k#129574 G))),
+(ShallowAbstractionOf X (And (And $k#129575 D) (Or $z#129576 G))), (ShallowAbstractionOf X (And (And $z#129577 D) (Or $k#129578 G))),
+(ShallowAbstractionOf X (And (And C $u#129579) (Or P G))), (ShallowAbstractionOf X (And (And C $w#129580) (Or P G))),
+(ShallowAbstractionOf X (And (And $z#129581 D) (Or P G))), (ShallowAbstractionOf X (And (And $k#129582 D) (Or P G))),
+(ShallowAbstractionOf X (And $z#129583 (Or P G))), (ShallowAbstractionOf X (And $k#129584 (Or P G))),
+(ShallowAbstractionOf X (And (And C D) $w#129585)), (ShallowAbstractionOf X (And (And C D) $u#129586)),
+(ShallowAbstractionOf X (And (And C D) (Or P $u#129587))), (ShallowAbstractionOf X (And (And C D) (Or P $w#129588))),
+(ShallowAbstractionOf X (And (And C D) (Or P $w#129589))), (ShallowAbstractionOf X (And (And C D) (Or P $u#129590))),
+(ShallowAbstractionOf X (And (And C $u#129591) $w#129592)), (ShallowAbstractionOf X (And (And C $w#129593) $w#129594))]
+
+[ (ShallowAbstractionOf X (And (And C $w#12932) E)), (ShallowAbstractionOf X (And (And C $u#12933) E)),
+(ShallowAbstractionOf X (And (And $k#12934 D) $w#12935)), (ShallowAbstractionOf X (And (And $z#12936 D) $w#12937)),
+(ShallowAbstractionOf X (And (And C $w#12938) $w#12939)), (ShallowAbstractionOf X (And (And C $u#12940) $w#12941)),
+(ShallowAbstractionOf X (And (And C D) $u#12942)), (ShallowAbstractionOf X (And (And C D) $w#12943)),
+(ShallowAbstractionOf X (And (And $z#12946 D) E)), (ShallowAbstractionOf X (And (And $k#12947 D) E)), (ShallowAbstractionOf Y L)]
