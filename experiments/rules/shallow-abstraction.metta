@@ -2,6 +2,7 @@
 ! (import! &dbspace hyperon-miner:experiments:data:sample-data)
 ! (import! &self hyperon-miner:experiments:rules:valuation-set)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
+! (import! &self conj-exp)
 ! (bind! &shabspace (new-space))
 ! (bind! &valspace (new-space))
 
@@ -13,14 +14,14 @@
             (let $t (match $valspace (, (ValuationOf $x $c) (ValuationOf $y $c)) True) (if (== $t True) (add-atom $shabspace (ShallowAbstractionOf $x $y)) Empty))
             (collapse (match $valspace (ValuationOf $y $t) (superpose (
                             (if (== (is-expression $t) True)
-                                (let $result (abstract-recursive $t 1) (superpose ( (remove-atom $shabspace (ShallowAbstractionOf $y $result)) (add-atom $shabspace (ShallowAbstractionOf $y $result)))))
+                                (let $result (abstract-recursive $t) (superpose ( (remove-atom $shabspace (ShallowAbstractionOf $y $result)) (add-atom $shabspace (ShallowAbstractionOf $y $result)))))
                                 empty
                             )
                          ; (add-atom $shabspace (ShallowAbstractionOf $y $t))
                     ))))
     (collapse (match $valspace (ValuationOf $x $z) (superpose (
                     (if (== (is-expression $z) True)
-                        (let $result (abstract-recursive $z 1) (superpose ( (remove-atom $shabspace (ShallowAbstractionOf $x $result)) (add-atom $shabspace (ShallowAbstractionOf $x $result)))))
+                        (let $result (abstract-recursive $z) (superpose ( (remove-atom $shabspace (ShallowAbstractionOf $x $result)) (add-atom $shabspace (ShallowAbstractionOf $x $result)))))
                         empty
                     )
                  ; (add-atom $shabspace (ShallowAbstractionOf $y $t))
@@ -29,21 +30,21 @@
 )
 )
 
-(= (abstract-recursive $p $d)
+(= (abstract-recursive $p)
     (if (== (is-expression $p) False)
-        D
+        $d
         (let* (
                 ( ($link $x $y) $p)
-                ( $nx (abstract-recursive $x $d))
-                ( $ny (abstract-recursive $y $d))
+                ( $nx (abstract-recursive $x))
+                ( $ny (abstract-recursive $y))
             )
         (superpose (
-                ($link $nx w)
-                ($link z $ny)
-                ($link $x u)
-                ($link k $y)
+                ($link $nx $w)
+                ($link $z $ny)
+                ($link $x $u)
+                ($link $k $y)
                 $p
-                ($link g o)
+                ($link $g $o)
                 ($link $nx $ny)
             )
     )
