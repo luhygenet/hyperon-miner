@@ -101,12 +101,12 @@
 
  ;;TODO:implement minsup-eval
 (= (minsup-eval $f $db $ms)
-    (True)
+    (Predicate "minsup" (List $f $db $ms))
 )
 
  ;;TODO:implement surp-eval
-(= (surp-eval  $f $db)
-    (Inheritance $x $y)
+(= (surp-eval $mode $f $db)
+    (Predicate $mode (List $mode $f $db))
 )
 
  ;;Present accepts an atom and checks if it is present in the db

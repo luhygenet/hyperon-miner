@@ -64,6 +64,13 @@
         ) (add-atom &self (stv $var2 $mean $confidence)))
 )
 
+ ;; $conclusion:  ((Pridicate minsup) $db $pattern)
+ ;; $tv: (EMP 0.5 0.6)
+
+(= (cog-set-tv! $conclusion $tv) (
+        (add-atom &self ($conclusion $tv))
+    ))
+
  ; asssuming the db is like this
  ; (Inheritance Allen human)
  ; (stv Allen 0.4 1)
@@ -79,6 +86,11 @@
             ($var2 (car-atom $var))
         ) (match &self (stv $var2 $mean $confidence) (stv $mean $confidence)))
 
+)
+
+(= (cog-tv $pattern) (
+        (match &self ($pattern $tv) $tv)
+    )
 )
 
 ! (cog-set-tv (Inheritance Allen human) (0.98 1))
