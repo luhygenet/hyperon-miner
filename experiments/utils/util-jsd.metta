@@ -81,5 +81,21 @@
 
 )
 
-! (cog-set-tv (Inheritance Allen human) (0.98 1))
-! (cog-tv (Inheritance Allen human))
+(= (is-expression $var) (== Expression (get-metatype $var)))
+(= (is-variable $var) (== Variable (get-metatype $var)))
+(= (is-symbol $var) (== Symbol (get-metatype $var)))
+
+ ; This function checks if a given expression is a pattern.
+ ; It takes an expression ($expr) as input and evaluates whether it matches
+ ; specific structures involving symbols, variables, and expressions.
+ ; The function returns True if the expression is a pattern, otherwise False.
+(= (is-pattern $expr) (
+
+        or (unify $expr ($link $x $y) (
+                and (is-symbol $link) (
+                    or (or (is-variable $x) (is-expression $x))
+                    (or (is-variable $y) (is-expression $y)))) False)
+        (unify $expr ($link $x)
+            (and (is-symbol $link)
+                (or (is-variable $x)
+                    (is-expression $x))) False )))
