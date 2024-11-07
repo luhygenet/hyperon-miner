@@ -358,12 +358,12 @@
 
  ; Function to calculate the average mean
 (= (avrg-means $means)
-    (/ (sum $means) (length $means))
+    (/ (sum $means) (tuple-count $means))
 )
 
  ; Function to calculate the average variance
 (= (avrg-variances $variances)
-    (/ (sum $variances) (length $variances))
+    (/ (sum $variances) (tuple-count $variances))
 )
 
  ; Function to compute the relative variances
