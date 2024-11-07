@@ -75,3 +75,10 @@
 (ShallowAbstractionOf X (And (And C $w#12938) $w#12939)), (ShallowAbstractionOf X (And (And C $u#12940) $w#12941)),
 (ShallowAbstractionOf X (And (And C D) $u#12942)), (ShallowAbstractionOf X (And (And C D) $w#12943)),
 (ShallowAbstractionOf X (And (And $z#12946 D) E)), (ShallowAbstractionOf X (And (And $k#12947 D) E)), (ShallowAbstractionOf Y L)]
+
+[ (ShallowAbstractionOf Y L), (ShallowAbstractionOf X (And (And C D) E)),
+(ShallowAbstractionOf X (And (And C D) E)), (ShallowAbstractionOf X (And (And $n848396 D) E)),
+(ShallowAbstractionOf X (And (And C $p730565) E)), (ShallowAbstractionOf X (And (And $v171808 $a167783) E)),
+(ShallowAbstractionOf X (And $e390868 $c419905)), (ShallowAbstractionOf X (And (And C $o168231) $r579597)),
+(ShallowAbstractionOf X $l128347), (ShallowAbstractionOf X (And $v542246 E)), (ShallowAbstractionOf X (And (And C D) $r987702)),
+(ShallowAbstractionOf X (And (And $t042805 $m944628) $l390145)), (ShallowAbstractionOf X (And (And $n146111 D) $q680985))]
