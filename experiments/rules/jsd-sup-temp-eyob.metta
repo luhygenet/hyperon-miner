@@ -3,35 +3,21 @@
 ! (import! &self  jsd-surpr)
 ! (import! &self experiments:utils:util-jsd)
 
-(: map (-> (-> $t $t) Expression Expression))
-(= (map $f $expr)
-    (if (== $expr ()) ()
-        (let* ( ($head (car-atom $expr))
-                ($tail (cdr-atom $expr))
-                ($head-new ($f $head))
-                ($tail-new (map $f $tail))
-            )
-        (cons-atom $head-new $tail-new)
-    )
-)
-
-)
-
 (: gt_zero_confidence_eval (-> Atom Bool))
 (= (gt_zero_confidence_eval $x)
     (> (confidence $x) 0)
 )
 
 (= (minsup-eval $f $ms)
-    (Predicate minsup (List $f $ms))
+    (Predicate minsup (cons-atom $f $ms))
 )
 
 (= (surp-eval $mode $f )
-    (Predicate $mode (List $mode $f))
+    (Predicate $mode $f)
 )
 
 (= (jsd-eval $f) (
-        Predicate jsd (List $f)
+        (Predicate jsd) $f
     ))
 
 (= (cog-mean $patter)
@@ -48,22 +34,31 @@
     (
         if (> $nary 1)
         (let* (
-                ($cnj-bodies (gen-variables $nary))
+                ($cnj-bodies (gen-variables "$gen-body" $nary))
                 ($f ($f-vardecl $cnj-bodies))
                 ($jsd-e (jsd-eval $f))
+
                 ($conclusion (surp-eval jsd-surp $f))
+
                 ($mean_confidece (cog-mean $jsd-e))
-                ($mean (car-atom $mean_confidece) )
-                ($mean_confidece (cdr-atom $mean_confidece))
-                ($confidence (car-atom $mean_confidece))
+
+                ($surp (car-atom $mean_confidece) )
+
+                ($mean_confidece1 (cdr-atom $mean_confidece))
+
+                ($confidence (car-atom $mean_confidece1))
 
             )
-        (if (gt_zero_confidence_eval $confidence)
+        (if (< 0 $confidence)
             (cog-set-tv! $conclusion (stv $surp 1))
+            empty
 
         )
 )
+
+empty
+
 ))
 
-!  (gen-variables "$cnj-bodies" 2)
- ; ! (gen-jsd-surprisingness-rule  2 "pattern")
+ ; !  (gen-variables "$cnj-bodies" 2)
+! (gen-jsd-surprisingness-rule  2 "pattern")
