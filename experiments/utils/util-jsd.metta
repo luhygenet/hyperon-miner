@@ -1,3 +1,7 @@
+
+ ; True, but no confidence.
+(= (DEFAULT_TV)  (STV 1 0))
+
 (= (gt-zero-confidence-eval $num)
     (if (> $num 0)
         True
@@ -54,21 +58,21 @@
  ;(Inheritance Allen human)
  ;(stv Allen 0.98 1)
  ;The tuple is like (0.9 0.8)
-(: cog-set-tv (-> Atom Tuple Atom))
-(= (cog-set-tv $atom $tv)
-    (let* ( ($var (cdr-atom $atom))
-            ($var2 (car-atom $var))
-            ($mean (car-atom $tv))
-            ($var3 (cdr-atom $tv))
-            ($confidence (car-atom $var3))
-        ) (add-atom &self (stv $var2 $mean $confidence)))
-)
+ ; (: cog-set-tv (-> Atom Tuple Atom))
+ ; (= (cog-set-tv $atom $tv)
+ ;     (let* ( ($var (cdr-atom $atom))
+ ;             ($var2 (car-atom $var))
+ ;             ($mean (car-atom $tv))
+ ;             ($var3 (cdr-atom $tv))
+ ;             ($confidence (car-atom $var3))
+ ;         ) (add-atom &self (stv $var2 $mean $confidence)))
+ ; )
 
  ;; $conclusion:  ((Pridicate minsup) $db $pattern)
  ;; $tv: (EMP 0.5 0.6)
 
-(= (cog-set-tv! $conclusion $tv) (
-        (add-atom &self ($conclusion $tv))
+(= (cog-set-tv $conclusion $tv) (
+        add-atom &self ($conclusion $tv)
     ))
 
  ; asssuming the db is like this
@@ -81,17 +85,19 @@
  ; (stv Kebede 0.9 1)
  ; (Inheritance Allen human)
 
+ ; (= (cog-tv $pattern)
+ ;     (let* ( ($var (cdr-atom $pattern))
+ ;             ($var2 (car-atom $var))
+ ;         ) (match &self (stv $var2 $mean $confidence) (stv $mean $confidence)))
+
+ ; )
+
 (= (cog-tv $pattern)
-    (let* ( ($var (cdr-atom $pattern))
-            ($var2 (car-atom $var))
-        ) (match &self (stv $var2 $mean $confidence) (stv $mean $confidence)))
-
-)
-
-(= (cog-tv $pattern) (
-        (match &self ($pattern $tv) $tv)
+    (unify &self ($pattern $tv)
+        $tv
+        (DEFAULT_TV)
     )
 )
 
-! (cog-set-tv (Inheritance Allen human) (0.98 1))
-! (cog-tv (Inheritance Allen human))
+! (cog-set-tv (Inheritance Allen human) (STV 0.98 1))
+! ( (cog-tv (Inheritance Allen humands)))
