@@ -26,7 +26,7 @@
 (= (emp-tv $pattern $db)
     (let*
         ( ( ($ucount ) ( (universe-count $pattern $db)))
-            ( ($ms) ($ucount))
+            ( ($ms) ($ucount)) ;;  we didn't use ms for support calculation
             ( ($sup) ( (sup $pattern $db)))
             ( ($conf) ( (count_to_confidence $ucount)) )
             ($mean (/ $sup $ucount))
@@ -38,13 +38,14 @@
  ;The support is determined by multiplying the probability estimate by the universe count of the pattern in the database.
  ; Parameters
  ; $pattern: The pattern for which the support is to be calculated. This is typically a data structure or identifier representing the pattern.
- ; $db: The database in which the pattern's support is to be calculated. This is typically a collection or sequence of data.
+ ; $db: The database in which the pattern's support is to be calculated. This is typically a collection or sequence of data(represented by space).
  ; $prob: The probability estimate of the pattern. This is a numeric value representing the likelihood of the pattern.
 (= (prob_to_support $pattern $db $prob)
     (* $prob (universe-count $pattern $db))
 )
 
- ; The support_estimate_calculator function calculates the support estimate for a given pattern in a database and then uses this estimate to compute the empirical truth value with bootstrapping if necessary.
+ ; The support_estimate_calculator function calculates the support estimate for a given pattern in a database and then uses
+ ; this estimate to compute the empirical truth value with bootstrapping if necessary.
  ;  It combines the probability estimate and database ratio to determine the effective database size and support estimate.
  ; Parameters
  ; $pattern: The pattern for which the support estimate and empirical truth value are to be calculated.
@@ -67,7 +68,7 @@
  ; Return Values
  ; 1: Returned if the support estimate is greater than or equal to the database size.
  ; 2: Returned if the support estimate is less than the database size.
-(= (categorize_subsize $db_size $support_estimate)
+(= (categorize_by_support_estimate $db_size $support_estimate)
     (if   (>= $support_estimate $db_size)
         1
         2)
@@ -88,7 +89,8 @@
  ; $db_size: The effective size of the database.
  ; $support_estimate: The estimated support of the pattern in the database.
  ; Return Values
- ; emp_tv_bs: Called if the support estimate is greater than or equal to the database size, using bootstrapping to calculate the empirical truth value.
+ ; emp_tv_bs: Called if the support estimate is greater than or equal to the database size,
+ ;  using bootstrapping to calculate the empirical truth value.
  ; emp_tv: Called if the support estimate is less than the database size, directly calculating the empirical truth value.
  ; emp_tv: Default case, directly calculating the empirical truth value.
 (= (emp_tv_pbs $pattern $db $prob_estimate $db_ratio $db_size $support_estimate)
@@ -216,8 +218,12 @@
  ; $db_ratio: The ratio used to scale the database size.
 (= (do_emp_tv $pattern $db $db_ratio )
     (let* ( ($db_sequence (collapse (get-atoms $db) ))
-            ($jte  (ji_tv_est_mem $pattern $db_sequence)))
-        (support_estimate_calculator  $pattern $db $jte $db_ratio))
+            ($jte  (ji_tv_est_mem $pattern $db_sequence))
+
+             ;; after we get jte we must extract the mean
+            ($mean (get-strength $jte)))
+
+        (support_estimate_calculator  $pattern $db $mean $db_ratio))
 )
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -243,7 +249,7 @@
                     ($random-index (gen-random $subsize)) ; Get a random index
                     ($element (get-element $random-index $db-element))
                     ($_ (add-atom $space $element)) ; Get the element from the list
-                    ($tail (gen-random-subsample $db (- $subsize 1) $space) ) ; Recursively generate the rest of the subsample
+                    ($tail (gen-random-subsample $db (- $subsize 1) $space) ) ; Recursively generate the rest of the s
                 )
             $space))) ; Add the element to the subsample
 )
@@ -308,8 +314,8 @@
 (= (max $a $b) (if (> $a $b) $a $b))
 (= (min $a $b) (if (< $a $b) $a $b))
 
-(= (get-strength (EMPTV $strength $confidence)) $strength)
-(= (get-confidence (EMPTV $strength $confidence)) $confidence)
+(= (get-strength ($type $strength $confidence)) $strength)
+(= (get-confidence ($type $strength $confidence)) $confidence)
 
 (= (get-count $confidence) (
         let $cf (min 0.9999998 $confidence)
