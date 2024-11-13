@@ -3,7 +3,10 @@
 ! (import! &dbspace hyperon-miner:experiments:data:sample-data)
 ! (import! &self hyperon-miner:experiments:rules:binding-set)
 ! (import! &self hyperon-miner:experiments:rules:shallow-abstraction)
+! (import! &self hyperon-miner:experiments:utils:common-utils)
+! (import! &self freq-pat)
 ! (bind! &shabspace (new-space))
+! (bind! &shabredspace (new-space))
 ! (bind! &bindspace (new-space))
 ! (bind! &spezspace (new-space))
 
@@ -22,7 +25,7 @@
  ; ! (match &bindspace (BindingOf $c $d) (BindingOf $c $d))
 
  ;; let's run the shallow-abstraction function to calculate the shallow abstraction over both variable X and Y
-! (shallow-abstraction X Y &bindspace &shabspace)
+! (shallow-abstraction X Y &bindspace &shabspace &shabredspace)
 
  ;; Check if shallow abstractions are inserted correctly
  ; ! (match &shabspace (ShallowAbstractionOf $c $d) (ShallowAbstractionOf $c $d))
@@ -32,3 +35,4 @@
 
  ;; Check if the specializations are inserted correctly
 ! (match &spezspace (SpecializationOf $x $y) (SpecializationOf $x $y))
+! (match &spezspace $x $x)

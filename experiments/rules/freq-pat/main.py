@@ -17,33 +17,35 @@ import hyperonpy as hp
 
 
 
-def call_python_process(metta: MeTTa, pattern):
-    metta.run('''
-    (= (abstract-recursive $p)
-        (if (not (== (get-metatype $p) Expression))
-            $p
-            (let* (
-                    ( ($link $x $y) $p)
-                    ( $nx (abstract-recursive $x))
-                    ( $ny (abstract-recursive $y))
-                )
-            (superpose (
-                        ($link $nx $w)
-                        ($link $z $ny)
-                        ($link $x $u)
-                        ($link $k $y)
-                        $d
-                        ($link $g $o)
-                        ($link $nx $ny)
-                    )
-            ) 
-    )
+# def call_python_process(metta: MeTTa, pattern):
+def call_python_process(metta: MeTTa):
+    # metta.run('''
+    # (= (abstract-recursive $p)
+    #     (if (not (== (get-metatype $p) Expression))
+    #         $p
+    #         (let* (
+    #                 ( ($link $x $y) $p)
+    #                 ( $nx (abstract-recursive $x))
+    #                 ( $ny (abstract-recursive $y))
+    #             )
+    #         (superpose (
+    #                     ($link $nx $w)
+    #                     ($link $z $ny)
+    #                     ($link $x $u)
+    #                     ($link $k $y)
+    #                     $d
+    #                     ($link $g $o)
+    #                     ($link $nx $ny)
+    #                 )
+    #         ) 
+    # )
 
-    )
-    )
-    ''')
+    # )
+    # )
+    # ''')
 
-    run_str = f'!(abstract-recursive {pattern})'
+    # run_str = f'!(abstract-recursive {pattern})'
+    run_str = f'!(match &shabspace (ShallowAbstractionOf $c $d) (ShallowAbstractionOf $c $d))'
 
     patterns = metta.run(run_str)
 
@@ -70,13 +72,19 @@ def call_python_process(metta: MeTTa, pattern):
             unique_var = generate_random_var()
             unique_structure = unique_structure.replace("$var", unique_var, 1)
 
-        unique_patterns.append(ValueAtom(metta.parse_single(unique_structure), 'Expression'))
+        # unique_patterns.append(unique_structure)
+        # unique_patterns.append(ValueAtom(metta.parse_single(unique_structure), 'Expression'))
+        unique_patterns.append(metta.parse_single(unique_structure))
+    # uni_patterns = ' '.join(unique_patterns)    
+    # atoms = metta.parse_single(uni_patterns)    
+    # return [ValueAtom(atoms, 'Expression')]
         
     return unique_patterns
 
 @register_atoms(pass_metta=True)
 def redundancy(metta):
-    redundancyFreeAtom = OperationAtom('redunpat', lambda patterns: call_python_process(metta, patterns), unwrap=False)
+    # redundancyFreeAtom = OperationAtom('redunpat', lambda patterns: call_python_process(metta, patterns), unwrap=False)
+    redundancyFreeAtom = OperationAtom('redunpat', lambda: call_python_process(metta),['Expression'], unwrap=False)
     return {
         r"redunpat": redundancyFreeAtom,
     }
