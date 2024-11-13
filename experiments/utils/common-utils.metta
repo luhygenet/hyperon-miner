@@ -41,7 +41,6 @@
                     (is-expression $x))) False )))
 
  ; this consider every thing as a pattern exept for symbole
-
 (= (is-pattern-et $expr) (not (is-symbol $expr))
 
 )
@@ -129,6 +128,21 @@
 (= (get-arity $pattern)
     (- (tuple-count $pattern) 1) )
 
+ ;; implmenting get-arity for tree structure pattern type
+(= (get-arity-tree $pattern) (
+        if (has-type AND $pattern)
+        ( let* (
+                ( ($link $first $second) $pattern)
+                ($first_arity (get-arity-tree $first))
+                ($second_arity (get-arity-tree $second))
+
+            )
+        (+ $first_arity $second_arity)
+    )
+1
+)
+)
+
  ;     for pattern type Nil will run both implmentation of  n_conjucts
 (= (n_conjuncts Nil) 0)
  ; (= (n_conjuncts $pattern)
@@ -140,7 +154,7 @@
 
  ; TODO: import is-pattern function from other branch, it implmented in est branch
 (= (n_conjuncts $pattern) (
-        if (not (is-pattern-et $pattern))
+        if (not (is-pattern $pattern))
         0
         (if (has-type , $pattern)
             (get-arity $pattern)
@@ -493,3 +507,6 @@
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Parent Abe Nil ))
+
+! (is-pattern (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)))
+! (get-arity-tree (AND (Parent $B $X) (AND (Parent $X $Z) (Inheritance $X $Y))))
