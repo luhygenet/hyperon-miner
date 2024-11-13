@@ -208,6 +208,17 @@
             ($dummy (find_max $tail (if (> $head $max) $head $max)))) 
             $dummy  )))
 
+(=(max $list) (find_max $list (car-atom $list)))
+
+(=(find_min $num_list $min) (
+    if (== $num_list ()) $min (
+        let* ((($head $tail)(decons-atom $num_list))
+            ($dummy (find_min $tail (if (< $head $min) $head $min)))) 
+            $dummy  )))
+
+
+(=(min $list) (find_min $list (car-atom $list)))
+
 
 
 
@@ -286,15 +297,28 @@
 
 
 
-(=(is_more_abstract_est ($link1 $x1 $y1) ($link2 $x2 $y2)) (
-    if(== $link1 $link2)
-     ( if (or (== $x1 $x2) (== $y1 $y2)) 
-      True
-      False) 
-      False      
-))
+(= (is_more_abstract_est ($link1 $x1 $y1) ($link2 $x2 $y2))
+    (if (== $link1 $link2)
+        (if
+            (and
+                (or
+                     ; Check if x1 and x2 are equal, or x1 is more abstract (a variable)
+                    (== $x1 $x2)
+                    (and
+                        (is-variable $x1) (or (is-expression $x2) (is-symbol $x2))))
+                (or
+                     ; Check if y1 and y2 are equal, or y1 is more abstract (a variable)
+                    (== $y1 $y2)
+                    (and
+                        (is-variable $y1) (or (is-expression $y2) (is-symbol $y2)))))
+            True
+            False )
+        False
+    )
+)
 
-(=(is_more_abstract $x $y) (
+
+(=(is_more_abstract_init $x $y) (
    if (and ( let $res (unify $x ($link $z $w) True False) $res) (let $res2 (unify $y ($link $a $b) True False) $res2) )
        (is_more_abstract_est $x $y)
        False
@@ -313,7 +337,7 @@
            ($subpattern (mk-body $head))
            ($dummy (add-subpatterns $tail $space))
             )
-            (let () (add-atom $space (pattern $subpattern)) (cons-atom $subpattern $dummy))
+            (cons-atom $subpattern $dummy)
 ))
 
 
@@ -358,7 +382,7 @@
         let* (  
               (($head $tail) (decons-atom $pattern_list))
              ;($emp_value (emp-tv $head $db))
-              ($set_emp ($head (EMPTV 0.5 0.5)))
+              ($set_emp ($head (EMPTV 0.8 0.45)))
               ($dummy (emp_tv_mem $tail $db))
         )  
             (cons-atom $set_emp $dummy)
@@ -370,12 +394,13 @@
     let* (
         ($tv_list (mk_distribution_list $tv))
         ($size (tuple-count $tv_list))
-       ($mean (let $sum (mean_accumulater $tv_list 0) (/ $sum $size)))
-       ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (/ $var_sum $size)))
-       ($mk_stv_val (mk_stv $mean $re_variance))
-       (($mode $confidence)  (decons-atom $mk_stv_val))
+        ($mean (let $sum (mean_accumulater $tv_list 0) (/ $sum $size)))
+        ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (/ $var_sum $size)))
+        ($mk_stv_val (mk_stv $mean $re_variance))
+        (($mode $confidence)  (decons-atom $mk_stv_val))
     )
-     ($mode (car-atom $confidence) )        
+     ($mode (car-atom $confidence) ) 
+       
 ))
 
 

@@ -54,7 +54,7 @@
 ;; returns the number of support of a pattern
 
 (= (sup-num $db $pattern)
-    (let $sup (counter_two $db $pattern)
+    (let $sup (counter $db $pattern)
         $sup
     )
 )
@@ -137,13 +137,9 @@
     )
 )
 
+
  ;check if atom is variable or not
-(= (is-variable $x)
-    (if (== (get-metatype $x) Variable)
-        True
-        False
-    )
-)
+
 
  ; THIS IMPLEMENTATION CONSIDERS THE VARIABLE NAMES
  ; THIS WILL REMOVE REDUNDANT CLAUSES ALONG WITH THE ABSTRACTS
@@ -168,6 +164,8 @@
         False
     )
 )
+
+
 
  ;Test
  ; ! (is_more_abstract (Inheritance cat $Y) (Inheritance $X pet))

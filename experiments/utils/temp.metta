@@ -2,11 +2,13 @@
 
 ! (register-module! ../../experiments)
 ! (import! &self experiments:rules:est-tv)
-! (import! &self experiments:rules:emp-tv)
+;;! (import! &self experiments:rules:emp-tv)
 
 ! (import! &database hyperon-miner:experiments:data:sample-data)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
 ! (import! &self hyperon-miner:experiments:utils:TruthValue)
+! (import! &self hyperon-miner:experiments:utils:gen_partition)
+
 
 
 ! (bind! square (py-atom numpy.square (-> Number Number)))
@@ -16,6 +18,9 @@
 
 ! (add-reduct &self (= (get-space) (new-space)))
 ! (add-atom (get-space) (Inheritance Abe human))
+! (add-atom (get-space) (Inheritance Abe human))
+! (add-atom (get-space) (Inheritance Abe human))
+
 ! (add-atom (get-space) (Inheritance Rio human))
 ! (add-atom (get-space) (Inheritance Bob human))
 ! (add-atom (get-space) (Inheritance Mike human))
@@ -24,9 +29,9 @@
 ! (add-atom (get-space) (Parent Abe Nil ))
 ! (add-atom (get-space)  (Inheritance Bob (And human (Or zac))) ) 
 
-;! (emp-tv (Inheritance $x human) (get-space))
+;;! (emp-tv (Inheritance $x human) (get-space))
 
-
+;!(estimate_v_xi (get-space) (Inheritanced Abe $y))
 
 
 
@@ -58,8 +63,10 @@
 ;!(let $pat_temp  (is-pattern (Inheritance $x $y)  ) (car-atom $pat_temp))
 
 
-!(ji-tv-est-init (get-space) (Inheritance (Or Bob $x) (Human $x $y)))
+;!(ji-tv-est-init (get-space) (Inheritance (Or Bob $x) (Human $x $y)))
+;;!(ji-tv-est-init (get-space) (Inheritance (Not $y) (Human $x (Or Bob $x))))
 ;!(ji-tv-est-init (get-space) (Inheritance Abe (Human $x (Or Bob $x))))
+
 
 ;!(add-subpatterns ((((Or Bob $x)) ((Human $x (Or Bob $x))))) (get-space))
 
@@ -107,3 +114,140 @@
 ;!(get-clouses (Inheritance (Or Bob $y) (Human $x)))
 
 
+
+
+ input pattern = [A, B, C]
+ ;; outPut
+ ;	 *
+ ;	 * [[[A],[C],[B]199192
+ 199192
+ ],
+ ;	 *  [[C,A],[B]],
+ ;	 *  [[C],[B,A]],
+ ;	 *  [[A],[C,B]]]
+
+
+
+;!(ji-tv-est-init (get-space) (Inheritance (Boy $y) (Human $x (Human Bob $x))))
+
+
+    
+  ;; ! (get-clouses (Inheritance (Boy $y) (Human $x (Or Bob $x))))
+
+     ((Boy $y) (Human $x (Or Bob $x)) (Or Bob $x))
+
+
+
+   ;;!(partitions_without_pattern ((Boy $y) (Human $x (Or Bob $x)) (Or Bob $x)))
+
+   (
+    
+   (((Boy $y) (Or Bob $x)) ((Human $x (Or Bob $x)))) 
+   (((Or Bob $x)) ((Boy $y) (Human $x (Or Bob $x)))) 
+   (((Or Bob $x)) ((Human $x (Or Bob $x))) ((Boy $y))) 
+   (((Human $x (Or Bob $x)) (Or Bob $x)) ((Boy $y))) 
+
+   ((Boy $y) (Human $x (Or Bob $x))) 
+   (((Human $x (Or Bob $x))) ((Boy $y))))
+
+
+
+
+
+  ((AND (AND (Boy $y) (Or Bob $x)) (Human $x (Or Bob $x))))
+
+
+  (((AND (AND (Boy $y) (Or Bob $x)) (Human $x (Or Bob $x))) (EMPTV 0.8 0.45)))
+
+
+  ((Beta (mean 0.7990861257269455) (variance 0.00024416181160985805)))
+
+
+  ;;!(mk-body  (((Boy $y) (Or Bob $x)) ((Human $x (Or Bob $z)))))
+  ;;!(add-subpatterns (((Boy $y) (Or Bob $x)) ((Human $x (Or Bob $x))))  (get-space))
+
+;;((Or Bob $x) (Human $x (Or Bob $x))) (Human $x (Or Bob $x))
+
+
+
+(Inheritance $X $Y) 
+(match &self (Inheritance C1 C2))
+
+(Inheritance $X $Y) (Inheritance C1 $Y) 
+
+
+;!(generet-partition-without-pattern (Inheritance (Boy $y) (Child $x)))
+
+
+(((Boy $y)) ((Human $x (Human Bob $x))) ((Human Bob $x))) 
+(((Boy $y) (Human Bob $x)) ((Human $x (Human Bob $x)))) 
+(((Boy $y)) ((Human $x (Human Bob $x)) (Human Bob $x))) 
+(((Boy $y) (Human $x (Human Bob $x))) ((Human Bob $x)))
+
+
+
+(((Boy $y)) ((Child $x)))
+
+;;!(do-ji-tv-est (get-space)  (Inheritance (Boy $y) (Human $x (Human Bob $x))))
+;!(do-ji-tv-est (get-space)  (Inheritance (Or Bob $x) (Human $x $y)))
+
+
+(=(emp_prob_pbs_mem $subpattern $db  $db_ratio) 0.7)
+
+
+(=(min-max $list) ((min $list) (max $list)))
+
+
+(=(pro-prob-wout-joint $subpatterns $db $db_ratio $p) (
+  if (== $subpatterns ()) $p (
+    let* ((($subpattern $tail) (decons-atom $subpatterns))
+           ($empr (emp_prob_pbs_mem $subpattern $db  $db_ratio))
+           ($new_prob (* $p $empr)))
+       (pro-prob-wout-joint $tail $db $db_ratio $new_prob)
+  )
+))
+
+
+
+
+(=(ji-prob-est  $partition $pattern $db $db_ratio) (
+     let $p (pro-prob-wout-joint (add-subpatterns $partition $db) $db $db_ratio 1)
+             (let $eq_prob (prob-with-joint $db (db_size $db) (remove-parenthesis $partition) (joint-variables-init $pattern (remove-parenthesis $partition)) 1)  
+             (* $p $eq_prob)))
+             )
+
+
+(=(do-ji-prob $partitions $pattern $db $db_ratio) (
+  if (== $partitions ()) () (
+     let* ((($partition $tail) (decons-atom $partitions))
+            ($jip (ji-prob-est $partition $pattern $db $db_ratio))
+             ($dummy (do-ji-prob $tail $pattern $db $db_ratio)))
+             (cons-atom $jip $dummy) ))
+)
+
+
+
+(=(ji_prob_est_interval $pattern $db $db_ratio) (
+   let ($emin $emax) (min-max(do-ji-prob (generet-partition-without-pattern $pattern) $pattern $db $db_ratio))
+        ($emin $emax)
+))
+
+
+
+;;!(ji_prob_est_interval (Inheritance (Boy $y) (Human $x (Human Bob $x))) (get-space) 2)
+
+
+(=(dst_from_interval $emin $emax $emp) (
+  if (< $emax $emp) (- $emp $emax) (if (< $emp $emin ) (- $emin $emp) 0.0)
+))
+
+
+(=(isurp $pattern $db $normalize $db_ratio) (
+    let* ((($emin $emax) (ji_prob_est_interval $pattern $db $db_ratio))
+           ($emp (emp_prob_pbs_mem $subpattern $db  $db_ratio))
+            ($dst (dst_from_interval $emin $emax $emp))
+             ($maxprb (max ($emp $emax))))
+               (min ((if $normalize (/ $dst $maxprb) $dst) 1.0))
+))
+
+!(isurp (Inheritance (Boy $y) (Human $x (Human Bob $x))) (get-space) False 2)

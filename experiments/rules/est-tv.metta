@@ -16,7 +16,7 @@
         ($tv (emp_tv_mem $subpatterns $db))  
        ($prod_etv (avrg_tv $tv))
     )
-        $prod_etv
+      $prod_etv     
 ))
 
 
@@ -24,7 +24,7 @@
 ;; without any interaction with the other components. The formula used to calculate this is the approximation formula: |V(Xi)| ~= Nth-root(S)
 
 (=(estimate_v_xi $db $pattern_i) (
-    let $result (sup-num $db $pattern) ((py-atom pow) $result 0.5)
+    let $result (sup-num $db $pattern_i) ((py-atom pow) $result 0.5)
 ))
 
 
@@ -39,7 +39,7 @@
     if (== $i 0) () (
         let* (
              ( ($head $tail) (decons-atom $original))
-             ($bool_value  (is_more_abstract $head $compJ)) 
+             ($bool_value  (is_more_abstract_init $head $compJ)) 
              ($v_xi  (if $bool_value (estimate_v_xi $db $head) -1))
              ($dummy (inner_temp $db $tail $compJ (- $i 1)))
         ) (
@@ -56,40 +56,45 @@
           let* (($tail (cdr-atom $copy))
         ($compJ (car-atom $tail))
         ($most_spec  (let $result (inner_temp $db $original $compJ $i) (find_max $result -1) ))
-        ($M_xj (if (== $most_spec -1) $db_size $most_spec))
+       ($M_xj (if (<= $most_spec 0) $db_size $most_spec))
         ($prob_j (* $prob (/ 1 $M_xj)))  ;; from general formula
         ($dummy (eq-prob $db $db_size $original $tail (+ $i 1) (- $count 1) $prob_j)))
-         $dummy)  $prob))
+         $dummy)
+           $prob
+           ))
+
+
+
 
 
 
 (=(prob-with-joint $db $db_size $partion $joint_vars $p)(
     if (== $joint_vars ()) $p
  (let* ((($head $tail) (decons-atom $joint_vars))
-        ($patterns (connected-subpatterns-with-var $partion $head))
+       ($patterns (connected-subpatterns-with-var $partion $head))
        ($prob (eq-prob $db $db_size $patterns $patterns 1 (tuple-count $patterns) $p))
         )
-     
-     (prob-with-joint $db $db_size $tail  $tail $prob)
-       )
+   (prob-with-joint $db $db_size $tail  $tail $prob)
+  
+        )
       
 ))
-
 
 
 
 (= (ji-est-tv $db $db_size $pattern $partitions)
 (   if (== $partitions ()) () (
         let* ((($head $tail) (decons-atom $partitions))
-            ($subparts (add-subpatterns ($head) $db))
-           ($prod_etv (pro_prob_without_joint $db $subparts))
-           (($rp $rc) (decons-atom $prod_etv))
-           ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $head) (joint-variables-init $pattern (remove-parenthesis $head)) 1))
-          (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
-          ($dummy (ji-est-tv $db $db_size $pattern $tail))
+              ($subparts (add-subpatterns $head $db))
+               ($prod_etv (pro_prob_without_joint $db $subparts))
+               (($rp $rc) (decons-atom $prod_etv))
+              ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $head) (joint-variables-init $pattern (remove-parenthesis $head)) 1))
+              (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
+               ($dummy (ji-est-tv $db $db_size $pattern $tail))
               ) 
-         (cons-atom ((remove-parenthesis $head) (STV $strength $confidence))  $dummy)
-       
+
+     (cons-atom ((remove-parenthesis $head) (STV $strength $confidence))  $dummy)
+     
          ))
 )
 
@@ -99,16 +104,20 @@
 ;; independent assumption of between each partition block, taking
 ;; into account the linkage probability.
 
-(=(ji-tv-est-init $db $pattern) (
-    let $prtns (partitions_without_pattern (get-clouses $pattern))  ;;(ji-est-tv $db (db_size $db) $pattern $prtns)
-        ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns)) 
-      ($pattern  (STV $strength $confidence)))
-    
+(=(do-ji-tv-est $db $pattern) (
+    let $prtns (generet-partition-without-pattern $pattern)  
+          ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
+          ($pattern  (ETV $strength $confidence)))  
+          ;;(ji-est-tv $db (db_size $db) $pattern $prtns)             
 ))
 
 
 
 
+
+
+
+((AND (AND (Boy $y) (Or Bob $x)) (Human $x (Or Bob $x))))
 
 
 
