@@ -2,7 +2,7 @@
  ; ! (import! &dbspace hyperon-miner:experiments:data:sample-data)
  ; ! (import! &self hyperon-miner:experiments:rules:binding-set)
  ; ! (import! &self hyperon-miner:experiments:utils:common-utils)
- ; ! (import! &self freq-pat)
+! (import! &self freq-pat)
  ; ! (bind! &shabspace (new-space))
  ; ! (bind! &shabredspace (new-space))
  ; ! (bind! &bindspace (new-space))
