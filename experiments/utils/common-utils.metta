@@ -154,7 +154,7 @@
 
  ; TODO: import is-pattern function from other branch, it implmented in est branch
 (= (n_conjuncts $pattern) (
-        if (not (is-pattern $pattern))
+        if (not (is-pattern-et $pattern))
         0
         (if (has-type , $pattern)
             (get-arity $pattern)
@@ -508,5 +508,9 @@
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Parent Abe Nil ))
 
-! (is-pattern (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)))
-! (get-arity-tree (AND (Parent $B $X) (AND (Parent $X $Z) (Inheritance $X $Y))))
+! (n_conjuncts (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)))
+ ; ! (get-arity-tree (AND (Parent $B $X) (AND (Parent $X $Z) (Inheritance $X $Y))))
+
+! (universe-count (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)) (get-space))
+
+! (universe-count (Parent $x Nil) (get-space))
