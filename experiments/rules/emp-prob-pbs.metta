@@ -9,8 +9,9 @@
  ; return std::max ( (unsigned)res, std::min (min_subsize, (unsigned)db_size)) ;
  ; }
 
-(= (subsmp-size $pattern $db-size $support-estimate $min-subsize)
+(= (subsmp-size $pattern $db-size $support-estimate)
     (let* ( ($nc (n-conjuncts $pattern))
+            ($min-subsize 10)
             ($alpha (/ $support-estimate (pow $db-size $nc)))
             ($res (pow (/ $db-size (* 10 $alpha)) (/ 1 $nc))))
         (max $res (min $min-subsize $db-size))

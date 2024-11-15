@@ -93,11 +93,11 @@
  ;  using bootstrapping to calculate the empirical truth value.
  ; emp_tv: Called if the support estimate is less than the database size, directly calculating the empirical truth value.
  ; emp_tv: Default case, directly calculating the empirical truth value.
-(= (emp_tv_pbs $pattern $db $prob_estimate $db_ratio $db_size $support_estimate)
 
+(= (emp_tv_pbs $pattern $db $prob_estimate $db_ratio $db_size $support_estimate)
     (case (categorize_by_support_estimate  $db_size $support_estimate)
         (
-            (1 (emp_tv_bs $pattern $db))
+            (1 (emp_tv_bs $pattern $db $db_size $db_ratio $support_estimate))
             (2 (emp-tv $pattern $db))
             ($_ (emp-tv $pattern $db))
         )))
@@ -108,6 +108,7 @@
 
  ;;ji_tv_est_mem this function is used to estimate the joint probability of a pattern.
  ;;ji_tv_est_mem is going to implemented in est-tv rule.
+
 (= (ji_tv_est_mem) (1 1))
 
  ;The categorize_subsize function categorizes a given subset size ($subsize) based on a threshold size ($ts).
@@ -282,9 +283,41 @@
             )
         (cons-atom $subsample-tv $remaining-esstvs)))) ; Add the result to the list and continue
 
+ ; Function: subsmp-size
+ ; Arguments:
+ ;   $pattern - The pattern to be matched.
+ ;   $db-size - The size of the database.
+ ;   $support-estimate - The estimated support value.
+ ;   $min-subsize - The minimum sub-sample size.
+ ; Description:
+ ;   This function calculates the sub-sample size based on the given pattern, database size,
+ ;   support estimate, and minimum sub-sample size. It first computes the number of conjuncts
+ ;   in the pattern ($nc) and the alpha value ($alpha) which is the ratio of support estimate
+ ;   to the database size raised to the power of $nc. Then, it calculates the result ($res)
+ ;   by raising the ratio of database size to ten times alpha to the power of 1/$nc. Finally,
+ ;   it returns the maximum value between $res and the minimum of $min-subsize and $db-size.
+
+(= (subsmp-size $pattern $db-size $support-estimate)
+    (let* ( ($nc (n-conjuncts $pattern))
+            ($min-subsize 10)
+            ($alpha (/ $support-estimate (pow $db-size $nc)))
+            ($res (pow (/ $db-size (* 10 $alpha)) (/ 1 $nc))))
+        (max $res (min $min-subsize $db-size))
+    )
+)
+
  ; Function to calculate empirical truth value with bootstrapping (resampling)
 
  ;;TODO: it should be updated.
+(= (emp-tv-bs $pattern $db $db_size $db_ratio $support_estimate) (
+        let* (
+            ($db-size-ration (* $db_size $db_ratio))
+            ($subsize (subsmp-size $pattern $db-size-ration $support_estimate))
+            ($n-resample 10)
+        )
+    (emp-tv-bs $pattern $db $n-resample $subsize)
+
+) ) ; If subsize >= db size, directly return empirical truth value
 
 (= (emp-tv-bs $pattern $db $n-resample $subsize)
     (if (< $subsize (db_size $db))
