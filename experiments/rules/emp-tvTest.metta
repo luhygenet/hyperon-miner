@@ -41,3 +41,7 @@
     )
 )
 ! (collapse  (get-atoms (duplicate-and-expand-space (get-space)1)))
+
+! (subsample-py (get-space) 3)
+! (emp-tv-subsmp (Inheritance Rio $Y) (get-space) 3)
+! (subsmp-size (Inheritance Abe human) 20 0.9)
