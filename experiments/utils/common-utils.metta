@@ -498,19 +498,20 @@
  ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $Y B)) (Inheritance $X A) $X) ; [True]
  ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $Y B)) (, (Inheritance $X $Y) (Inheritance $X C0)) $X) ; [True]
 
-! (add-reduct &self (= (get-space) (new-space)))
-! (add-atom (get-space) (Inheritance Abe human))
-! (add-atom (get-space) (Inheritance Rio human))
-! (add-atom (get-space) (Inheritance Bob human))
-! (add-atom (get-space) (Inheritance Mike human))
-! (add-atom (get-space) (Inheritance Mike Nil))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Parent Abe Nil ))
+ ; ! (add-reduct &self (= (get-space) (new-space)))
+ ; ! (add-atom (get-space) (Inheritance Abe human))
+ ; ! (add-atom (get-space) (Inheritance Rio human))
+ ; ! (add-atom (get-space) (Inheritance Bob human))
+ ; ! (add-atom (get-space) (Inheritance Mike human))
+ ; ! (add-atom (get-space) (Inheritance Mike Nil))
+ ; ! (add-atom (get-space) (Inheritance Zac human))
+ ; ! (add-atom (get-space) (Inheritance Zac human))
+ ; ! (add-atom (get-space) (Parent Abe Nil ))
 
-! (n_conjuncts (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)))
+ ; ! (n_conjuncts (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)))
  ; ! (get-arity-tree (AND (Parent $B $X) (AND (Parent $X $Z) (Inheritance $X $Y))))
 
-! (universe-count (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)) (get-space))
+ ; ! (universe-count (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)) (get-space))
+ ; ! (universe-count (, (Parent $x Nil) (Parent $x Nil)) (get-space))
 
-! (universe-count (Parent $x Nil) (get-space))
+ ; ! (universe-count (Parent $x Nil) (get-space))
