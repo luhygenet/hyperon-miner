@@ -89,16 +89,7 @@ def generate_partitions(metta, subsets, original):
 
     return atom
 
-def pow_py(metta, base, power):
-    base = float(str(base))
-    power = float(str(power))
 
-    ans = pow(base, power)
-    print(ans)
-    ans= str(ans)
-    atom = metta.parse_all(ans)
-
-    return atom
     
 @register_atoms(pass_metta=True)
 def generete_partionReg(metta: MeTTa):
@@ -107,9 +98,8 @@ def generete_partionReg(metta: MeTTa):
     generatePartiton = OperationAtom('generate-partitions', lambda a, b: generate_partitions(metta, a, b),
                                      ['Expression', 'Expression', 'Expression'], unwrap=False)
     # generateRandomVar = OperationAtom('generateRandomVar', lambda a, b: (print(S(a),S(b)),generate_random_var(metta,a, b)[1],['Atom', 'Atom', 'Expression'], unwrap=False))
-    powPy = OperationAtom("pow-py", lambda a, b: pow_py(metta, a, b),
-                                     ['Atom', 'Atom', 'Atom'], unwrap=False)
+
     return {
-        r"gen-partition": generatePartiton ,
-        r"pow-py": powPy
+        r"gen-partition": generatePartiton 
+        
     }
