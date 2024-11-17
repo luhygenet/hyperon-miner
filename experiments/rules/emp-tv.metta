@@ -1,4 +1,12 @@
 
+
+! (register-module! ../../experiments)
+! (register-module! ../../../hyperon-miner)
+! (import! &database hyperon-miner:experiments:data:sample-data)
+! (import! &self hyperon-miner:experiments:utils:common-utils)
+ ! (import! &self experiments:rules:emp-tv-bs)
+
+
  ;; Rule to calculate the empirical truth value of a pattern.
 
  ;;;;;;;;;;
@@ -109,7 +117,25 @@
  ;;ji_tv_est_mem this function is used to estimate the joint probability of a pattern.
  ;;ji_tv_est_mem is going to implemented in est-tv rule.
 
-(= (ji_tv_est_mem) (1 1))
+;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(=(do-ji-tv-est $db $pattern) (
+;;    let $prtns (generet-partition-without-pattern $pattern)  
+;;          ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
+;;          ($pattern  (ETV $strength $confidence)))  
+;;          ;;(ji-est-tv $db (db_size $db) $pattern $prtns)             
+;; ))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(= (ji_tv_est $pattern $db) 
+    (let* 
+    (
+        ($out_est (do-ji-tv-est $db $pattern)) 
+        (($pat $tv) $out_est)
+    )
+    $tv
+    )
+)
+
 
  ;The categorize_subsize function categorizes a given subset size ($subsize) based on a threshold size ($ts).
  ;Parameters
@@ -179,7 +205,7 @@
 
     )
 )
-! (duplicate-and-expand-space (get-space))
+; ! (duplicate-and-expand-space (get-space))
  ;
 
  ; The copy-db-by-size function is designed to create a copy of the given database up to a specified size. This function ensures that the contents of the original database are duplicated into a new database instance until the specified size is reached.
@@ -219,7 +245,7 @@
  ; $db_ratio: The ratio used to scale the database size.
 (= (do_emp_tv $pattern $db $db_ratio )
     (let* ( ($db_sequence (collapse (get-atoms $db) ))
-            ($jte  (ji_tv_est_mem $pattern $db_sequence))
+            ($jte  (ji_tv_est $pattern $db))
 
              ;; after we get jte we must extract the mean
             ($mean (get-strength $jte)))
@@ -262,7 +288,8 @@
 (= (subsample-py $db $subsize )
     (let* (
             ($db-content (collapse (get-atoms $db)))
-            ($space (copy-db  (new-space) (generet_random_subsample $db-content $subsize) ))
+            ($random-selected (generet_random_subsample $db-content $subsize))
+            ($space (copy-db  (new-space) $random-selected))
         )
     $space
 )
@@ -298,11 +325,14 @@
  ;   it returns the maximum value between $res and the minimum of $min-subsize and $db-size.
 
 (= (subsmp-size $pattern $db-size $support-estimate)
-    (let* ( ($nc (n-conjuncts $pattern))
-            ($min-subsize 10)
-            ($alpha (/ $support-estimate (pow $db-size $nc)))
-            ($res (pow (/ $db-size (* 10 $alpha)) (/ 1 $nc))))
-        (max $res (min $min-subsize $db-size))
+    (let* ( ($nc (n_conjuncts $pattern))    
+            (($min-size) (10))   
+            ($alpha (/ $support-estimate (pow-py $db-size $nc)))
+            ($base (/ $db-size (* 10 $alpha)))
+            ($power (/ 1 $nc))
+            ($res (pow-py $base $power))
+    )
+        (max $res (min $min-size $db-size))
     )
 )
 
@@ -311,8 +341,9 @@
  ;;TODO: it should be updated.
 (= (emp-tv-bs $pattern $db $db_size $db_ratio $support_estimate) (
         let* (
-            ($db-size-ration (* $db_size $db_ratio))
-            ($subsize (subsmp-size $pattern $db-size-ration $support_estimate))
+            ($_ (println BSStarted))
+            ($db-size-ratio (* $db_size $db_ratio))
+            ($subsize (subsmp-size $pattern $db-size-ratio $support_estimate))
             ($n-resample 10)
         )
     (emp-tv-bs $pattern $db $n-resample $subsize)
@@ -320,6 +351,7 @@
 ) ) ; If subsize >= db size, directly return empirical truth value
 
 (= (emp-tv-bs $pattern $db $n-resample $subsize)
+
     (if (< $subsize (db_size $db))
         (let* (
                 ($esstvs (emp-tv-bs-helper $pattern $db $n-resample $subsize))
@@ -533,3 +565,28 @@
         )
     $final-tv
 ))
+
+
+;; ;===================Experiment=================================
+
+! (add-reduct &self (= (get-space) (new-space)))
+! (add-atom (get-space) (Inheritance Abe human))
+! (add-atom (get-space) (Inheritance Rio human))
+! (add-atom (get-space) (Inheritance Bob human))
+! (add-atom (get-space) (Inheritance Mike human))
+! (add-atom (get-space) (Inheritance Mike Nil))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Parent Abe Nil ))
+
+; ! (get-atoms (subsample-py (get-space) 3))
+
+; !(emp-tv-subsmp (Inheritance Zac $x) (get-space) 4)
+
+; !(subsmp-size (Inheritance Zac $x) 8 0.5)
+
+; !(emp-tv-bs (Inheritance Zac $x) (get-space) 8 0.6 0.9) 
+
+; ! (BetaDistribution (EMPTV 0.9773269689737469 0.0009825445253591023) )
+
+; !(mk-stv 1.7689693569125715 1.0178393379503528 )
