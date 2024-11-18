@@ -45,15 +45,23 @@ def call_python_process(metta: MeTTa):
     # ''')
 
     # run_str = f'!(abstract-recursive {pattern})'
-    run_str = f'!(match &shabspace (ShallowAbstractionOf $c $d) (ShallowAbstractionOf $c $d))'
+    run_str = f'!(match &specspace (SpecializationOf $c $d) (SpecializationOf $c $d))'
 
     patterns = metta.run(run_str)
 
     data = [str(item) for sublist in patterns for item in sublist]
 
-    def extract_structure(expression):
-        return re.sub(r'\$\w+#\d+', '$var', expression)
+    def clean_reserved_vars(expression):
+        expression = re.sub(r'\$x#\d+', '$x', expression)
+        expression = re.sub(r'\$y#\d+', '$y', expression)
+        expression = re.sub(r'\$link#\d+', '$link', expression)
+        return expression
 
+    # Extract structure while ignoring specific variables
+    def extract_structure(expression):
+        # Replace all other variables except $x, $y, and $link with a placeholder
+        expression = clean_reserved_vars(expression)
+        return re.sub(r'\$\w+#\d+', '$var', expression)
     structure_dict = {}
     for expr in data:
         structure = extract_structure(expr)
