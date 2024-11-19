@@ -119,13 +119,20 @@
 
 ;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(=(do-ji-tv-est $db $pattern) (
+; (=(do-ji-tv-est $db $pattern) (
 ;;    let $prtns (generet-partition-without-pattern $pattern)  
 ;;          ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
 ;;          ($pattern  (ETV $strength $confidence)))  
 ;;          ;;(ji-est-tv $db (db_size $db) $pattern $prtns)             
 ;; ))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; MOCKING ;;;;;;
+;;;;;;;;;;;;;;;;;
+( = (do-ji-tv-est $db $pattern) (                     
+    $pattern  (ETV 0.6 0.9)                           
+))                                                    
+                                                      
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (= (ji_tv_est $pattern $db) 
     (let* 
     (
@@ -243,6 +250,7 @@
  ; $pattern: The pattern for which the empirical truth value is to be calculated.
  ; $db: The database in which the pattern's empirical truth value is to be calculated.
  ; $db_ratio: The ratio used to scale the database size.
+ 
 (= (do_emp_tv $pattern $db $db_ratio )
     (let* ( ($db_sequence (collapse (get-atoms $db) ))
             ($jte  (ji_tv_est $pattern $db))
@@ -579,7 +587,7 @@
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Parent Abe Nil ))
 
-; ! (get-atoms (subsample-py (get-space) 3))
+; !(get-atoms (subsample-py (get-space) 3))
 
 ; !(emp-tv-subsmp (Inheritance Zac $x) (get-space) 4)
 
@@ -587,6 +595,9 @@
 
 ; !(emp-tv-bs (Inheritance Zac $x) (get-space) 8 0.6 0.9) 
 
-; ! (BetaDistribution (EMPTV 0.9773269689737469 0.0009825445253591023) )
+; !(BetaDistribution (EMPTV 0.9773269689737469 0.0009825445253591023) )
 
 ; !(mk-stv 1.7689693569125715 1.0178393379503528 )
+; !(ji_tv_est (Patern Ryo Ri) &self)
+
+; !(do_emp_tv (Inheritance Zac Eyob) (get-space) 0.8)
