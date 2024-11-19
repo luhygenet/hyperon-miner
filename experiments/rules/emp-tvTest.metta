@@ -4,7 +4,8 @@
 ! (register-module! ../../../hyperon-miner)
 ! (import! &database hyperon-miner:experiments:data:sample-data)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
-
+ ! (import! &self experiments:rules:emp-tv-bs)
+ 
 ! (add-reduct &self (= (get-space) (new-space)))
 ! (add-atom (get-space) (Inheritance Abe human))
 ! (add-atom (get-space) (Inheritance Rio human))
@@ -41,3 +42,7 @@
     )
 )
 ! (collapse  (get-atoms (duplicate-and-expand-space (get-space)1)))
+
+! (subsample-py (get-space) 3)
+! (emp-tv-subsmp (Inheritance Rio $Y) (get-space) 3)
+! (subsmp-size (Inheritance Abe human) 20 0.9)

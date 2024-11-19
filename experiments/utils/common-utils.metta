@@ -1,3 +1,4 @@
+
  ;; Declaration of List data type and constructors
 (: List (-> $a Type))
 (: Nil (List $a))
@@ -15,9 +16,67 @@
 (= (fromNat Z) 0)
 (= (fromNat (S $k)) (+ 1 (fromNat $k)))
 
+ ; This file contains utility functions for checking the metatype of a given variable.
+ ; - (is-expression $var): Returns true if the metatype of $var is Expression.
+ ; - (is-variable $var): Returns true if the metatype of $var is Variable.
+ ; - (is-symbol $var): Returns true if the metatype of $var is Symbol.
+
+(= (is-expression $var) (== Expression (get-metatype $var)))
+(= (is-variable $var) (== Variable (get-metatype $var)))
+(= (is-symbol $var) (== Symbol (get-metatype $var)))
+
+ ; This function checks if a given expression is a pattern.
+ ; It takes an expression ($expr) as input and evaluates whether it matches
+ ; specific structures involving symbols, variables, and expressions.
+ ; The function returns True if the expression is a pattern, otherwise False.
+(= (is-pattern $expr) (
+
+        or (unify $expr ($link $x $y) (
+                and (is-symbol $link) (
+                    or (or (is-variable $x) (is-expression $x))
+                    (or (is-variable $y) (is-expression $y)))) False)
+        (unify $expr ($link $x)
+            (and (is-symbol $link)
+                (or (is-variable $x)
+                    (is-expression $x))) False )))
+
+ ; this consider every thing as a pattern exept for symbole
+(= (is-pattern-et $expr) (not (is-symbol $expr))
+
+)
+ ; Function: tuple-count
+ ; Description: Calculates the tuple-count of a tuple.
+ ; Parameters:
+ ;   - $tuple: The tuple whose tuple-count is to be calculated.
+ ; Returns:
+ ;   - The tuple-count of the tuple as an integer.
  ;; Count the number elements in an expression
+
 (: tuple-count (-> %Undefined% Number))
 (= (tuple-count $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
+
+ ; Function: sum
+ ; Description: Calculates the sum of elements in a list.
+ ; Parameters:
+ ;   - $list: The list of numbers to be summed.
+ ; Returns:
+ ;   - The sum of the elements in the list as an integer.
+
+(= (sum $list) (
+        if (== $list ())
+        0
+        (+ (car-atom $list) (sum (cdr-atom $list)))
+    ))
+
+ ; This function calculates the average of a tuple of numbers.
+ ; It takes a tuple as input and returns the average value.
+ ; The average is computed by dividing the sum of the tuple elements by the tuple-count of the tuple.
+
+(= (avrg-tuple $tuple)
+    (/ (sum $tuple) (tuple-count $tuple))
+)
+
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
  ;; Count the number of instances of a given pattern
 (: counter (-> hyperon::space::DynSpace Atom Number))
@@ -69,6 +128,21 @@
 (= (get-arity $pattern)
     (- (tuple-count $pattern) 1) )
 
+ ;; implmenting get-arity for tree structure pattern type
+(= (get-arity-tree $pattern) (
+        if (has-type AND $pattern)
+        ( let* (
+                ( ($link $first $second) $pattern)
+                ($first_arity (get-arity-tree $first))
+                ($second_arity (get-arity-tree $second))
+
+            )
+        (+ $first_arity $second_arity)
+    )
+1
+)
+)
+
  ;     for pattern type Nil will run both implmentation of  n_conjucts
 (= (n_conjuncts Nil) 0)
  ; (= (n_conjuncts $pattern)
@@ -80,7 +154,7 @@
 
  ; TODO: import is-pattern function from other branch, it implmented in est branch
 (= (n_conjuncts $pattern) (
-        if (not (is-pattern $pattern))
+        if (not (is-pattern-et $pattern))
         0
         (if (has-type , $pattern)
             (get-arity $pattern)
@@ -424,12 +498,20 @@
  ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $Y B)) (Inheritance $X A) $X) ; [True]
  ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $Y B)) (, (Inheritance $X $Y) (Inheritance $X C0)) $X) ; [True]
 
-! (add-reduct &self (= (get-space) (new-space)))
-! (add-atom (get-space) (Inheritance Abe human))
-! (add-atom (get-space) (Inheritance Rio human))
-! (add-atom (get-space) (Inheritance Bob human))
-! (add-atom (get-space) (Inheritance Mike human))
-! (add-atom (get-space) (Inheritance Mike Nil))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Parent Abe Nil ))
+ ; ! (add-reduct &self (= (get-space) (new-space)))
+ ; ! (add-atom (get-space) (Inheritance Abe human))
+ ; ! (add-atom (get-space) (Inheritance Rio human))
+ ; ! (add-atom (get-space) (Inheritance Bob human))
+ ; ! (add-atom (get-space) (Inheritance Mike human))
+ ; ! (add-atom (get-space) (Inheritance Mike Nil))
+ ; ! (add-atom (get-space) (Inheritance Zac human))
+ ; ! (add-atom (get-space) (Inheritance Zac human))
+ ; ! (add-atom (get-space) (Parent Abe Nil ))
+
+ ; ! (n_conjuncts (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)))
+ ; ! (get-arity-tree (AND (Parent $B $X) (AND (Parent $X $Z) (Inheritance $X $Y))))
+
+ ; ! (universe-count (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)) (get-space))
+ ; ! (universe-count (, (Parent $x Nil) (Parent $x Nil)) (get-space))
+
+ ; ! (universe-count (Parent $x Nil) (get-space))
