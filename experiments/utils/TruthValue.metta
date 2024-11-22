@@ -219,6 +219,12 @@
 
 (=(min $list) (find_min $list (car-atom $list)))
 
+(=(get-cnj-clouses $pattern) (
+  let ($head $tail) (decons-atom $pattern)  (if (== $head ,) $tail ())
+))
+
+
+(=(min-max $list) ((min $list) (max $list)))
 
 
 
@@ -277,7 +283,7 @@
     let ($head $tail) (decons-atom $block) (
         if (let $res (is-pattern $head) (car-atom $res)) 
            (if (== $tail ()) $head 
-               (let $temp (mk-body $tail) (if (== $temp ()) $head (AND $head $temp)))) 
+               (let $temp (mk-body $tail) (if (== $temp ()) $head (, $head $temp)))) 
            (if (and (not (== $head ()))  (== $tail ())) (mk-body $head) 
                (let $res2 (mk-body $head) (mk-body ($res2 $tail)) ))
     ) 
@@ -390,6 +396,7 @@
  ))
 
 
+
 (=(avrg_tv $tv)(
     let* (
         ($tv_list (mk_distribution_list $tv))
@@ -402,6 +409,21 @@
      ($mode (car-atom $confidence) ) 
        
 ))
+
+
+
+(=(is_equivalent ($link1 $x1 $y1) ($link2 $x2 $y2) $var) (
+    if (== $link1 $link2) (or (and (== $x1 $x2) (== $x2 $var)) (and (== $y1 $y2) (== $y2 $var))) False ) 
+)
+
+(=(is_equivalent ($link1 $x1) ($link2 $x2) $var) (
+  if (== $link1 $link2) (and (== $x1 $x2) (== $x2 $var)) False
+))
+
+(=(dst_from_interval $emin $emax $emp) (
+  if (< $emax $emp) (- $emp $emax) (if (< $emp $emin ) (- $emin $emp) 0.0)
+))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

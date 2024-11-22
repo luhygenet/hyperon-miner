@@ -116,15 +116,7 @@
 
 
 
- input pattern = [A, B, C]
- ;; outPut
- ;	 *
- ;	 * [[[A],[C],[B]199192
- 199192
- ],
- ;	 *  [[C,A],[B]],
- ;	 *  [[C],[B,A]],
- ;	 *  [[A],[C,B]]]
+
 
 
 
@@ -176,7 +168,7 @@
 (Inheritance $X $Y) (Inheritance C1 $Y) 
 
 
-;!(generet-partition-without-pattern (Inheritance (Boy $y) (Child $x)))
+;;!(generet-partition-without-pattern (,(Inheritance Zac $y) (Inheritance Bob $x) (Inheritance Abe $x)))
 
 
 (((Boy $y)) ((Human $x (Human Bob $x))) ((Human Bob $x))) 
@@ -189,13 +181,34 @@
 (((Boy $y)) ((Child $x)))
 
 ;;!(do-ji-tv-est (get-space)  (Inheritance (Boy $y) (Human $x (Human Bob $x))))
-;!(do-ji-tv-est (get-space)  (Inheritance (Or Bob $x) (Human $x $y)))
+;!(do-ji-tv-est (get-space)  (,(Inheritance Zac $y) (Inheritance Bob $x) (Inheritance Abe $x)))
+
+
+;;!(get-variables (, (Inheritance $a $b) (Inheritance $b $c)))
+
+
+
+;;!(get-cnj-clouses (,(Inheritance $a $b) (Inheritance $b $c) (Inheritance $d $e) (Inheritance $f $g)))
+
 
 
 (=(emp_prob_pbs_mem $subpattern $db  $db_ratio) 0.7)
 
 
-(=(min-max $list) ((min $list) (max $list)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 (=(pro-prob-wout-joint $subpatterns $db $db_ratio $p) (
@@ -209,12 +222,12 @@
 
 
 
-
 (=(ji-prob-est  $partition $pattern $db $db_ratio) (
-     let $p (pro-prob-wout-joint (add-subpatterns $partition $db) $db $db_ratio 1)
+     let $p (pro-prob-wout-joint $partition $db $db_ratio 1)
              (let $eq_prob (prob-with-joint $db (db_size $db) (remove-parenthesis $partition) (joint-variables-init $pattern (remove-parenthesis $partition)) 1)  
              (* $p $eq_prob)))
              )
+
 
 
 (=(do-ji-prob $partitions $pattern $db $db_ratio) (
@@ -233,13 +246,12 @@
 ))
 
 
+;!(ji_prob_est_interval (,(Inheritance $x $y)  (Inheritance Abe $y)) (get-space) 2)
 
-;;!(ji_prob_est_interval (Inheritance (Boy $y) (Human $x (Human Bob $x))) (get-space) 2)
 
 
-(=(dst_from_interval $emin $emax $emp) (
-  if (< $emax $emp) (- $emp $emax) (if (< $emp $emin ) (- $emin $emp) 0.0)
-))
+
+
 
 
 (=(isurp $pattern $db $normalize $db_ratio) (
@@ -250,4 +262,28 @@
                (min ((if $normalize (/ $dst $maxprb) $dst) 1.0))
 ))
 
-!(isurp (Inheritance (Boy $y) (Human $x (Human Bob $x))) (get-space) False 2)
+
+
+
+
+;!(isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True 2)
+
+;[0.6455555555555555]
+
+
+;;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $x)))
+
+($x $y $z)
+
+(((Inheritance $x $y) (Inheritance Zac $x)) ((Inheritance Abe $y))) 
+(((Inheritance $x $y)) ((Inheritance Abe $y)) ((Inheritance Zac $x))) 
+(((Inheritance $x $y)) ((Inheritance Abe $y) (Inheritance Zac $x))) 
+(((Inheritance $x $y) (Inheritance Abe $y)) ((Inheritance Zac $x)))
+
+
+
+
+
+
+
+
