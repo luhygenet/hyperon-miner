@@ -8,22 +8,24 @@
 ! (bind! &cndpspace (new-space))
 
 (= (candidatePattern $dbspace $spezspace $minsup $cndpspace)
-    (superpose (
-            (collapse (
-                    match $spezspace (SpecializationOf $pattern $specialized)
-                    (let $result (sup-eval $dbspace $specialized $minsup)
-                        (if (== $result True)
-                            (add-atom $cndpspace (CandidatePattern $specialized))
-                            $result
-                        )
-                )
-        )
+    (match $spezspace (SpecializationOf $specialized $pattern)
+        (let $result (sup-eval $dbspace $specialized $minsup)
+            (if (== $result True)
+                (add-atom $cndpspace (CandidatePattern $specialized))
+                $result
+            )
+    )
+ ; (let $result (counter $dbspace $specialized)
+ ;     $result
+ ; )
+ ;     $specialized
 )
-)
-)
+
 )
 
 ! (build-specialization Inheritance $x $y &dbspace &specspace &specredspace)
+
+ ; ! (match &specspace (SpecializationOf $x $y) ( $x))
 
 ! (candidatePattern &dbspace &specspace 2 &cndpspace)
 

@@ -36,17 +36,17 @@
                 )
             (
                 superpose (
-                    (add-atom $specredspace (SpecializationOf ($link $x $y) ($shabx $y)))
-                    (add-atom $specredspace (SpecializationOf ($link $x $y) ($x $shaby)))
-                    (add-atom $specredspace (SpecializationOf ($link $x $y) ($shabx $shaby)))
+                    (add-atom $specredspace (SpecializationOf ($link $x $y) ($link $shabx $y)))
+                    (add-atom $specredspace (SpecializationOf ($link $x $y) ($link $x $shaby)))
+                    (add-atom $specredspace (SpecializationOf ($link $x $y) ($link $shabx $shaby)))
                 )
         )
 )
-(let ($name $aptrn $spec) (redunpat) (add-atom $specspace (SpecializationOf $aptrn $spec)))
+(let ($name $aptrn $spec) (redunpat) (add-atom $specspace (SpecializationOf $spec $aptrn)))
 ))
 )
 
-! (build-specialization Inheritance $x $y &dbspace &specspace &specredspace)
+ ; ! (build-specialization Inheritance $x $y &dbspace &specspace &specredspace)
 
  ; ! (match &specspace (SpecializationOf $x $y) (SpecializationOf $x $y))
  ; ! (match &specredspace (SpecializationOf $x $y) (SpecializationOf $x $y))
