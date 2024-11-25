@@ -1,13 +1,12 @@
-! (register-module! ../../../hyperon-miner)
+;;! (register-module! ../../../hyperon-miner)
 
-! (register-module! ../../experiments)
-! (import! &self experiments:rules:est-tv)
+;;! (register-module! ../../experiments)
+;;! (import! &self experiments:rules:est-tv)
 ;;! (import! &self experiments:rules:emp-tv)
 
-! (import! &database hyperon-miner:experiments:data:sample-data)
-! (import! &self hyperon-miner:experiments:utils:common-utils)
-! (import! &self hyperon-miner:experiments:utils:TruthValue)
-! (import! &self hyperon-miner:experiments:utils:gen_partition)
+;! (import! &self hyperon-miner:experiments:utils:common-utils)
+;;! (import! &self hyperon-miner:experiments:utils:TruthValue)
+;;! (import! &self hyperon-miner:experiments:utils:gen_partition)
 
 
 
@@ -114,6 +113,8 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 
 
 
+
+
 ;;;;;;;;;;;
 ;; Tests ;;
 ;;;;;;;;;;;
@@ -134,4 +135,4 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 
 ;!(add-pattern ((Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
 
-!(isurp_old (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True)
+;!(isurp_old (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True)
