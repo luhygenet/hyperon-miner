@@ -2,12 +2,32 @@
  ; True, but no confidence.
 (= (DEFAULT_TV)  (STV 1 0))
 
-(= (gt-zero-confidence-eval $num)
-    (if (> $num 0)
-        True
-        False
-    )
+(: confidence (-> TruthValue Number))
+(= (confidence (Bl $smt)) 1.0)
+(= (confidence (Pr $smt)) 1.0)
+(= (confidence ($type $mean $conf)) $conf)
+
+(: strength (-> TruthValue Number))
+(= (strength (Bl $smt)) 0)
+(= (strength (Pr $smt)) 0)
+(= (strength ($type $strg $conf)) $strg)
+
+!(strength (STV 0.1 0.2))
+
+; (= (gt-zero-confidence-eval $num)
+;     (if (> $num 0)
+;         True
+;         False
+;     )
+; )
+;; this take truth value like (STV 0.1 0.1)
+(: gt_zero_confidence_eval (-> Atom Bool))
+(= (gt_zero_confidence_eval $x)
+    (> (confidence $x) 0)
 )
+
+!(gt_zero_confidence_eval (STV 0.1 0.2))
+
 
 (= (exist $value)
     (if (== $value ())
@@ -20,26 +40,32 @@
 (: Db Type)
 
  ;;Simulation for the emp-eval
-(: emp-eval (-> Pattern Db Number))
-(= (emp-eval $pattern $db)
-    (case $pattern
-        (
-            ( (Parent abel henok) (0.6 1))
-            ( (Parent abel mary) (0.7 1))
-            ($_ (0.5 1))
-        )
-))
+; (: emp-eval (-> Pattern Db Number))
+; (= (emp-eval $pattern $db)
+;     (case $pattern
+;         (
+;             ( (Parent abel henok) (0.6 1))
+;             ( (Parent abel mary) (0.7 1))
+;             ($_ (0.5 1))
+;         )
+; ))
 
- ;;Simulation for the est-eval
-(: est-eval (-> Pattern Db Number))
-(= (est-eval $pattern $db)
-    (case $pattern
-        (
-            ( (Parent abel henok) (0.55 1))
-            ( (Parent abel mary) (0.65 1))
-            ($_ (0.5 1))
-        )
-))
+;  ;;Simulation for the est-eval
+; (: est-eval (-> Pattern Db Number))
+; (= (est-eval $pattern $db)
+;     (case $pattern
+;         (
+;             ( (Parent abel henok) (0.55 1))
+;             ( (Parent abel mary) (0.65 1))
+;             ($_ (0.5 1))
+;         )
+; ))
+
+(= (emp-eval $pattern) ( (Predicate emp) $pattern))
+(= (est-eval $pattern) ( (Predicate est) $pattern))
+(= (jsd-eval $f) (
+        (Predicate jsd) $f
+    ))
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -99,5 +125,5 @@
     )
 )
 
-! (cog-set-tv (Inheritance Allen human) (STV 0.98 1))
-! ( (cog-tv (Inheritance Allen humands)))
+; ! (cog-set-tv (Inheritance Allen human) (STV 0.98 1))
+; ! ( (cog-tv (Inheritance Allen humands)))
