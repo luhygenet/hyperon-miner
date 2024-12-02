@@ -72,7 +72,7 @@
  ;Creates truth value to be use on cog-set-tv stv is just an alias
 (: cog-new-stv (-> Number Number Tuple))
 (= (cog-new-stv $mean $confidence)
-    ($mean $confidence))
+    (STV $mean $confidence))
 
  ;  ; Returns truth value of an atom
  ; (: cog-tv (-> Atom Boolean))
