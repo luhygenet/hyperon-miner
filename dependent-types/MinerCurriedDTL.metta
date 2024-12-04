@@ -8,6 +8,7 @@
         (-> (ms_threshold $ms)
             (-> (⍃ $ms $cnt)
                 (minsup $ptrn)))))
+                
 ;; apriori-rule
 (: apriori-rule
     (-> (minsup $aptrn)
@@ -26,3 +27,6 @@
     (-> (minsup $ptrn)
         (-> (supportOf $ptrn $cnt)
             (surp $ptrn (isurp? ($ptrn $cnt))))))
+
+
+(:Avrg (-> (STV $num) num))

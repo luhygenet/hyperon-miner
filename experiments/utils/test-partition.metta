@@ -35,7 +35,7 @@
  ; ( (Parent John Kalid) (Parent Jalud Beza) (Parent Nati Abis))
  ; )
 
-! (gen-subsets ( (Parent John Kalid)
+;! (gen-subsets ( (Parent John Kalid)
         (Parent Jalud Beza)
         (Parent Nati Abis)
     )

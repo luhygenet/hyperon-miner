@@ -1,99 +1,65 @@
+! (register-module! ../../experiments)
+! (import! &self experiments:rules:emp-tv)
+! (import! &self experiments:rules:est-tv)
 ! (register-module! ../../../hyperon-miner)
 ! (import! &database hyperon-miner:experiments:data:sample-data)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
-! (import! &self hyperon-miner:experiments:tests:testUtils)
-! (import! &self  hyperon-miner:experiments:utils:SurprisingnessUtils)
+! (import! &self hyperon-miner:experiments:utils:TruthValue)
+! (bind! square (py-atom numpy.square (-> Number Number)))
 
- ;; check if count-atom-element returns number childrens in the
-! (tuple-count (abebe, abebe, abebe)) ;; 3
-! (tuple-count (abebe abebe abebe))
+;;Test compose 
+;; !(assertEqual (compose (Inheritance $y B) (($y A))) (Inheritance A B))
+;; !(assertEqual (compose (Evaluation $x $y) (($x "scm-eager: absolutely-true"))) (Evaluation "scm-eager: absolutely-true" $y))
+;; !(assertEqual (compose (Implication $x $y) (($x $y))) (Implication $y $y) )
+;; !(assertEqual (compose x (($x sa))) (compose x (($x sa))))
 
-! (tuple-count (abebe, abebe, abebe)) ;; 3
-! (tuple-count (abebe abebe abebe))
- ;; check if the count function returns the number of instances of a given pattern
-! (counter &database abebe) ;; 2
 
- ;; check if the sup-eval function returns True when a pattern's support is greater than minimum support
-! (sup-eval $database abebe 1) ;; True
 
- ;; Test has-type
-! (has-type lambda (lambda x y))
- ;; Test get-arity
-! (get-arity (lambda  (Parent $x Nil)  (Parent $x Nil)))
 
- ;; TEST n_conjuncts
-! (n_conjuncts (lambda   (Parent $x Nil) (Parent $x Nil)) )
+;; Test avrg_tv
 
- ;;test db size
- ; ! (add-reduct &self (= (get-space) (new-space)))
-! (let $space (new-space)
-    (add-atom &self (= (get-space) $space)))
-! (add-atom (get-space) (Inheritance Abe human))
-! (add-atom (get-space) (Inheritance Rio human))
-! (add-atom (get-space) (Inheritance Bob human))
-! (add-atom (get-space) (Inheritance Mike human))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Inheritance Mike human))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Inheritance Rio human))
-! (add-atom (get-space) (Inheritance Bob human))
-! (add-atom (get-space) (Inheritance Mike human))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Inheritance Mike human))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Inheritance Rio human))
-! (add-atom (get-space) (Inheritance Bob human))
+(=(test_avrg_tv_1)(
+    let* (
+       ($tv_1 ((Inheritance Abe $x) (STV 0 0.1)))
+       ($tv_2 ((Inheritance John $x) (STV 0 0.1)))
+       ($result (avrg_tv ($tv_1 $tv_2)))
 
-! (let $space (new-space)
-    (add-atom &self (= (space) $space)))
-! (add-atom (space) (Inheritance Zac human))
+    )
+    $result 
+))
 
-! ("get-atoms")
-! (get-atoms (space))
-! (get-atoms (get-space))
 
-! (db_size (get-space))
+(=(test_avrg_tv_2)(
+    let* (
+       ($tv_1 ((Inheritance Abe $x) (STV 0 0.1)))
+       ($tv_2 ((Inheritance John $x) (STV 1 0.1)))
+       ($result (avrg_tv ($tv_1 $tv_2)))
 
-! (universe-count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))
+    )
+    $result 
+))
 
- ;;test pow
-! (pow 5 3)
-! (pow 100000 -7)
-! (pow 5 3)
-! (pow 1 0)
-! (+ (abs -5) 10) ; 15
-! (universe-count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))
-Pattern
-(Pattern)
-(lambda   (Parent $x Nil) (Parent $x Nil))
-(Abebe)
-! ("============ test_emp_prob_bs ============ ")
-! (universe-count (Parent) (get-space))
-! (sup Pattern &self)
-! (sup (lambda   (Parent $x Nil) (Parent $x Nil)) &self)
-! (universe-count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))
- ; (= (emp-prob $pattern $db)
- ;     (let*
- ;         ( ( ($ucount ) ( (universe-count $pattern $db)))
- ;             ( ($ms) ($ucount))
- ;             ( ($sup) ( (sup $pattern $db)))
 
- ;         ) (/ $sup  $ucount)
- ; ))
- ; ! (emp-prob (Nil) &self)
-! (emp-prob (lambda   (Parent $x Nil) (Parent $x Nil)) &self)
-! (db_size &self)
- ; ! (emp-prob (lambda   (Parent $x Nil) (Parent $x Nil)) &self)
- ; ! (emp_prob_bs  (lambda   (Parent $x Nil) (Parent $x Nil)) &self 1 2)
-! (emp_prob_subsmp  (lambda   (Parent $x Nil) (Parent $x Nil)) &self 2)
-! (emp-prob (lambda (Parent $x Nil) (Parent $x Nil)) &self)
+(=(test_avrg_tv_3)(
+    let* (
+       ($tv_1 ((Inheritance Abe $x) (STV 1 0.001248)))
+       ($tv_2 ((Inheritance John $x) (STV 1 0.001248)))
+       ($tv_3 ((Inheritance John $x) (STV 0 0.001248)))
+       ($tv_4 ((Inheritance John $x) (STV 1 0.001248)))
+       ($tv_5 ((Inheritance John $x) (STV 1 0.001248)))
+       ($tv_6 ((Inheritance John $x) (STV 1 0.001248)))
+       ($tv_7 ((Inheritance John $x) (STV 1 0.001248)))
+       ($tv_8 ((Inheritance John $x) (STV 1 0.001248)))
+       ($tv_9 ((Inheritance John $x) (STV 1 0.001248)))
+       ($tv_10 ((Inheritance John $x) (STV 1 0.001248)))
+        
+       ($result (avrg_tv ($tv_1 $tv_2 $tv_3 $tv_4 $tv_5 )))
 
-! ("============ test_subsample ============ ")
-! (db_size (get-space))
-! (get-atoms (get-space))
-! (subsample (get-space) 10)
-! (categorize_subsize 10  (db_size (get-space)))
-! (categorize_subsize 2  (db_size (get-space)))
-! (db_size (get-space))
-! (>= (db_size (get-space)) 6)
-! (get-atoms (subsample (get-space) 2))
+    )
+    $result 
+))
+
+
+!(assertEqual (test_avrg_tv_1) (0 0.1))
+;!(assertEqual (test_avrg_tv_2) (0.5 0.000125))
+!(assertEqual (test_avrg_tv_3) (0.5 0.000677))

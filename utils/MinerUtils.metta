@@ -1,5 +1,5 @@
 ; !(register-module! ../../hyperon-miner)
-!(import! &self hyperon-miner:utils:DeBruijnIndex)
+;!(import! &self hyperon-miner:utils:DeBruijnIndex)
 
 ;;;;;;;;;
 ;; Nat ;;
@@ -134,6 +134,7 @@
 
 ;; Probability formula
 (= (prob $count) (/ $count (universe-size)))
+
 
 ;; iSurprisingness formula
 (= (iSurprisingness $pattern)
