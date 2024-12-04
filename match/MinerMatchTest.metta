@@ -1,5 +1,6 @@
 ! (register-module! ../../hyperon-miner)
 !(import! &self hyperon-miner:match:MinerMatch)
+!(import! &self ../utils/MinerUtils.metta)
 
 ;; Load sample data
 !(import! &db hyperon-miner:data:sample)

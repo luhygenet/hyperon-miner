@@ -135,6 +135,7 @@
 ;; Probability formula
 (= (prob $count) (/ $count (universe-size)))
 
+
 ;; iSurprisingness formula
 (= (iSurprisingness $pattern)
     (case $pattern (
