@@ -1,6 +1,6 @@
 from hyperon import *
 from hyperon.ext import register_atoms
-import re
+import regex as re
 import random
 import string
 import sys
@@ -110,12 +110,68 @@ def call_python_process(metta: MeTTa):
     return unique_patterns
 
 
+def replace_with_de_bruijn(metta: MeTTa, pattern):
+    str_pattern = str(pattern)
+
+    def get_de_bruijn(index):
+        if index == 0:
+            return "Z"
+        return f"(S {get_de_bruijn(index - 1)})"
+
+    index = 0
+    var_count = len(re.findall(r"\$\w+(?:#\w+)?", str_pattern))
+    for _ in range(var_count):
+        str_pattern = re.sub(
+            r"\$\w+(?:#\w+)?", f"{get_de_bruijn(index)}", str_pattern, count=1
+        )
+        index += 1
+
+    return [metta.parse_single(str_pattern)]
+
+
+def replace_with_variable(metta: MeTTa, pattern):
+    str_pattern = str(pattern)
+
+    def match_de_bruijn_indices(string):
+        stack = []
+        for char in string:
+            if char == "(":
+                stack.append(char)
+            elif char == ")":
+                stack.pop()
+        for i in stack:
+            string += ")"
+        return string
+
+    def generate_random_var():
+        return (
+            "$"
+            + "".join(random.choices(string.ascii_lowercase, k=1))
+            + "".join(random.choices(string.digits, k=2))
+        )
+
+    matches = re.findall(r"(Z|\(S(.*?)\))", str_pattern)
+    for match in matches:
+        str_pattern = re.sub(
+            re.escape(match_de_bruijn_indices(match[0])),
+            f"{generate_random_var()}",
+            str_pattern,
+            count=1,
+        )
+
+    return [metta.parse_single(str_pattern)]
+
+
 @register_atoms(pass_metta=True)
 def redundancy(metta):
     # redundancyFreeAtom = OperationAtom('redunpat', lambda patterns: call_python_process(metta, patterns), unwrap=False)
     redundancyFreeAtom = OperationAtom(
         "redunpat", lambda: call_python_process(metta), ["Expression"], unwrap=False
     )
-    return {
-        r"redunpat": redundancyFreeAtom,
-    }
+    replace = OperationAtom(
+        "replace", lambda pattern: replace_with_de_bruijn(metta, pattern), unwrap=False
+    )
+    replacev = OperationAtom(
+        "replacev", lambda pattern: replace_with_variable(metta, pattern), unwrap=False
+    )
+    return {r"redunpat": redundancyFreeAtom, r"replace": replace, r"replacev": replacev}
