@@ -27,28 +27,39 @@
 )
 )
 
-(= (build-specialization $link $x $y $dbspace $specspace $specredspace) (superpose (
+(= (build-specialization ($link $x $y) $dbspace $specspace) (superpose (
             (let*
                 (
-                    ( ($subx $suby) (match $dbspace ($link $x $y) ($x $y)))
+                    ( ($link $x1 $y1) (replacev ($link $x $y)))
+                    ( ($subx $suby) (match $dbspace ($link $x1 $y1) ($x1 $y1)))
                     ($shabx (abstract-recursive $subx))
                     ($shaby (abstract-recursive $suby))
+                    ($spec1 (replace (SpecializationOf ($link $shabx $y1) ($link $x $y))))
+                    ($spec2 (replace (SpecializationOf ($link $x1 $shaby) ($link $x $y))))
+                    ($spec3 (replace (SpecializationOf ($link $shabx $shaby) ($link $x $y))))
                 )
             (
                 superpose (
-                    (add-atom $specredspace (SpecializationOf ($link $x $y) ($link $shabx $y)))
-                    (add-atom $specredspace (SpecializationOf ($link $x $y) ($link $x $shaby)))
-                    (add-atom $specredspace (SpecializationOf ($link $x $y) ($link $shabx $shaby)))
+                    (remove-atom $specspace $spec1)
+                    (add-atom $specspace $spec1)
+                    (remove-atom $specspace $spec2)
+                    (add-atom $specspace $spec2)
+                    (remove-atom $specspace $spec3)
+                    (add-atom $specspace $spec3)
+
                 )
+
         )
 )
-(let ($name $aptrn $spec) (redunpat) (add-atom $specspace (SpecializationOf $spec $aptrn)))
+ ; (let ($name $aptrn $spec) (redunpat) (add-atom $specspace (SpecializationOf $spec $aptrn)))
 ))
 )
 
- ; ! (build-specialization Inheritance $x $y &dbspace &specspace &specredspace)
+ ; ! (build-specialization Inheritance z (s z) &dbspace &specspace &specredspace)
+ ; ! (build-specialization Inheritance Z (S Z) &dbspace &specspace)
 
  ; ! (match &specspace (SpecializationOf $x $y) (SpecializationOf $x $y))
  ; ! (match &specredspace (SpecializationOf $x $y) (SpecializationOf $x $y))
+ ; ! (match &specredspace $h $h)
 
  ; ! (let $res (redunpat)  $res)
