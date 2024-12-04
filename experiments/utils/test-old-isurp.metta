@@ -13,4 +13,25 @@
 
 
 
+;;;;;;;;;;;
+;; Tests ;;
+;;;;;;;;;;;
+
+;!(total_counts  (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
+
+;!(n_conjuncts_new (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+;!(sup-num (get-space) (Inheritance Abe $y) )
+
+;!(prob (Inheritance Abe $y) (get-space))
+;!(ptrn-support  (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y) (Human Abe Kebe)) (get-space))
+
+;!(prob  (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
+
+;!(sup-num  (get-space) (Inheritance Zac $y))
+
+;!(accumulator-x (1 2 3 4))
+
+;!(add-pattern ((Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
+
+;!(isurp_old (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True)
 

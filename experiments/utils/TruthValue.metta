@@ -195,7 +195,7 @@
 
 (=(list-patterns $x) (  
     if (== $x ()) () (  
-      let* (
+      let* ( 
             ($head (car-atom $x))
             ($tail (cdr-atom $x))
             ($tail_new (superpose(list-patterns $tail))))   
