@@ -1,4 +1,12 @@
 
+
+! (register-module! ../../experiments)
+! (register-module! ../../../hyperon-miner)
+! (import! &database hyperon-miner:experiments:data:sample-data)
+! (import! &self hyperon-miner:experiments:utils:common-utils)
+ ! (import! &self experiments:rules:emp-tv-bs)
+
+
  ;; Rule to calculate the empirical truth value of a pattern.
 
  ;;;;;;;;;;
@@ -26,7 +34,7 @@
 (= (emp-tv $pattern $db)
     (let*
         ( ( ($ucount ) ( (universe-count $pattern $db)))
-            ( ($ms) ($ucount))
+            ( ($ms) ($ucount)) ;;  we didn't use ms for support calculation
             ( ($sup) ( (sup $pattern $db)))
             ( ($conf) ( (count_to_confidence $ucount)) )
             ($mean (/ $sup $ucount))
@@ -38,13 +46,14 @@
  ;The support is determined by multiplying the probability estimate by the universe count of the pattern in the database.
  ; Parameters
  ; $pattern: The pattern for which the support is to be calculated. This is typically a data structure or identifier representing the pattern.
- ; $db: The database in which the pattern's support is to be calculated. This is typically a collection or sequence of data.
+ ; $db: The database in which the pattern's support is to be calculated. This is typically a collection or sequence of data(represented by space).
  ; $prob: The probability estimate of the pattern. This is a numeric value representing the likelihood of the pattern.
 (= (prob_to_support $pattern $db $prob)
     (* $prob (universe-count $pattern $db))
 )
 
- ; The support_estimate_calculator function calculates the support estimate for a given pattern in a database and then uses this estimate to compute the empirical truth value with bootstrapping if necessary.
+ ; The support_estimate_calculator function calculates the support estimate for a given pattern in a database and then uses
+ ; this estimate to compute the empirical truth value with bootstrapping if necessary.
  ;  It combines the probability estimate and database ratio to determine the effective database size and support estimate.
  ; Parameters
  ; $pattern: The pattern for which the support estimate and empirical truth value are to be calculated.
@@ -67,7 +76,7 @@
  ; Return Values
  ; 1: Returned if the support estimate is greater than or equal to the database size.
  ; 2: Returned if the support estimate is less than the database size.
-(= (categorize_subsize $db_size $support_estimate)
+(= (categorize_by_support_estimate $db_size $support_estimate)
     (if   (>= $support_estimate $db_size)
         1
         2)
@@ -88,14 +97,15 @@
  ; $db_size: The effective size of the database.
  ; $support_estimate: The estimated support of the pattern in the database.
  ; Return Values
- ; emp_tv_bs: Called if the support estimate is greater than or equal to the database size, using bootstrapping to calculate the empirical truth value.
+ ; emp_tv_bs: Called if the support estimate is greater than or equal to the database size,
+ ;  using bootstrapping to calculate the empirical truth value.
  ; emp_tv: Called if the support estimate is less than the database size, directly calculating the empirical truth value.
  ; emp_tv: Default case, directly calculating the empirical truth value.
-(= (emp_tv_pbs $pattern $db $prob_estimate $db_ratio $db_size $support_estimate)
 
+(= (emp_tv_pbs $pattern $db $prob_estimate $db_ratio $db_size $support_estimate)
     (case (categorize_by_support_estimate  $db_size $support_estimate)
         (
-            (1 (emp_tv_bs $pattern $db))
+            (1 (emp_tv_bs $pattern $db $db_size $db_ratio $support_estimate))
             (2 (emp-tv $pattern $db))
             ($_ (emp-tv $pattern $db))
         )))
@@ -106,7 +116,33 @@
 
  ;;ji_tv_est_mem this function is used to estimate the joint probability of a pattern.
  ;;ji_tv_est_mem is going to implemented in est-tv rule.
-(= (ji_tv_est_mem) (1 1))
+
+;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; (=(do-ji-tv-est $db $pattern) (
+;;    let $prtns (generet-partition-without-pattern $pattern)  
+;;          ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
+;;          ($pattern  (ETV $strength $confidence)))  
+;;          ;;(ji-est-tv $db (db_size $db) $pattern $prtns)             
+;; ))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; MOCKING ;;;;;;
+;;;;;;;;;;;;;;;;;
+( = (do-ji-tv-est $db $pattern) (                     
+    $pattern  (ETV 0.6 0.9)                           
+))                                                    
+                                                      
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(= (ji_tv_est $pattern $db) 
+    (let* 
+    (
+        ($out_est (do-ji-tv-est $db $pattern)) 
+        (($pat $tv) $out_est)
+    )
+    $tv
+    )
+)
+
 
  ;The categorize_subsize function categorizes a given subset size ($subsize) based on a threshold size ($ts).
  ;Parameters
@@ -176,7 +212,7 @@
 
     )
 )
-! (duplicate-and-expand-space (get-space))
+; ! (duplicate-and-expand-space (get-space))
  ;
 
  ; The copy-db-by-size function is designed to create a copy of the given database up to a specified size. This function ensures that the contents of the original database are duplicated into a new database instance until the specified size is reached.
@@ -214,10 +250,15 @@
  ; $pattern: The pattern for which the empirical truth value is to be calculated.
  ; $db: The database in which the pattern's empirical truth value is to be calculated.
  ; $db_ratio: The ratio used to scale the database size.
+ 
 (= (do_emp_tv $pattern $db $db_ratio )
     (let* ( ($db_sequence (collapse (get-atoms $db) ))
-            ($jte  (ji_tv_est_mem $pattern $db_sequence)))
-        (support_estimate_calculator  $pattern $db $jte $db_ratio))
+            ($jte  (ji_tv_est $pattern $db))
+
+             ;; after we get jte we must extract the mean
+            ($mean (get-strength $jte)))
+
+        (support_estimate_calculator  $pattern $db $mean $db_ratio))
 )
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -243,7 +284,7 @@
                     ($random-index (gen-random $subsize)) ; Get a random index
                     ($element (get-element $random-index $db-element))
                     ($_ (add-atom $space $element)) ; Get the element from the list
-                    ($tail (gen-random-subsample $db (- $subsize 1) $space) ) ; Recursively generate the rest of the subsample
+                    ($tail (gen-random-subsample $db (- $subsize 1) $space) ) ; Recursively generate the rest of the s
                 )
             $space))) ; Add the element to the subsample
 )
@@ -255,7 +296,8 @@
 (= (subsample-py $db $subsize )
     (let* (
             ($db-content (collapse (get-atoms $db)))
-            ($space (copy-db  (new-space) (generet_random_subsample $db-content $subsize) ))
+            ($random-selected (generet_random_subsample $db-content $subsize))
+            ($space (copy-db  (new-space) $random-selected))
         )
     $space
 )
@@ -276,11 +318,48 @@
             )
         (cons-atom $subsample-tv $remaining-esstvs)))) ; Add the result to the list and continue
 
+ ; Function: subsmp-size
+ ; Arguments:
+ ;   $pattern - The pattern to be matched.
+ ;   $db-size - The size of the database.
+ ;   $support-estimate - The estimated support value.
+ ;   $min-subsize - The minimum sub-sample size.
+ ; Description:
+ ;   This function calculates the sub-sample size based on the given pattern, database size,
+ ;   support estimate, and minimum sub-sample size. It first computes the number of conjuncts
+ ;   in the pattern ($nc) and the alpha value ($alpha) which is the ratio of support estimate
+ ;   to the database size raised to the power of $nc. Then, it calculates the result ($res)
+ ;   by raising the ratio of database size to ten times alpha to the power of 1/$nc. Finally,
+ ;   it returns the maximum value between $res and the minimum of $min-subsize and $db-size.
+
+(= (subsmp-size $pattern $db-size $support-estimate)
+    (let* ( ($nc (n_conjuncts $pattern))    
+            (($min-size) (10))   
+            ($alpha (/ $support-estimate (pow-py $db-size $nc)))
+            ($base (/ $db-size (* 10 $alpha)))
+            ($power (/ 1 $nc))
+            ($res (pow-py $base $power))
+    )
+        (max $res (min $min-size $db-size))
+    )
+)
+
  ; Function to calculate empirical truth value with bootstrapping (resampling)
 
  ;;TODO: it should be updated.
+(= (emp-tv-bs $pattern $db $db_size $db_ratio $support_estimate) (
+        let* (
+            ($_ (println BSStarted))
+            ($db-size-ratio (* $db_size $db_ratio))
+            ($subsize (subsmp-size $pattern $db-size-ratio $support_estimate))
+            ($n-resample 10)
+        )
+    (emp-tv-bs $pattern $db $n-resample $subsize)
+
+) ) ; If subsize >= db size, directly return empirical truth value
 
 (= (emp-tv-bs $pattern $db $n-resample $subsize)
+
     (if (< $subsize (db_size $db))
         (let* (
                 ($esstvs (emp-tv-bs-helper $pattern $db $n-resample $subsize))
@@ -308,8 +387,8 @@
 (= (max $a $b) (if (> $a $b) $a $b))
 (= (min $a $b) (if (< $a $b) $a $b))
 
-(= (get-strength (EMPTV $strength $confidence)) $strength)
-(= (get-confidence (EMPTV $strength $confidence)) $confidence)
+(= (get-strength ($type $strength $confidence)) $strength)
+(= (get-confidence ($type $strength $confidence)) $confidence)
 
 (= (get-count $confidence) (
         let $cf (min 0.9999998 $confidence)
@@ -358,12 +437,12 @@
 
  ; Function to calculate the average mean
 (= (avrg-means $means)
-    (/ (sum $means) (length $means))
+    (/ (sum $means) (tuple-count $means))
 )
 
  ; Function to calculate the average variance
 (= (avrg-variances $variances)
-    (/ (sum $variances) (length $variances))
+    (/ (sum $variances) (tuple-count $variances))
 )
 
  ; Function to compute the relative variances
@@ -494,3 +573,31 @@
         )
     $final-tv
 ))
+
+
+;; ;===================Experiment=================================
+
+! (add-reduct &self (= (get-space) (new-space)))
+! (add-atom (get-space) (Inheritance Abe human))
+! (add-atom (get-space) (Inheritance Rio human))
+! (add-atom (get-space) (Inheritance Bob human))
+! (add-atom (get-space) (Inheritance Mike human))
+! (add-atom (get-space) (Inheritance Mike Nil))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Parent Abe Nil ))
+
+; !(get-atoms (subsample-py (get-space) 3))
+
+; !(emp-tv-subsmp (Inheritance Zac $x) (get-space) 4)
+
+; !(subsmp-size (Inheritance Zac $x) 8 0.5)
+
+; !(emp-tv-bs (Inheritance Zac $x) (get-space) 8 0.6 0.9) 
+
+; !(BetaDistribution (EMPTV 0.9773269689737469 0.0009825445253591023) )
+
+; !(mk-stv 1.7689693569125715 1.0178393379503528 )
+; !(ji_tv_est (Patern Ryo Ri) &self)
+
+; !(do_emp_tv (Inheritance Zac Eyob) (get-space) 0.8)

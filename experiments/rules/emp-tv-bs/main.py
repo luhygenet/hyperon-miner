@@ -106,6 +106,39 @@ def average_truth_value(metta: MeTTa, tvs):
     return tv
 
 
+##################################
+##### Direct C++ implmentation ##
+################################
+
+def subsmp(metta: MeTTa, db_element, subsize):
+    db = db_element.get_children()
+    subsize = int(str(subsize))
+    ts = len(db)  # Get the size of db and store it in ts
+    smp_db = None
+    if ts // 2 <= subsize < ts:
+        smp_db = db.copy()  # Copy db to smp_db
+        i = ts  # Start with the total size as `i`
+        while subsize < i:
+            rnd_idx = random.randint(0, i - 1)  # Generate a random index
+            smp_db[rnd_idx], smp_db[i - 1] = smp_db[i -
+                                                    1], smp_db[rnd_idx]  # Swap with the last element
+            i -= 1
+        smp_db = smp_db[:i]  # Resize to include only the first `i` elements
+
+    elif 0 <= subsize < ts // 2:
+        smp_db = [None] * subsize  # Initialize a list with `subsize` elements
+        def select(): return random.randint(0, ts - 1)  # Random selector function
+        for i in range(subsize):
+            smp_db[i] = db[select()]  # Randomly select an element from db
+
+    else:
+        smp_db = db
+
+    mettaSubsample = metta.parse_all(str(smp_db).replace(
+        "[", "(").replace("]", ")").replace(",", ""))
+    return mettaSubsample
+
+
 def generet_random_subsample(metta: MeTTa, db_element, subsize):
     db_elements = db_element.get_children()
     subsize = int(str(subsize))
@@ -122,6 +155,16 @@ def generet_random_subsample(metta: MeTTa, db_element, subsize):
     mettaSubsample = metta.parse_all(str(subsample).replace(
         "[", "(").replace("]", ")").replace(",", ""))
     return mettaSubsample
+def pow_py(metta, base, power):
+    base = float(str(base))
+    power = float(str(power))
+
+    ans = pow(base, power)
+    print(ans)
+    ans= str(ans)
+    atom = metta.parse_all(ans)
+
+    return atom
 
 
 @register_atoms(pass_metta=True)
@@ -134,7 +177,12 @@ def avrage_tv(metta: MeTTa):
     random_subsample = OperationAtom('generet_random_subsample', lambda db_elemet, subsize:  generet_random_subsample(metta, db_elemet, subsize),
                                      ['Expression', 'Atom', 'Expression'], unwrap=False)
 
+    powPy = OperationAtom("pow-py", lambda a, b: pow_py(metta, a, b),
+                                     ['Atom', 'Atom', 'Atom'], unwrap=False)
+
     return {
         r"mean-tv": avrageTv,
-        r"generet_random_subsample": random_subsample
+        r"generet_random_subsample": random_subsample,
+        r"pow-py": powPy
+
     }

@@ -124,6 +124,3 @@
         (DEFAULT_TV)
     )
 )
-
-; ! (cog-set-tv (Inheritance Allen human) (STV 0.98 1))
-; ! ( (cog-tv (Inheritance Allen humands)))
