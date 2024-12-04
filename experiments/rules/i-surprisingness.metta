@@ -82,7 +82,7 @@
 ; Generates the power set (all subsets) of a list
 (= (powerset $lst)
    (if (empty? $lst)
-       (list '())
+       (list ())
        (let (($rest (powerset (cdr $lst))))
          (append $rest (map (lambda ($subset) (cons (car $lst) $subset)) $rest)))))
 
@@ -101,7 +101,7 @@
 ; Checks if a list is empty
 (= (empty? $lst)
    (match $lst
-      ('() true)
+      (() true)
       (_ false)))
 
 ; Calculates the length of a list
