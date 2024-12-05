@@ -1,11 +1,11 @@
  ;; Rule to specialization a pattern
-! (register-module! ../../../hyperon-miner)
-! (import! &dbspace hyperon-miner:experiments:data:sample-data)
-! (import! &self hyperon-miner:experiments:rules:build-specialization)
-! (import! &self hyperon-miner:experiments:utils:common-utils)
-! (bind! &specspace (new-space))
-! (bind! &cndpspace (new-space))
-! (import! &self freq-pat)
+ ; ! (register-module! ../../../hyperon-miner)
+ ; ! (import! &dbspace hyperon-miner:experiments:data:sample-data)
+ ; ! (import! &self hyperon-miner:experiments:rules:build-specialization)
+ ; ! (import! &self hyperon-miner:experiments:utils:common-utils)
+ ; ! (bind! &specspace (new-space))
+ ; ! (bind! &cndpspace (new-space))
+ ; ! (import! &self freq-pat)
 
 (= (candidatePattern $dbspace $spezspace $minsup $cndpspace)
     (match $spezspace (SpecializationOf $specialized $pattern)
@@ -27,10 +27,10 @@
 
 )
 
-! (build-specialization (Inheritance Z (S Z)) &dbspace &specspace)
+ ; ! (build-specialization (Inheritance Z (S Z)) &dbspace &specspace)
 
  ; ! (match &specspace (SpecializationOf $x $y) ( $x))
 
-! (candidatePattern &dbspace &specspace 2 &cndpspace)
+ ; ! (candidatePattern &dbspace &specspace 2 &cndpspace)
 
-! (match &cndpspace $h $h)
+ ; ! (match &cndpspace $h $h)
