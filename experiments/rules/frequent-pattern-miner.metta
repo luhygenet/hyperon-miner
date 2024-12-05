@@ -1,6 +1,7 @@
 ! (register-module! ../../../hyperon-miner)
 ! (import! &dbspace hyperon-miner:experiments:data:sample-data)
 ! (import! &self hyperon-miner:experiments:rules:build-specialization)
+! (import! &self hyperon-miner:experiments:rules:candidate_patterns)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
 ! (bind! &specspace (new-space))
 ! (bind! &cndpspace (new-space))
@@ -15,6 +16,7 @@
                         (remove-atom $aptrnspace (AbstractPattern ($link Z (S Z))))
                         (add-atom $aptrnspace (AbstractPattern ($link Z (S Z))))
                     ))
+            empty
         )
 )
 )
@@ -29,6 +31,6 @@
 
  ; ! (apriori &dbspace 2 &aptrnspace)
 
- ; ! (frequency-pattern-miner &dbspace &specspace &cndpspace &aptrnspace 2)
+! (frequency-pattern-miner &dbspace &specspace &cndpspace &aptrnspace 2)
 
-! (match &dbspace (: $p ($link $x $y)) ($link $x $y))
+! (match &dbspace (: $p ($link $x $y)) $p)
