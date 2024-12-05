@@ -1,4 +1,180 @@
+;;;;;;;;;;;;;;;;;;
+;; Common Utils ;;
+;;;;;;;;;;;;;;;;;;
 
+(= (decons-atom $exp)
+    ((car-atom $exp) (cdr-atom $tail))
+)
+
+(= (concatTuple $xs $ys)
+    (if (== $xs ())
+        $ys
+        (let* ( (($head $tail) (decons-atom $xs))
+                ($tailNew (concatTuple $tail $ys)))
+                 (cons-atom $head $tailNew))  ))
+
+(=(remove-parenthesis $x) (
+    let ($head $tail) (decons-atom $x) (if (== $tail ()) (remove-parenthesis $head) $x)
+))
+
+
+(= (get-variables $pattern)
+    (if (== $pattern ())
+        ()
+        (let* (
+                ($head (car-atom $pattern))
+                ($tail (cdr-atom $pattern)))
+
+            (if (== (get-metatype $head) Expression)
+                (concatTuple (get-variables $head)
+                    (get-variables $tail))
+                (if (== (get-metatype $head) Variable)
+                    (concatTuple
+                        ($head)
+                        (get-variables $tail))
+
+                    (get-variables $tail))))
+    )
+)
+
+
+(=(is-symbol $var) 
+   (== (get-metatype $var) Symbol)
+)
+
+(=(is-variable $var) 
+   (== (get-metatype $var) Variable)
+)
+
+(=(is-expression $var) 
+  (== (get-metatype $var) Expression)
+)
+
+(=(reverse-list ()) ())
+(=(reverse-list $subparts)(
+      let ($head $tail) (decons-atom $subparts) (push-back $head (reverse-list $tail))
+))
+
+
+(=(remove-element $element ())())
+(=(remove-element $element $list) (
+    let ($head $tail) (decons-atom $list) (
+        if (== $element $head) (remove-element $element $tail) (
+            let $dummy (remove-element $element $tail) (cons-atom $head $dummy)))))
+
+
+
+(=(append-list $atom ()) ($atom))
+(=(append-list $atom $list) (
+    let* (
+        (($head $tail) (decons-atom $list))
+        ($dummy (append-list $head $tail))
+    ) 
+     (cons-atom $atom $dummy)))
+
+
+(=(append-list-v2 $atom ()) ($atom))
+(=(append-list-v2 $atom $list) (
+    let* (
+        (($head $tail) (decons-atom $list))
+        ($dummy ((append-list $head $tail)))
+    ) 
+     (cons-atom $atom $dummy)))
+
+
+(=(push-back $atom ()) ($atom))
+(=(push-back $atom $list) (
+    let* ((($head $tail) (decons-atom $list))
+        ($dummy (push-back $atom $tail))) 
+     (cons-atom $head $dummy)))
+
+
+(=(insert () $res) $res)
+(=(insert $subparts $res)(
+      let ($head $tail) (decons-atom $subparts) (let $temp (push-back $head $res) (insert $tail $temp))))
+
+(=(is-present $atom ()) False)
+(=(is-present $atom $list) (
+    if (is-expression $list) (
+    let ($head $tail) (decons-atom $list) (
+        if (== $atom $head) True  (or (is-present $atom $head) (is-present $atom $tail))
+    )) (if (== $atom $head) True False)))
+
+
+;; This function checks if a given expression is a pattern.
+;; It takes an expression ($expr) as input and evaluates whether it matches
+
+(=(is-pattern $expr) (
+    collapse(
+ or (unify $expr ($link $x $y) (
+       and (is-symbol $link) (
+        or (or (is-variable $x) (is-expression $x))
+             (or (is-variable $y) (is-expression $y)))) False)
+    (unify $expr ($link $x) 
+       (and (is-symbol $link) 
+        (or (is-variable $x) 
+            (is-expression $x))) False ) )))
+
+(=(is-valid () $partion) True)
+(=(is-valid $clous $partion)(
+    let ($head $tail) (decons-atom $clous)  (and (is-present $head $partion) (is-valid $tail $partion)) ))            
+
+(=(comp $main_head ()) ())
+(=(comp $main_head $list)(
+    let* (
+        (($x $tail) (decons-atom $list))
+        ($rst (append-list (append-list $main_head  $x) (comp  $main_head $tail)))   
+    ) $rst))
+
+
+(=(get-clouses () ) ())
+(= (get-clouses $pattern)
+        (let* (
+                (($head $tail) (decons-atom $pattern)))
+            (if (== (get-metatype $head) Expression)
+                (   let $result  (concatTuple ($head)
+                    (get-clouses $tail)) (concatTuple $result (get-clouses $head)))
+                    (get-clouses $tail))) )
+
+
+(=(list-patterns $x) (  
+    if (== $x ()) () (  
+      let* ( 
+            ($head (car-atom $x))
+            ($tail (cdr-atom $x))
+            ($tail_new (superpose(list-patterns $tail))))   
+        (cons-atom $head $tail_new ) )))
+
+
+(=(find_max $num_list $max) (
+    if (== $num_list ()) $max (
+        let* ((($head $tail)(decons-atom $num_list))
+            ($dummy (find_max $tail (if (> $head $max) $head $max)))) 
+            $dummy  )))
+
+(=(max $list) (find_max $list (car-atom $list)))
+
+(=(find_min $num_list $min) (
+    if (== $num_list ()) $min (
+        let* ((($head $tail)(decons-atom $num_list))
+            ($dummy (find_min $tail (if (< $head $min) $head $min)))) 
+            $dummy  )))
+
+
+(=(min $list) (find_min $list (car-atom $list)))
+
+(=(get-cnj-clouses $pattern) (
+  let ($head $tail) (decons-atom $pattern)  (if (== $head ,) $tail ())
+))
+
+
+(=(min-max $list) ((min $list) (max $list)))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Common Utils from prev file ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; Declaration of List data type and constructors
 (: List (-> $a Type))
 (: Nil (List $a))
@@ -16,29 +192,6 @@
 (= (fromNat Z) 0)
 (= (fromNat (S $k)) (+ 1 (fromNat $k)))
 
- ; This file contains utility functions for checking the metatype of a given variable.
- ; - (is-expression $var): Returns true if the metatype of $var is Expression.
- ; - (is-variable $var): Returns true if the metatype of $var is Variable.
- ; - (is-symbol $var): Returns true if the metatype of $var is Symbol.
-
-(= (is-expression $var) (== Expression (get-metatype $var)))
-(= (is-variable $var) (== Variable (get-metatype $var)))
-(= (is-symbol $var) (== Symbol (get-metatype $var)))
-
- ; This function checks if a given expression is a pattern.
- ; It takes an expression ($expr) as input and evaluates whether it matches
- ; specific structures involving symbols, variables, and expressions.
- ; The function returns True if the expression is a pattern, otherwise False.
-(= (is-pattern $expr) (
-
-        or (unify $expr ($link $x $y) (
-                and (is-symbol $link) (
-                    or (or (is-variable $x) (is-expression $x))
-                    (or (is-variable $y) (is-expression $y)))) False)
-        (unify $expr ($link $x)
-            (and (is-symbol $link)
-                (or (is-variable $x)
-                    (is-expression $x))) False )))
 
  ; this consider every thing as a pattern exept for symbole
 (= (is-pattern-et $expr) (not (is-symbol $expr))
@@ -255,9 +408,6 @@
 
 
 
- ;Test
- ; ! (is_more_abstract (Inheritance cat $Y) (Inheritance $X pet))
-
  ; Recursive function to check if the given clause is more abstract than any clause in the rest
 (= (is_more_abstract_in_list $clause $clauses)
     (if (== $clauses ()) ; Base case: no more clauses to compare
@@ -288,10 +438,6 @@
     (remove_abstract_clauses $clauses $clauses) ; Start with original clauses
 )
 
- ; Test the remove_abstract_clauses function
- ; ! (remove_abstract_clauses_initial ( (Inheritance cat $Y) (Inheritance $X pet) (Inheritance $X $Y) ))
- ; ! (remove_abstract_clauses_initial ( (Inheritance $X C1) (Inheritance C2 $Y) (Inheritance $X $Y) ))
- ; ! (remove_abstract_clauses_initial ( (Inheritance $X $Y) (Inheritance $Y $Z) (Inheritance $Z $W) ))
 
  ; Function: get_variables
  ; This function extracts all the variables from a given pattern (Expression).
@@ -447,29 +593,7 @@
  ; ! (remove_redundant_subclauses ( (Mortal $W) (Implies (Human $X) (Mortal $X))  (Human $X) ))
 
  ; ##############################
-(= (is_more_abstract ($link1 $x1 $y1) ($link2 $x2 $y2) $relative_var)
-    (if (or (and (== $x1 $x2) (== $x1 $relative_var)) (and (== $y1 $y2) (== $y1 $relative_var)))
-        (if (== $link1 $link2)
-            (if
-                (and
-                    (or
-                         ; Check if x1 and x2 are equal, or x1 is more abstract (a variable)
-                        (== $x1 $x2)
-                        (and
-                            (== (get-metatype $x1) Variable)
-                            (== (get-metatype $x2) Symbol)))
-                    (or
-                         ; Check if y1 and y2 are equal, or y1 is more abstract (a variable)
-                        (== $y1 $y2)
-                        (and
-                            (== (get-metatype $y1) Variable)
-                            (== (get-metatype $y2) Symbol))))
-                True
-                False )
-            False
-        )
-    False )
-)
+
 
 (= (is_pat_more_abstract $l_pat $r_pat $relative_var)
     (if (== (car-atom $l_pat) ,)
@@ -497,27 +621,3 @@
             (check_pattern_match $l_pat (cdr-atom $r_pat) $relative_var $ori_l_pat $ori_r_pat))
     )
 )
-
- ; ! (is_pat_more_abstract (Inheritance $Z $W) (Inheritance $Z $Y) $Z) ;[False]
- ; ! (is_pat_more_abstract (Inheritance $Z $W) (Inheritance $Z A) $Z) ; [True]
- ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $X B)) (Inheritance $Z A) $X) ; [False]
- ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $Y B)) (Inheritance $X A) $X) ; [True]
- ; ! (is_pat_more_abstract (, (Inheritance $X $W) (Inheritance $Y B)) (, (Inheritance $X $Y) (Inheritance $X C0)) $X) ; [True]
-
- ; ! (add-reduct &self (= (get-space) (new-space)))
- ; ! (add-atom (get-space) (Inheritance Abe human))
- ; ! (add-atom (get-space) (Inheritance Rio human))
- ; ! (add-atom (get-space) (Inheritance Bob human))
- ; ! (add-atom (get-space) (Inheritance Mike human))
- ; ! (add-atom (get-space) (Inheritance Mike Nil))
- ; ! (add-atom (get-space) (Inheritance Zac human))
- ; ! (add-atom (get-space) (Inheritance Zac human))
- ; ! (add-atom (get-space) (Parent Abe Nil ))
-
- ; ! (n_conjuncts (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)))
- ; ! (get-arity-tree (AND (Parent $B $X) (AND (Parent $X $Z) (Inheritance $X $Y))))
-
- ; ! (universe-count (, (Parent $B $X) (Parent $X $Z) (Inheritance $X $Y)) (get-space))
- ; ! (universe-count (, (Parent $x Nil) (Parent $x Nil)) (get-space))
-
- ; ! (universe-count (Parent $x Nil) (get-space))

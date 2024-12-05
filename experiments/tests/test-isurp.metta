@@ -1,13 +1,12 @@
 ! (register-module! ../../../hyperon-miner)
-
-! (register-module! ../../experiments)
-! (import! &self experiments:rules:est-tv)
-;;! (import! &self experiments:rules:emp-tv)
-
-! (import! &database hyperon-miner:experiments:data:sample-data)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
-! (import! &self hyperon-miner:experiments:utils:TruthValue)
+! (import! &self hyperon-miner:experiments:utils:beta-dist)
+! (import! &self hyperon-miner:experiments:utils:surp-utils)
+! (import! &self hyperon-miner:experiments:utils:miner-utils)
 ! (import! &self hyperon-miner:experiments:utils:gen_partition)
+! (import! &self hyperon-miner:experiments:rules:est-tv)
+! (import! &self hyperon-miner:experiments:rules:isurp)
+
 
 
 
@@ -32,5 +31,14 @@
 
 ;!(ji_prob_est_interval (,(Inheritance $x $y)  (Inheritance Abe $y)) (get-space) 2)
 ;!(isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True 2)
-
 ;[0.6455555555555555]
+
+!(min-max (1 2 3 4 5))
+;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+
+
+
+
+(Inheritance A D)
+
+(Inheritance A D)
