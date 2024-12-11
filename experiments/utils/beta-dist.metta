@@ -87,6 +87,11 @@
 ))
 
 
+; This function `mk-stv` creates a standard truth value (STV) using the provided mean and variance.
+ ; It calculates the alpha and beta parameters based on the mean and variance.
+ ; It then computes the count and confidence values using these parameters.
+ ; The mode is determined based on the values of alpha and beta, following specific conditions.
+ ; Finally, it returns an EMPTV (mode, confidence) pair.
 ;;(: mk_stv (-> ))
 (=(mk_stv $mean $variance) (
    let* (
@@ -111,6 +116,12 @@
    
 ))
 
+
+ ; This function calculates the parameters of a Beta distribution based on the given empirical TV (emptv) data.
+ ; It extracts the strength, confidence, and count from the empirical data, then computes the positive count
+ ; and uses prior alpha and beta values (both set to 1.0) to calculate the final alpha and beta parameters
+ ; for the Beta distribution. The final alpha is the sum of the prior alpha and the positive count, while the
+ ; final beta is the sum of the prior beta and the difference between the count and the positive count.
 (=(mk_distribution $Etv)(
     let*(
         ($tail (cdr-atom $Etv))

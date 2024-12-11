@@ -320,7 +320,7 @@
 
  ; Function: subsmp-size
  ; Arguments:
- ;   $pattern - The pattern to be matched.
+ ;   $pattern - The pattern to be matched.  
  ;   $db-size - The size of the database.
  ;   $support-estimate - The estimated support value.
  ;   $min-subsize - The minimum sub-sample size.

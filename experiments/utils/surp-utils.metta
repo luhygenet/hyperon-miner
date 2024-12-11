@@ -62,7 +62,23 @@
     )
  ))
 
+ 
 
+ ; Orchestrating the overall process to calculate the average truth value
+
+ ;  * This function calculates the average truth value from a list of truth values.
+ ;  *
+ ;  * Steps followed in the calculation:
+ ;  *
+ ;  * 1. Extract Beta distributions from the given truth values.
+ ;  * 2. Calculate the mean for each Beta distribution.
+ ;  * 3. Calculate the variances for each Beta distribution.
+ ;  * 4. Calculate the overall average mean from the individual means.
+ ;  * 5. Calculate the relative variances using the individual means, variances, and the overall average mean.
+ ;  * 6. Combine the original variances with the relative variances.
+ ;  * 7. Calculate the average variance from the combined variances.
+ ;  * 8. Create the final truth value using the average mean and variance.
+ ;  * 9. Return the final truth value.
 
 (=(avrg_tv $tv)(
     let* (
