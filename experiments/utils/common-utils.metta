@@ -340,6 +340,8 @@
     )
 )
 
+
+
  ;; equals-to-zero  accepts a Number and compares it with zero if it is equals to zero it returns a boolean value True else False
 (: equals-to-zero (-> Number Boolean))
 (= (equals-to-zero $x) (== $x 0))
@@ -621,3 +623,6 @@
             (check_pattern_match $l_pat (cdr-atom $r_pat) $relative_var $ori_l_pat $ori_r_pat))
     )
 )
+
+(= (min $x $y) (if (> $y $x) $x $y))
+(= (max $x $y) (if (> $y $x) $y $x))
