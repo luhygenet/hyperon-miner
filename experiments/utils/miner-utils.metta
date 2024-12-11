@@ -60,16 +60,7 @@
 ))
 
 
-(=(connected-subpatterns-with-var () $var) ())
-(=(connected-subpatterns-with-var $partion $var)(
-    let* (
-        (($head $tail) (decons-atom $partion) )
-       ($is_pattern (let $pat_temp  (is-pattern $head) (car-atom $pat_temp)))
-        ($is_connected (let $temp (collapse (is-present $var $head)) (car-atom $temp))))
 
-        (  if  (and $is_pattern $is_connected)
-               (let $dummy (connected-subpatterns-with-var $tail $var ) (cons-atom $head $dummy)) 
-                (if $is_pattern (connected-subpatterns-with-var $tail $var) (concatTuple  (connected-subpatterns-with-var $head $var) (connected-subpatterns-with-var $tail $var)) ))))
 
 
 

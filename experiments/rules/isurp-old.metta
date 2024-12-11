@@ -77,7 +77,7 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 
 ;; calculate  I-surprisingness of the pattern without takes 
 ;; into account the joint variables.
-(: isurp_old (-> Pattern db Number))
+;(: isurp_old (-> Pattern db boolean Number))
 (=(isurp_old $pattern $db $normalize) (
     let* (
         ($pattern_prob (prob $pattern $db ))

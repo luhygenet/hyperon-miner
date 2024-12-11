@@ -1,15 +1,34 @@
-! (register-module! ../../../hyperon-miner)
-! (import! &db hyperon-miner:data:ugly_man_sodaDrinker)
-! (import! &self hyperon-miner:experiments:utils:isurp-old)
-! (import! &self hyperon-miner:experiments:rules:est-tv)
-;;! (import! &self hyperon-miner:experiments:rules:emp-tv)
-! (import! &self hyperon-miner:experiments:utils:common-utils)
-! (import! &self hyperon-miner:experiments:utils:TruthValue)
-! (import! &self hyperon-miner:experiments:utils:gen_partition)
+! (register-module! ../../../hyperon-miner/experiments)
+! (import! &self experiments:utils:common-utils)
+! (import! &self experiments:utils:beta-dist)
+! (import! &self experiments:utils:constants)
+! (import! &self experiments:utils:TruthValue)
+! (import! &self experiments:utils:surp-utils)
+! (import! &self experiments:utils:miner-utils)
+! (import! &self experiments:utils:gen_partition)
+! (import! &self experiments:rules:est-tv)
+! (import! &self experiments:rules:isurp-old)
 
 
 
-!(isurp_old (, (Inheritance $x man)  (Inheritance $x ugly)) &db True)
+
+! (bind! square (py-atom numpy.square (-> Number Number)))
+
+
+
+
+! (add-reduct &self (= (get-space) (new-space)))
+! (add-atom (get-space) (Inheritance Abe human))
+! (add-atom (get-space) (Inheritance Abe human))
+! (add-atom (get-space) (Inheritance Abe human))
+
+! (add-atom (get-space) (Inheritance Rio human))
+! (add-atom (get-space) (Inheritance Bob human))
+! (add-atom (get-space) (Inheritance Mike human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Parent Abe Nil ))
+! (add-atom (get-space)  (Inheritance Bob (And human (Or zac))) ) 
 
 
 
@@ -33,5 +52,5 @@
 
 ;!(add-pattern ((Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
 
-;!(isurp_old (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True)
+!(isurp_old (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True)
 

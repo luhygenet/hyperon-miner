@@ -65,7 +65,7 @@
 
 
 
-(=(prob-with-joint $db $db_size $partion $joint_vars $p)(
+(=(prob-with-joint-o $db $db_size $partion $joint_vars $p)(
     if (== $joint_vars ()) $p
  (let* ((($head $tail) (decons-atom $joint_vars))
        ($patterns (connected-subpatterns-with-var $partion $head))
@@ -74,6 +74,21 @@
    (prob-with-joint $db $db_size $partion  $tail $prob)
         )   
 ))
+
+
+(=(prob-with-joint $db $db_size $partion $joint_vars $p)(
+       if (== $joint_vars ()) $p
+ (let* ((($head $tail) (decons-atom $joint_vars))
+       ($patterns (connected-subpatterns-with-var $partion $head))
+       ($prob (eq-prob $db $db_size $patterns $patterns 1 (tuple-count $patterns)  $head $p))
+        )
+   (prob-with-joint $db $db_size $partion  $tail $prob)
+    
+        ) 
+))
+
+
+
 
 
 

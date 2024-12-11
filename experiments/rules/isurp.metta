@@ -10,7 +10,7 @@
 ;;! (import! &self hyperon-miner:experiments:utils:gen_partition)
 
 
-(=(emp_prob_pbs_mem $subpattern $db  $db_ratio) )
+(=(emp_prob_pbs_mem $subpattern $db  $db_ratio) 0.4)
 
 (=(pro-prob-wout-joint $subpatterns $db $db_ratio $p) (
   if (== $subpatterns ()) $p (
@@ -22,11 +22,14 @@
 ))
 
 
-(=(ji-prob-est  $partition $pattern $db $db_ratio) (
+
+(=(ji-prob-est $partition $pattern $db $db_ratio) (
      let $p (pro-prob-wout-joint $partition $db $db_ratio 1)
              (let $eq_prob (prob-with-joint $db (db_size $db) (remove-parenthesis $partition) (joint-variables-init $pattern (remove-parenthesis $partition)) 1)  
              (* $p $eq_prob)))
              )
+
+
 
 
 
@@ -39,10 +42,12 @@
 )
 
 
+
 (=(ji_prob_est_interval $pattern $db $db_ratio) (
-   let ($emin $emax) (min-max(do-ji-prob (generet-partition-without-pattern $pattern) $pattern $db $db_ratio))
+   let ($emin $emax) (min-max  (do-ji-prob (generet-partition-without-pattern $pattern) $pattern $db $db_ratio))
         ($emin $emax)
 ))
+
 
 
 (=(isurp $pattern $db $normalize $db_ratio) (

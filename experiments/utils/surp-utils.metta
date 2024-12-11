@@ -20,11 +20,8 @@
          (add-subpatterns $parts $space )) )
 
 
-(=(var-appers $var ()) ())
-(=(var-appers $var $blk) (
-     let* ((($head $tail) (decons-atom $blk))
-           ($is_present (let $temp (collapse (is-present $var $head)) (car-atom $temp))))
-           (if $is_present  (let $dummy (var-appers $var $tail) (cons-atom $var $dummy)) (var-appers $var $tail))))
+
+
 
 
 (=(joint-variables () $partion) ())
@@ -35,9 +32,11 @@
              (joint-variables $tail $partion))         
 ))
 
+
 (=(mk-unique ()) ())
 (=(mk-unique $vars) (
     let ($head $tail) (decons-atom $vars) (let $dummy (mk-unique (remove-element $head $vars)) (cons-atom $head $dummy))))
+
 
 (=(get-unique-vars $pattern)(
     let $vars (get-variables $pattern) (mk-unique $vars) 

@@ -170,7 +170,25 @@
 
 (=(min-max $list) ((min $list) (max $list)))
 
+(=(var-appers $var ()) ())
+(=(var-appers $var $blk) (
+     let* ((($head $tail) (decons-atom $blk))
+           ($is_present (let $temp (collapse (is-present $var $head))  (car-atom $temp)) )
+           )
+           (if $is_present  (let $dummy (var-appers $var $tail) (cons-atom $var $dummy)) (var-appers $var $tail))
+           ))
 
+
+(=(connected-subpatterns-with-var () $var) ())
+(=(connected-subpatterns-with-var $partion $var)(
+    let* (
+        (($head $tail) (decons-atom $partion) )
+       ($is_pattern (let $pat_temp  (is-pattern $head) (car-atom $pat_temp)))
+        ($is_connected (let $temp (collapse (is-present $var $head)) (car-atom $temp))))
+
+        (  if  (and $is_pattern $is_connected)
+               (let $dummy (connected-subpatterns-with-var $tail $var ) (cons-atom $head $dummy)) 
+                (if $is_pattern (connected-subpatterns-with-var $tail $var) (concatTuple  (connected-subpatterns-with-var $head $var) (connected-subpatterns-with-var $tail $var)) ))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Common Utils from prev file ;;
