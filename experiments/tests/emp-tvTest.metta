@@ -1,11 +1,16 @@
 
 ! (register-module! ../../experiments)
 ! (import! &self experiments:rules:emp-tv)
-! (register-module! ../../../hyperon-miner)
-! (import! &database hyperon-miner:experiments:data:sample-data)
-! (import! &self hyperon-miner:experiments:utils:common-utils)
- ! (import! &self experiments:rules:emp-tv-bs)
- 
+! (import! &self experiments:utils:common-utils)
+! (import! &self experiments:utils:emp-tv-bs)
+! (import! &self experiments:utils:bs-utils)
+
+
+(= (pow-py $base $power) ((py-atom numpy.power) $base $power)) 
+
+
+
+
 ! (add-reduct &self (= (get-space) (new-space)))
 ! (add-atom (get-space) (Inheritance Abe human))
 ! (add-atom (get-space) (Inheritance Rio human))
@@ -16,33 +21,52 @@
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Parent Abe Nil ))
 
-! (emp-tv (Parent $x Nil) (get-space))
 
-! (sup (Inheritance $x $y) (get-space))
 
- ;! (prob_to_support (Inheritance $x) (collapse (get-atoms (get-space)) ) 1 )
- ; ! (universe-count $pattern $db)
-(universe-count ( (Parent $x Nil) (Parent $x Nil)) (get-space))
-(universe-count (Inheritance $x ) (get-space))
 
- ; ! (prob_to_support A (get-space) 1 )
-! (db_size (get-space))
-! (support_estimate_calculator (Inheritance $x Nil) (get-space) 1 1)
-! (categorize_subsize 1 32)
-! (emp_tv_pbs (Parent $x Nil) (get-space) 1 1 2 3)
-! (do_emp_tv (Inheritance $x Nil) (get-space) 1 )
+; ! (sup (Inheritance $x $y) (get-space))
 
-! (==== test=== copy-db-by-size=== )
-! (copy-db-by-size (new-space) (collapse (get-atoms (get-space)) ) 0 10)
+;  ! (prob_to_support (Inheritance $x) (collapse (get-atoms (get-space)) ) 1 )
+;  ! (universe-count $pattern $db)
+; (universe-count ( (Parent $x Nil) (Parent $x Nil)) (get-space))
+; (universe-count (Inheritance $x ) (get-space))
 
-(= (duplicate-and-expand-space $space $n)
-    (let $new-db (copy-db  (get-space) (collapse (get-atoms (get-space)) ) )
-        (add_n_atoms_to_db $new-db $n)
+;  ! (prob_to_support A (get-space) 1 )
+; ! (db_size (get-space))
+; ! (support_estimate_calculator (Inheritance $x Nil) (get-space) 1 1)
+; ! (categorize_subsize 1 32)
+; ! (emp_tv_pbs (Parent $x Nil) (get-space) 1 1 2 3)
+; ! (do_emp_tv (Inheritance $x Nil) (get-space) 1 )
 
-    )
-)
-! (collapse  (get-atoms (duplicate-and-expand-space (get-space)1)))
+; ! (==== test=== copy-db-by-size=== )
+; ! (copy-db-by-size (new-space) (collapse (get-atoms (get-space)) ) 0 10)
 
-! (subsample-py (get-space) 3)
-! (emp-tv-subsmp (Inheritance Rio $Y) (get-space) 3)
-! (subsmp-size (Inheritance Abe human) 20 0.9)
+; (= (duplicate-and-expand-space $space $n)
+;     (let $new-db (copy-db  (get-space) (collapse (get-atoms (get-space)) ) )
+;         (add_n_atoms_to_db $new-db $n)
+
+;     )
+; )
+; ! (collapse  (get-atoms (duplicate-and-expand-space (get-space)1)))
+
+; ! (get-atoms (subsample-py (get-space) 3))
+; ! (emp-tv-subsmp (Inheritance Rio $Y) (get-space) 3)
+; ! (subsmp-size (Inheritance Abe human) 20 0.9)
+
+
+
+; !(get-atoms (subsample-py (get-space) 3))
+
+; !(emp-tv-subsmp (Inheritance Zac $x) (get-space) 5)
+
+; !(subsmp-size (Inheritance Zac $x) 8 0.5)
+
+; !(emp-tv-bs (Inheritance Zac $x) (get-space) 8 0.6 0.9) 
+
+; !(BetaDistribution (EMPTV 0.9773269689737469 0.0009825445253591023) )
+
+; !(mk-stv 1.7689693569125715 1.0178393379503528 )
+; !(ji_tv_est (Patern Ryo Ri) &self)
+
+; !(do_emp_tv (Inheritance Zac Eyob) (get-space) 0.8)
+

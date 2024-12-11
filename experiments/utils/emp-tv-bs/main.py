@@ -155,16 +155,6 @@ def generet_random_subsample(metta: MeTTa, db_element, subsize):
     mettaSubsample = metta.parse_all(str(subsample).replace(
         "[", "(").replace("]", ")").replace(",", ""))
     return mettaSubsample
-def pow_py(metta, base, power):
-    base = float(str(base))
-    power = float(str(power))
-
-    ans = pow(base, power)
-    print(ans)
-    ans= str(ans)
-    atom = metta.parse_all(ans)
-
-    return atom
 
 
 @register_atoms(pass_metta=True)
@@ -177,12 +167,7 @@ def avrage_tv(metta: MeTTa):
     random_subsample = OperationAtom('generet_random_subsample', lambda db_elemet, subsize:  generet_random_subsample(metta, db_elemet, subsize),
                                      ['Expression', 'Atom', 'Expression'], unwrap=False)
 
-    powPy = OperationAtom("pow-py", lambda a, b: pow_py(metta, a, b),
-                                     ['Atom', 'Atom', 'Atom'], unwrap=False)
-
     return {
         r"mean-tv": avrageTv,
         r"generet_random_subsample": random_subsample,
-        r"pow-py": powPy
-
     }
