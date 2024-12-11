@@ -28,6 +28,7 @@
         ( ( ($ucount ) ( (universe-count $pattern $db)))
             ( ($ms) ($ucount)) ;;  we didn't use ms for support calculation
             ( ($sup) ( (sup $pattern $db)))
+
             ( ($conf) ( (count_to_confidence $ucount)) )
             ($mean (/ $sup $ucount))
             ($confidence   (* 1e-1 $conf))
@@ -287,8 +288,8 @@
 
 
 (= (emp-tv-subsmp $pattern $db $subsize) (
-        let* ( ($space (subsample-py $db $subsize (new-space))))
-        ( emp-tv $pattern $space)
+        let* ( ($space (subsample-py $db $subsize)))
+        (emp-tv $pattern $space)
     ))
 
  ; Helper function to repeatedly resample and collect empirical truth values
@@ -332,7 +333,7 @@
 
 (= (emp-tv-bs $pattern $db $db_size $db_ratio $support_estimate) (
         let* (
-            ($_ (println BSStarted))
+          
             ($db-size-ratio (* $db_size $db_ratio))
             ($subsize (subsmp-size $pattern $db-size-ratio $support_estimate))
             ($n-resample 10)
