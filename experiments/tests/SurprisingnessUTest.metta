@@ -1,10 +1,13 @@
-! (register-module! ../../experiments)
-! (import! &self experiments:rules:emp-tv)
+! (register-module! ../../../hyperon-miner/experiments)
+! (import! &self experiments:utils:common-utils)
+! (import! &self experiments:utils:beta-dist)
+! (import! &self experiments:utils:constants)
+! (import! &self experiments:utils:TruthValue)
+! (import! &self experiments:utils:surp-utils)
+! (import! &self experiments:utils:miner-utils)
+! (import! &self experiments:utils:gen_partition)
 ! (import! &self experiments:rules:est-tv)
-! (register-module! ../../../hyperon-miner)
-! (import! &database hyperon-miner:experiments:data:sample-data)
-! (import! &self hyperon-miner:experiments:utils:common-utils)
-! (import! &self hyperon-miner:experiments:utils:TruthValue)
+
 ! (bind! square (py-atom numpy.square (-> Number Number)))
 
 ;;Test compose 
@@ -60,6 +63,6 @@
 ))
 
 
-!(assertEqual (test_avrg_tv_1) (0 0.1))
-;!(assertEqual (test_avrg_tv_2) (0.5 0.000125))
+;!(assertEqual (test_avrg_tv_1) (0 0.1))
+!(assertEqual (test_avrg_tv_2) (0.5 0.000125))
 !(assertEqual (test_avrg_tv_3) (0.5 0.000677))
