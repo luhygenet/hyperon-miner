@@ -1,7 +1,6 @@
 
 ! (register-module! ../../experiments)
 ! (import! &self experiments:rules:emp-tv)
-! (import! &database experiments:data:sample-data)
 ! (import! &self experiments:utils:common-utils)
 ! (import! &self experiments:utils:emp-tv-bs)
 ! (import! &self experiments:utils:bs-utils)
@@ -62,7 +61,7 @@
 
 ; !(subsmp-size (Inheritance Zac $x) 8 0.5)
 
-!(emp-tv-bs (Inheritance Zac $x) (get-space) 8 0.6 0.9) 
+; !(emp-tv-bs (Inheritance Zac $x) (get-space) 8 0.6 0.9) 
 
 ; !(BetaDistribution (EMPTV 0.9773269689737469 0.0009825445253591023) )
 

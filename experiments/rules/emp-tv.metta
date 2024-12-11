@@ -346,9 +346,10 @@
     (if (< $subsize (db_size $db))
         (let* (
                 ($esstvs (emp-tv-bs-helper $pattern $db $n-resample $subsize))
-                ($_  (println! $esstvs))
+                ((EMPTV $mean $variance) (avrg-tv-py $esstvs))
             )
-        (avrg-tv-py $esstvs)) ; Return average of the empirical truth values
+            (mk-stv $mean $variance)
+        ) ; Return average of the empirical truth values
     (emp-tv $pattern $db))) ; If subsize >= db size, directly return empirical truth value
 
 
