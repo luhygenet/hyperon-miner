@@ -14,17 +14,25 @@
         (-> (specialization_with_minsup $sptrn $aptrn)
             (minsup $sptrn))))
 
+; ;; Conjunction rule
+; (: support-cnj
+;     (-> (minsup $ptrn1)
+;         (-> (minsup $ptrn2)
+;             (-> (isDiff $ptrn1 $ptrn2)
+;                 (-> (refdb $db)
+;                     (supportOf (, $ptrn1 $ptrn2)
+;                         (if (prune? (, $ptrn1 $ptrn2))
+;                             0
+;                             (count (, $ptrn1 $ptrn2) $db))))))))
+
 ;; Conjunction rule
-(: support-cnj
+(: support-conj
     (-> (minsup $ptrn1)
         (-> (minsup $ptrn2)
             (-> (isDiff $ptrn1 $ptrn2)
-                (-> (refdb $db)
-                    (supportOf (, $ptrn1 $ptrn2)
-                        ;; add Prunning condition
-                        (if (prune? (, $ptrn1 $ptrn2))
-                            0
-                            (count (, $ptrn1 $ptrn2) $db))))))))
+                (-> (valid-conj $ptrn1 $ptrn2)
+                    (-> (refdb $db)
+                        (supportOf (, $ptrn1 $ptrn2) (count (, $ptrn1 $ptrn2) $db))))))))
 
 ;; iSurprisingness rule
 (: surprisingness 
