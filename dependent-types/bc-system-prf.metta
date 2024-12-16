@@ -29,3 +29,9 @@
     (if (and (and (is-closed $X) (is-closed $Y)) (== $X $Y))
         (empty)
         (: CPUDiff (isDiff $X $Y))))
+
+;; Proof for prunning
+(= (syn $kb $_ (: PRUNEPRF (valid-conj $p1 $p2))) 
+    (if (prune? (, $p1 $p2))
+        (empty)
+        (: PRUNEPRF (valid-conj $p1 $p2))))
