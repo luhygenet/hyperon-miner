@@ -6,7 +6,6 @@
 ! (import! &self experiments:utils:bs-utils)
 
 
-(= (pow-py $base $power) ((py-atom numpy.power) $base $power)) 
 
 
 

@@ -1,6 +1,7 @@
 ;;;;;;;;;;;;;;;;;;
 ;; Common Utils ;;
 ;;;;;;;;;;;;;;;;;;
+(= (pow-py $base $power) ((py-atom numpy.power) $base $power)) 
 
 (= (decons-atom $exp)
     ((car-atom $exp) (cdr-atom $tail))

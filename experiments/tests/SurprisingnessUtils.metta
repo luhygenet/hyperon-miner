@@ -2,8 +2,10 @@
  ;;;;;;;;;;
  ;; Imports ;;
  ;;;;;;;;;;
- ; ! (register-module! ../../experiments)
- ;  ; ! (import! &self experiments:rules:emp-tv)
+! (register-module! ../../experiments)
+! (import! &self experiments:rules:emp-tv)
+! (import! &self experiments:utils:bs-utils)
+! (import! &self experiments:utils:common-utils)
  ; ! (import! &self  test-utils)
  ; ! (import! &self  experiments:tests:List)
 
@@ -45,24 +47,21 @@
 (= (rget $dict (:: $x $xs))
     (rget (get $dict $x) $xs))
 
-! (import getattr)
+; ! (import getattr)
 
-(= (inspect $x) (getattr $x "__dict__"))
+; (= (inspect $x) (getattr $x "__dict__"))
 
-(= (import $y as $x)
-    (bind! $x (py-atom $y)))
-(= (import $x)
-    (import $x as $x))
+; (= (import $y as $x)
+;     (bind! $x (py-atom $y)))
+; (= (import $x)
+;     (import $x as $x))
 
  ; > Python imports
  ; --------------
 
-! (import str as ::str)
+; ! (import str as ::str)
 
  ;database setup
-! (add-reduct &self (= (get-space) (new-space)))
-(= (db) (get-space))
-
  ;;check if the index is out of range
 (: out_of_index (-> Number Number Boolean))
 (= (out_of_index $n_cpts $x) (>= $x $n_cpts))
@@ -98,7 +97,7 @@
 (= (emp_prob_subsmp $pattern $db $subsize)
 
     (if (< $subsize (db_size $db))
-        ( emp-prob $pattern (subsmp $db $subsize))
+        ( emp-prob $pattern (subsample-py $db $subsize))
         (emp-prob $pattern $db)
     )
 )
@@ -217,7 +216,7 @@
 
     )
 )
-! (duplicate-and-expand-space (new-space))
+; ! (duplicate-and-expand-space (new-space))
  ;;TODO: remove n atoms from the database
 
 (= (copy-db-by-size $db $old-db-content $n $size)
@@ -228,15 +227,19 @@
 
 )
 )
-! (==== test=== copy-db-by-size=== )
-! (copy-db-by-size (new-space) (collapse (get-atoms (get-space)) ) 0 10)
 
-(= (subsample $db $subsize)
-    (if (>= (db_size $db) $subsize)
-        $db
-        (case (categorize_subsize  $subsize (db_size $db))
-            (
-                (1 (duplicate-and-expand-space $db (- (* $subsize 2) (db_size $db)))) ; if it is in group 1 add atoms to the database
-                (2 (copy-db-by-size (new-space) (collapse (get-atoms $db ) ) 0 (- (* $subsize 2) (db_size $db))))
-                ($_ (copy-db-by-size (new-space) (collapse (get-atoms $db ) ) 0 (- (* $subsize 2) (db_size $db))))
-            )))) ; if it is in group 2 remove atoms from the database
+
+
+! (add-reduct &self (= (get-space) (new-space)))
+! (add-atom (get-space) (Inheritance Abe human))
+! (add-atom (get-space) (Inheritance Rio human))
+! (add-atom (get-space) (Inheritance Bob human))
+! (add-atom (get-space) (Inheritance Mike human))
+! (add-atom (get-space) (Inheritance Mike Nil))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Parent Abe Nil ))
+
+; !(emp-prob (Inheritance $x human) (get-space))
+!(subsample-py (get-space) 3)
+
