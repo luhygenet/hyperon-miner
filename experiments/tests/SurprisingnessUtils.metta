@@ -2,14 +2,12 @@
  ;;;;;;;;;;
  ;; Imports ;;
  ;;;;;;;;;;
+
 ! (register-module! ../../experiments)
 ! (import! &self experiments:rules:emp-tv)
-! (import! &self experiments:utils:bs-utils)
 ! (import! &self experiments:utils:common-utils)
- ; ! (import! &self  test-utils)
- ; ! (import! &self  experiments:tests:List)
-
- ;;
+! (import! &self experiments:utils:emp-tv-bs)
+! (import! &self experiments:utils:bs-utils)
 
 ! (import! &self  test-utils)
 
@@ -47,19 +45,19 @@
 (= (rget $dict (:: $x $xs))
     (rget (get $dict $x) $xs))
 
-; ! (import getattr)
+! (import getattr)
 
-; (= (inspect $x) (getattr $x "__dict__"))
+(= (inspect $x) (getattr $x "__dict__"))
 
-; (= (import $y as $x)
-;     (bind! $x (py-atom $y)))
-; (= (import $x)
-;     (import $x as $x))
+(= (import $y as $x)
+    (bind! $x (py-atom $y)))
+(= (import $x)
+    (import $x as $x))
 
- ; > Python imports
- ; --------------
+ > Python imports
+ --------------
 
-; ! (import str as ::str)
+! (import str as ::str)
 
  ;database setup
  ;;check if the index is out of range
@@ -102,13 +100,32 @@
     )
 )
 
+(= (emp_prob_helper $pattern $db $n_resample $subsize) 
+
+    (if (== $n_resample 0) 
+        () 
+        (let* (
+            ($head-emp (emp_prob_subsmp $pattern $db $subsize))
+            ($tail-emp (emp_prob_helper $pattern $db (- $n_resample 1) $subsize))
+
+            )
+        (cons-atom  $head-emp $tail-emp)
+    )
+    )
+)
+ 
+
+
+
 ( = (emp_prob_bs $pattern $db $n_resample $subsize)
     (if (< $subsize (db_size $db))
-        (avrg (emp_prob_subsmp ($pattern $db  $subsize)))
+        (avrg (emp_prob_helper $pattern $db $n_resample $subsize))
         (emp-prob $pattern $db)
     )
 
 )
+
+
 
 (: sum (-> (List $a) Number))
 (= (sum Nil) 0)
@@ -117,9 +134,9 @@
 (: avrg (-> (List Number) Number))
 (= (avrg $lst)
 
-    (case (len $lst)
+    (case (tuple-count $lst)
         ( (0 0)
-            ($_ (/ (sum $lst) (len $lst))))
+            ($_ (/ (sum $lst) (tuple-count $lst))))
     )
 )
 
@@ -175,16 +192,7 @@
      ;;construct new databas  get atoms of the database and add it to the new database.
 )
 
- ;;copy-db function is designed to create a copy of the given database and return the new database.
-(= (copy-db $db $old-db-content)
-    (if (== $old-db-content ()) $db
-        (let* ( ($_ (add-atom $db (car-atom $old-db-content)))
 
-            )
-        (copy-db $db (cdr-atom $old-db-content))
-    )
-
-))
 
  ;;TODO: add n atoms to the database
 (= (add_n_atoms_to_db $db $n)
@@ -241,5 +249,8 @@
 ! (add-atom (get-space) (Parent Abe Nil ))
 
 ; !(emp-prob (Inheritance $x human) (get-space))
-!(subsample-py (get-space) 3)
-
+; !(subsample-py (get-space) 3)
+; !(sup (Inheritance $x $y) (get-space))
+; !(emp_prob_subsmp (Inheritance Abe human) (get-space) 4)
+; ! (emp_prob_helper (Inheritance $x human) (get-space) 5 4)
+!(emp_prob_bs (Inheritance $x human) (get-space) 5 4)
