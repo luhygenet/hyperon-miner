@@ -36,7 +36,7 @@
                     ($shaby (abstract-recursive $suby))
                     ($spec1 (replace (SpecializationOf ($link $shabx $y1) ($link $x $y))))
                     ($spec2 (replace (SpecializationOf ($link $x1 $shaby) ($link $x $y))))
-                    ($spec3 (replace (SpecializationOf ($link $shabx $shaby) ($link $x $y))))
+                     ; ($spec3 (replace (SpecializationOf ($link $shabx $shaby) ($link $x $y))))
                 )
             (
                 superpose (

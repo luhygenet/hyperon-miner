@@ -5,7 +5,7 @@
  ; ! (import! &self hyperon-miner:experiments:utils:common-utils)
  ; ! (bind! &specspace (new-space))
  ; ! (bind! &cndpspace (new-space))
- ; ! (import! &self freq-pat)
+! (import! &self freq-pat)
 
 (= (candidatePattern $dbspace $spezspace $minsup $cndpspace)
     (match $spezspace (SpecializationOf $specialized $pattern)
