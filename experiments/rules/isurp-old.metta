@@ -9,24 +9,38 @@
 ;;! (import! &self hyperon-miner:experiments:utils:gen_partition)
 
 
+;;;;;;;;;;;;;;;;;;;;
+;;High-Level Steps;;
+;;;;;;;;;;;;;;;;;;;;
+;; - Compute the probability of the pattern (pattern_prob).
+;; - Generate all partitions excluding the pattern.
+;; - Calculate the probabilities of all partitions (iprob).
+;; - Identify the minimum and maximum probabilities (emin, emax) of the partitions.
+;; - Compute the distance of pattern_prob from the interval [emin,emax]
+;; - Normalize the distance if required.
+;; - Bound the final surprisingness value to a maximum of 1.0
 
 
 
+;;Calculates the total possible counts for a pattern based on database size 
+;;and the number of conjunctive clauses in the pattern.
 (=(total_counts $pattern $db) (pow (db_size $db) (n_conjuncts_new $pattern)))
 
-;; return the product of list of numbers
+;; Computes the product of a list of numbers recursively
 (=(accumulator-x $num_list) (accumulator-x $num_list 1))
 (=(accumulator-x $num_list $prev_value)  (
    if (== $num_list ()) $prev_value (let ($head $tail) (decons-atom $num_list) (accumulator-x $tail (* $head $prev_value)))
 ))
 
-
+;;Determines the number of conjunctive clauses in a pattern.
 (=(n_conjuncts_new $pattern) (
    let ($head $tail) (decons-atom $pattern) (
     if (== $head ,) (tuple-count $tail) 1)
 ))
 
 
+;;Recursively calculates the support for each component of a 
+;;conjunctive pattern by retrieving their support numbers (`sup-num`) from the database.
 (=(compute-component-support $cps $db)(
   if (== $cps ()) () (
     let* (  (($head $tail) (decons-atom $cps)) 
@@ -48,17 +62,18 @@
 ;; Function calculating the probability of a pattern
 (=(prob $pattern $db) (/ (ptrn-support  $pattern $db) (total_counts $pattern $db)))
 
-;; convert list of patterns of the blk to conjuct pattern 
-;; by adding "," in front of tuples of the blk
+;;Converts a list of blocks into a conjunctive pattern
 (=(add-pattern $blks $db) (
 let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ))
 `
 
-;; Calculate the probability of each block of the partition
+;;Calculates the probability of a block within a partition by first converting 
+;;it into a pattern and then computing its probability.
 (=(blk-prob $partition $db) (prob (add-pattern $partition $db) $db))
 
-;; Calculate the probability of each partition 
+
+;; Recursively computes the probabilities of all blocks in a partition. 
 (=(p-blk-prob $partition $db) (
     if (== $partition ()) () (let* ((($blk $tail) (decons-atom $partition))
                                     ( $res (blk-prob $blk $db) )
@@ -66,8 +81,9 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
                                     (cons-atom $res $dummy))))
 
 
-;;Calculate the probability estimate of each partition based on
-;;independent assumption of between each partition block.
+
+;;Estimates the probability of each partition under the assumption that blocks 
+;;within a partition are independent. It multiplies the probabilities of individual blocks
 (=(iprob $prtns $db) (
    if (== $prtns ()) ()  (let* ((($partition $tail) (decons-atom $prtns)) 
                                  ($temp (accumulator-x (p-blk-prob $partition $db)))
@@ -75,8 +91,11 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ))
 
 
-;; calculate  I-surprisingness of the pattern without takes 
-;; into account the joint variables.
+
+;; Computes the I-surprisingness of a pattern based on its probability, the 
+;; minimum and maximum probabilities derived from independent partitions, and the 
+;; distance of the pattern probability from this interval. Optionally, the surprisingness 
+;; value can be normalized.
 ;(: isurp_old (-> Pattern db boolean Number))
 (=(isurp_old $pattern $db $normalize) (
     let* (

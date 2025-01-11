@@ -190,6 +190,10 @@
                (let $dummy (connected-subpatterns-with-var $tail $var ) (cons-atom $head $dummy)) 
                 (if $is_pattern (connected-subpatterns-with-var $tail $var) (concatTuple  (connected-subpatterns-with-var $head $var) (connected-subpatterns-with-var $tail $var)) ))))
 
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Common Utils from prev file ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

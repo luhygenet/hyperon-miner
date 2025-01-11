@@ -79,9 +79,6 @@
 
 
 
-
-
-
 (= (ji-est-tv $db $db_size $pattern $partitions)
 (   if (== $partitions ()) () (
         let* ((($head $tail) (decons-atom $partitions))

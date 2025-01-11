@@ -10,8 +10,14 @@
 ;;! (import! &self hyperon-miner:experiments:utils:gen_partition)
 
 
+
+;; Calculate the empirical probability of pattern, using
+;; boostrapping if necessary
 (=(emp_prob_pbs_mem $subpattern $db  $db_ratio) 0.4)
 
+
+;; Calculate the product of the probability over subpatterns
+;; without considering joint variables
 (=(pro-prob-wout-joint $subpatterns $db $db_ratio $p) (
   if (== $subpatterns ()) $p (
     let* ((($subpattern $tail) (decons-atom $subpatterns))
@@ -22,14 +28,15 @@
 ))
 
 
-
+;; Calculate probability estimate of a pattern given a partition,
+;; assuming all blocks are independent, but takes into account the
+;; joint variables (ji_prob_est stands for joint-independent
+;; probability estimate).
 (=(ji-prob-est $partition $pattern $db $db_ratio) (
      let $p (pro-prob-wout-joint $partition $db $db_ratio 1)
              (let $eq_prob (prob-with-joint $db (db_size $db) (remove-parenthesis $partition) (joint-variables-init $pattern (remove-parenthesis $partition)) 1)  
              (* $p $eq_prob)))
              )
-
-
 
 
 
@@ -42,7 +49,9 @@
 )
 
 
-
+;; Calculate the probability estimate of each partition based on
+;; independent assumption of between each partition block, taking
+;; into account the linkage probability.
 (=(ji_prob_est_interval $pattern $db $db_ratio) (
    let ($emin $emax) (min-max  (do-ji-prob (generet-partition-without-pattern $pattern) $pattern $db $db_ratio))
         ($emin $emax)

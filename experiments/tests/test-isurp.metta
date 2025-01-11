@@ -7,7 +7,9 @@
 ! (import! &self experiments:utils:miner-utils)
 ! (import! &self experiments:utils:gen_partition)
 ! (import! &self experiments:rules:est-tv)
+! (import! &self experiments:rules:emp-tv)
 ! (import! &self experiments:rules:isurp)
+! (import! &self experiments:rules:emp-prob-pbs)
 
 
 
@@ -46,9 +48,13 @@
 ;!(get-unique-vars (,(Inheritance $x $y)  (Inheritance Abe (And $z $w))))
 ;!(get-unique-vars (,(Inheritance $x $y)  (Inheritance Abe (And $z $w))))
 
+ ;!(emp_tv_mem ((Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Abe $x))  (get-space)) 
 
  ;!(var-appers $x (((Or Bob $x)) ((Human $x (Or Bob $x)))))
 
  ;!(is-present $z (Inheritance $x $y))
 
 ;!(let $temp (collapse (is-present $y ((Or Bob $x))))  $temp)
+
+;!(emp-prob-pbs (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 3)
+

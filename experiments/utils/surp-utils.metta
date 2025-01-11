@@ -22,8 +22,6 @@
 
 
 
-
-
 (=(joint-variables () $partion) ())
 (=(joint-variables $vars  $partion )(
     let ($head $tail)    (decons-atom $vars)
@@ -54,15 +52,15 @@
     if (== $pattern_list ()) () (
         let* (  
               (($head $tail) (decons-atom $pattern_list))
-             ;($emp_value (emp-tv $head $db))
-              ($set_emp ($head (EMPTV 0.8 0.45)))
+              ($emp_value (emp-tv $head $db))
               ($dummy (emp_tv_mem $tail $db))
         )  
-            (cons-atom $set_emp $dummy)
+            (cons-atom $emp_value $dummy)
     )
  ))
 
- 
+
+
 
  ; Orchestrating the overall process to calculate the average truth value
 

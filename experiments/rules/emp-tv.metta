@@ -98,7 +98,7 @@
 (= (emp_tv_pbs $pattern $db $prob_estimate $db_ratio $db_size $support_estimate)
     (case (categorize_by_support_estimate  $db_size $support_estimate)
         (
-            (1 (emp_tv_bs $pattern $db $db_size $db_ratio $support_estimate))
+            (1 (emp_tv_bs $pattern $db $db_size $db_ratio $support_estimatje))
             (2 (emp-tv $pattern $db))
             ($_ (emp-tv $pattern $db))
         )))
