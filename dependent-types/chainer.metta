@@ -38,12 +38,12 @@
     (let () (println! (bc-⍃ (: $prf (⍃ $X $Y))))
      (if (and (and (is-closed $X) (is-closed $Y)) (< $X $Y))
           (: CPU (⍃ $X $Y))
-          (empty))))
+          Empty)))
 ;; System proof for isDiff
 (= (bc (: $prf (isDiff $X $Y)) $_ $kb)
     (let () (println! (bc-isDiff (: $prf (isDiff $X $Y))))
      (if (and (and (is-closed $X) (is-closed $Y)) (== $X $Y))
-          (empty)
+          Empty
           (: CPUDiff (isDiff $X $Y)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -72,7 +72,7 @@
 (= (add-atom-nodup $space $atom)
    (case (match $space $atom $atom)
      (($atom ())
-      (%void% (add-atom $space $atom)))))
+      (Empty (add-atom $space $atom)))))
 
 ;; Add all atoms from an expression to a given atomspace
 (: add-atoms-nodup (-> $st Expression ()))
@@ -129,4 +129,26 @@
    (let* (($res (bc $prms $depth $kb))
           ($cres (collapse $res))
           ($dummy (add-minsup $kb $res)))
-     (ibc (superpose $cres) $depth $k)))
+     (ibc (superpose $cres) $depth $k $kb)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; custome Iterative forward chainer for the Miner ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(= (get-minsup $res)
+     (collapse (let (: $prf (supportOf $ptrn $cnt)) $res (: $prf (supportOf $ptrn $cnt)))))
+
+(= (get-minsup $res)
+     (let () (println! (interim-result $res))
+     (collapse (let (: $prf (minsup $ptrn)) $res (: $prf (minsup $ptrn))))))
+
+(: mifc (-> $a Nat Nat $space $a))
+;; base case
+(= (mifc $prms $depth Z $kb) $prms)
+
+;; Iterative step
+(= (mifc $prms $depth (S $k) $kb)
+   (let* (($res (fc $prms $depth $kb))
+          ($msptrn (get-minsup $res))
+          ($dummy (add-atom $kb $msptrn)))
+     (mifc (superpose $msptrn) $depth $k $kb)))
