@@ -1,32 +1,16 @@
-; !(register-module! ../../hyperon-miner)
-; !(import! &self hyperon-miner:utils:MinerUtils)
-; !(import! &self hyperon-miner:utils:DeBruijnIndex)
-; !(import! &self hyperon-miner:dependent-types:chainer)
+!(register-module! ../../chaining)
+!(import! &self chaining:dtl:backward:curried)
+!(import! &self chaining:dtl:forward:curried)
+!(import! &self chaining:dtl:utils)
 
-;; sample data
-!(bind! &db (new-space))
+!(register-module! ../../hyperon-miner)
+!(import! &self hyperon-miner:utils:MinerUtils)
+!(import! &self hyperon-miner:dependent-types:bc-system-prf)
 
-(: Linktype Type)
-(: interacts_with (-> $a $b Linktype))
-!(add-atom &db (interacts_with (gene TP53) (gene MDM2)))
-!(add-atom &db (interacts_with (gene BRCA1) (gene BRCA2)))
-!(add-atom &db (interacts_with (gene TP53) (gene BRCA1)))
-!(add-atom &db (interacts_with (gene TP53) (gene MDM2)))
-!(add-atom &db (interacts_with (gene CDK2) (gene CYCLIN_E)))
-!(add-atom &db (interacts_with (gene CDK2) (gene CYCLIN_A)))
-!(add-atom &db (interacts_with (gene EGFR) (gene GRB2)))
-!(add-atom &db (interacts_with (gene EGFR) (gene ERBB2)))
-!(add-atom &db (interacts_with (gene TP53) (gene MDM2)))
-!(add-atom &db (interacts_with (gene BRCA1) (gene RAD51)))
-!(add-atom &db (interacts_with (gene BRCA2) (gene RAD51)))
-!(add-atom &db (interacts_with (gene TP53) (gene BRCA2)))
-!(add-atom &db (interacts_with (gene MDM2) (gene MDM4)))
-!(add-atom &db (interacts_with (gene TP53) (gene EGFR)))
-!(add-atom &db (interacts_with (gene BRCA1) (gene MDM2)))
-!(add-atom &db (interacts_with (gene BRCA1) (gene EGFR)))
-!(add-atom &db (interacts_with (gene CDK2) (gene CYCLIN_E)))
-!(add-atom &db (interacts_with (gene CDK2) (gene CYCLIN_A)))
-!(add-atom &db (interacts_with (gene MDM2) (gene TP53)))
+;; Load db
+!(import! &db hyperon-miner:data:sample2)
+;; Remove, stdlib, corelib DynSpace imported
+!(match &db $x (if (== (get-type $x) hyperon::space::DynSpace) (remove-atom &db $x) (Empty) ))
 
 ;; Parameters
 (= (highsurp) 0.8)
@@ -40,7 +24,9 @@
 ;; KB and rule base ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
-!(import! &kb MinerCurriedDTL)
+!(import! &kb hyperon-miner:dependent-types:MinerCurriedDTL)
+;; Remove, stdlib, corelib DynSpace imported
+!(match &kb $x (if (== (get-type $x) hyperon::space::DynSpace) (remove-atom &kb $x) (Empty)))
 
 ;; Initialize miner with the given db, kb and parameters
 !(init-miner &db &kb (ms) (highsurp))
@@ -49,30 +35,47 @@
 ;; Test ;;
 ;;;;;;;;;;
 
-;; Test 1: Use the forward chainer
-;; Start from the most abstract pattern, and collect patterns with minimum support iteratively
-; a,
-; !(let* (($aptrn (abstract-patterns))
-;         ($cnt (count $aptrn))
-;         ($fact (: (supportwitness $aptrn) (supportOf $aptrn $cnt)))
-;         ($depth (fromNumber 8)))
-;     (ifc $fact $depth (S Z) &kb))
+; initial fact: Abstract pattern (interacts_with X Y) has enough support
+!(add-atom &kb (: FACT (supportOf (interacts_with (VarIdx Z) (VarIdx (S Z))) 5)))
 
-;; or b,
-; !(ifc (: ST (supportOf (Inheritance (VarIdx Z) (VarIdx (S Z))) 4)) (fromNumber 5) (fromNumber 2) &kb)
+;; Test 1
+; !(syn &kb (fromNumber 11) (: $prf $concln))
 
-;; Find Conjunctions of patterns, with minimum support
-; !(ibc (: $prf (supportOf (, $ptrn1 $ptrn2) $cnt)) (fromNumber 4) (S Z) &kb)
-; !(bc (: $prf (minsup $ptrn)) (fromNumber 4) &kb)
+;; Test 2
+; !(let $r (syn &kb (fromNumber 11) (: $prf $concln)) (add-atoms-nodup &kb (collapse $r)))
+; !(syn &kb (fromNumber 4) (: $prf (minsup $ptrn)))
 
-;; Test 2: Use the backward chainer
-;; Given the support for the most abstract pattern,
-;; find patterns with minimum support.
-;; (Recursive backward chaining)
-; !(let* (($aptrn (abstract-patterns))
-;         ($cnt (count $aptrn)))
-;     (add-atom &kb (: (supportwitness $aptrn) (supportOf $aptrn $cnt))))
+;; Test 3
+;; FIXME: iterative synthesize not working? 
+; !(isyn &kb (fromNumber 9) (S (S Z)) (: $prf (minsup $ptrn)))
 
-; !(ibc (: $prf (minsup $ptrn)) (fromNumber 5) (S (S Z)) &kb)
+;; Test 4
+;; Recursive call
+; !(let $a (syn &kb (fromNumber 4) (: $prf (minsup $ptrn))) (add-atoms-nodup &kb (collapse $a)))
+; !(let $b (syn &kb (fromNumber 5) (: $prf (supportOf $ptrn $cnt))) (add-atoms-nodup &kb (collapse $b)))
+; !(let $c (syn &kb (fromNumber 5) (: $prf (minsup $ptrn))) (add-atoms-nodup &kb (collapse $c)))
+; !(let $d (syn &kb (fromNumber 5) (: $prf (supportOf $ptrn $cnt))) (add-atoms-nodup &kb (collapse $d)))
+; !(syn &kb (fromNumber 5) (: $prf (minsup $ptrn)))
 
-; !(let (: $type (minsup $pattern)) (get-atoms &kb) (minsup $pattern))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;   Recursive minsup algorithm  ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; step 1
+; (minsup P1)
+; (minsup P2)
+; (minsup P3)
+; ...
+; step2
+; (, (minsup P1) (minsup P2))
+; (, (minsup P1) (minsup P3))
+; (, (minsup P2) (minsup P3))
+; ...
+; step3
+; (, (minsup P1) (, (minsup P1) (minsup P2)))
+; (, (minsup P1) (, (minsup P2) (minsup P3)))
+; (, (minsup P2) (, (minsup P1) (minsup P3)))
+; ...
+; step 4
+; (, (minsup P1) (, (minsup P1) (, (minsup P1) (minsup P2))))
+; ...
