@@ -13,6 +13,39 @@
 ;; This is very slow, use the grounded python function instead
 (= (tuple-count $tuple) (if (== $tuple ()) 0 (+ 1 (tuple-count (cdr-atom $tuple)))))
 
+;;;;;;;;;;;;;;;;;;;;;; 
+;; Helper for Match ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+!(bind! &candidatespace (new-space))
+!(bind! &countedspace (new-space))
+
+(= (get-links $db)
+    (match $db ($link $x $y) $link))
+
+(= (specialize $link $db)
+    (match $db ($link $x $y) (superpose (($link $x (VarIdx (S Z))) ($link (VarIdx Z) $y)))))
+
+(= (findsupport $sPattern $ms $db)
+    (case (match &countedspace $sPattern 1)
+        ((Empty (let $cnt (count $sPattern $db)
+                    (if (> $cnt $ms) (superpose ((add-atom &candidatespace (candidate $sPattern $cnt))
+                                                 (add-atom &countedspace $sPattern)
+                                                 (candidate $sPattern $cnt)))
+                                     (add-atom &countedspace $sPattern))))
+         ($_ Empty))))
+
+(= (support $sPattern $ms $db)
+    (let $a (findsupport $sPattern $ms $db) $a))
+
+(= (get-pattern (candidate $pattern $cnt)) $pattern)
+
+(= (all-candidates) (get-atoms &candidatespace))
+
+;;;;;;;;;;;;;;;;;;;;
+;; Helper for DTL ;;
+;;;;;;;;;;;;;;;;;;;;
+
 !(bind! &abstractions (new-space))
 !(bind! &specialization (new-space))
 
@@ -107,8 +140,9 @@
 ;;    (, (likes A $y) (, (likes B $y) (, (likes C $y) (likes D $y))))
 
 (= (prune? (, $p1 $p2))
+   (let () (println! (, $p1 $p2))
    (if (or (abstract? $p1) (abstract? $p2)) True 
-    (if (and (conj? $p1) (conj? $p2)) True False)))
+    (if (and (conj? $p1) (conj? $p2)) True False))))
 
 ;; Todo: disconnected conjunctions
 ;; create a connection or prune??
