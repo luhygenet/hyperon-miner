@@ -10,7 +10,6 @@
 
  ;; Valuation set Implementation
 (= (valuation-set $link $x $y $dbspace $valspace) (superpose (
-            (println! ($link $x $y))
             (match $dbspace ($link $x $y) (superpose ( (remove-atom $valspace (ValuationOf X $x)) (add-atom $valspace (ValuationOf X $x)))))
             (match $dbspace ($link $x $y) (superpose ( (remove-atom $valspace (ValuationOf Y $y)) (add-atom $valspace (ValuationOf Y $y)))))
         )

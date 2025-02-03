@@ -24,10 +24,10 @@
     ($link (Debruijn2var $first $varlist) (Debruijn2var $second $varlist)))
 
 (= (Var2Debruijn $second (S Z))(
-    if (== (get-metatype $second) Symbol) $second (VarIdx (S Z))
+    if (or (== (get-metatype $second) Symbol)(== (get-metatype $second) Expression)) $second (VarIdx (S Z))
 ))
 (= (Var2Debruijn $first Z)(
-    if (== (get-metatype $first) Symbol) $first (VarIdx Z))
+    if (or (== (get-metatype $first) Symbol)(== (get-metatype $first) Expression)) $first (VarIdx Z))
 )
 (= (Var2Debruijn ($link $first $second))(
     $link (Var2Debruijn $first Z) (Var2Debruijn $second (S Z))

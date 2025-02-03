@@ -177,7 +177,7 @@
                 ($head (car-atom $pattern_vars))
                 ($tail (cdr-atom $pattern_vars)))
             (if (does_exist $head $cnjtion_vars)
-                (concatTuple ( ($head (generateRandomVar $set))) (address_conflict $tail $cnjtion_vars ))
+                (concatTuple ( ($head (generateRandomVar))) (address_conflict $tail $cnjtion_vars ))
                 (concatTuple ( ($head $head)) (address_conflict $tail $cnjtion_vars))))
     )
 )
@@ -372,7 +372,7 @@
 
 (INHERITANCE_LINK A B)
 (LIST_LINK A B)
-(List_LINK A C)
+(LIST_LINK A C)
 (LIST_LINK B C)
 (INHERITANCE_LINK A D)
 (INHERITANCE_LINK X Y)
