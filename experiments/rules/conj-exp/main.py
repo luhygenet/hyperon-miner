@@ -115,6 +115,7 @@ def combine_lists_recursive(list1, list2, length, current_combination=None, inde
         combinations.extend(combine_lists_recursive(list1, list2, length, new_combination, index1, j + 1))
 
     return (unique_combinations(combinations, list1, list2))
+    # return combinations
 
 def combine_lists(list1, list2):
     length = len(list2)
@@ -122,21 +123,29 @@ def combine_lists(list1, list2):
 
 
 def unique_combinations(combinations, list1, list2):
+    # print(list1)
+    # print(list2)
     flat_list1 = flatten_list(list1)
     flat_list2 = flatten_list(list2)
+    # print(flat_list1)
+    # print(flat_list2)
     
     seen = set()
     unique_combos = []
     list1_set = set(str(item) for item in flat_list1)
     list2_set = set(str(item) for item in flat_list2)
-
+    # print(list1_set)
+    # print(list2_set)
     for combo in combinations:
-        sorted_combo = tuple(sorted(str(item) for item in combo))
+        # sorted_combo = tuple(sorted(str(item) for item in combo))
+        sorted_combo = tuple(str(item) for item in combo)
         combo_set = set(sorted_combo)
         if sorted_combo not in seen and combo_set != list1_set and combo_set != list2_set:
+        # if combo_set != list1_set and combo_set != list2_set:
             seen.add(sorted_combo)
             unique_combos.append(combo)
     return unique_combos
+    # return seen
 
 @register_atoms(pass_metta=True)
 def cnj_exp(metta):
@@ -214,3 +223,6 @@ def rand_str(run_context):
     return {
         r"generateRandomVar": generateRandomVar
     }
+
+
+# print(combine_lists_op(MeTTa(), "($X $Y $X $B)", "($R-D1737102179 $A)"))
