@@ -228,12 +228,12 @@
 
 ;; This is very slow, use the grounded python function instead
 
-;    (: tuple-count (-> %Undefined% Number))
-;    (= (tuple-count $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
+   (: tuple-count (-> %Undefined% Number))
+   (= (tuple-count $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
 
 ;; Tuple count grounded python function
 ; (import! &self  helper)
-! (import! &self  helper)
+; ! (import! &self  helper)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ; Function: sum
  ; Description: Calculates the sum of elements in a list.
