@@ -27,7 +27,7 @@ def parseFromExpresstion(metta, expresion, dimention):
 
 def parseToExpression(metta, strings):
     strings = strings.replace("[", "(").replace("]", ")").replace(
-        ",", "").replace("\"", "").replace("'","")
+        ",", "").replace("\"", "").replace("'", "").replace("#", "")
 
     atom = metta.parse_all(strings)
     return atom
@@ -90,7 +90,6 @@ def generate_partitions(metta, subsets, original):
     return atom
 
 
-    
 @register_atoms(pass_metta=True)
 def generete_partionReg(metta: MeTTa):
 
@@ -100,6 +99,6 @@ def generete_partionReg(metta: MeTTa):
     # generateRandomVar = OperationAtom('generateRandomVar', lambda a, b: (print(S(a),S(b)),generate_random_var(metta,a, b)[1],['Atom', 'Atom', 'Expression'], unwrap=False))
 
     return {
-        r"gen-partition": generatePartiton 
-        
+        r"gen-partition": generatePartiton
+
     }
