@@ -2,12 +2,12 @@
  ;;;;;;;;;;
  ;; Imports ;;
  ;;;;;;;;;;
- ; ! (register-module! ../../experiments)
- ;  ; ! (import! &self experiments:rules:emp-tv)
- ; ! (import! &self  test-utils)
- ; ! (import! &self  experiments:tests:List)
 
- ;;
+! (register-module! ../../experiments)
+! (import! &self experiments:rules:emp-tv)
+! (import! &self experiments:utils:common-utils)
+! (import! &self experiments:utils:emp-tv-bs)
+! (import! &self experiments:utils:bs-utils)
 
 ! (import! &self  test-utils)
 
@@ -54,15 +54,12 @@
 (= (import $x)
     (import $x as $x))
 
- ; > Python imports
- ; --------------
+ > Python imports
+ --------------
 
 ! (import str as ::str)
 
  ;database setup
-! (add-reduct &self (= (get-space) (new-space)))
-(= (db) (get-space))
-
  ;;check if the index is out of range
 (: out_of_index (-> Number Number Boolean))
 (= (out_of_index $n_cpts $x) (>= $x $n_cpts))
@@ -98,18 +95,37 @@
 (= (emp_prob_subsmp $pattern $db $subsize)
 
     (if (< $subsize (db_size $db))
-        ( emp-prob $pattern (subsmp $db $subsize))
+        ( emp-prob $pattern (subsample-py $db $subsize))
         (emp-prob $pattern $db)
     )
 )
+
+(= (emp_prob_helper $pattern $db $n_resample $subsize) 
+
+    (if (== $n_resample 0) 
+        () 
+        (let* (
+            ($head-emp (emp_prob_subsmp $pattern $db $subsize))
+            ($tail-emp (emp_prob_helper $pattern $db (- $n_resample 1) $subsize))
+
+            )
+        (cons-atom  $head-emp $tail-emp)
+    )
+    )
+)
+ 
+
+
 
 ( = (emp_prob_bs $pattern $db $n_resample $subsize)
     (if (< $subsize (db_size $db))
-        (avrg (emp_prob_subsmp ($pattern $db  $subsize)))
+        (avrg (emp_prob_helper $pattern $db $n_resample $subsize))
         (emp-prob $pattern $db)
     )
 
 )
+
+
 
 (: sum (-> (List $a) Number))
 (= (sum Nil) 0)
@@ -118,9 +134,9 @@
 (: avrg (-> (List Number) Number))
 (= (avrg $lst)
 
-    (case (len $lst)
+    (case (tuple-count $lst)
         ( (0 0)
-            ($_ (/ (sum $lst) (len $lst))))
+            ($_ (/ (sum $lst) (tuple-count $lst))))
     )
 )
 
@@ -176,16 +192,7 @@
      ;;construct new databas  get atoms of the database and add it to the new database.
 )
 
- ;;copy-db function is designed to create a copy of the given database and return the new database.
-(= (copy-db $db $old-db-content)
-    (if (== $old-db-content ()) $db
-        (let* ( ($_ (add-atom $db (car-atom $old-db-content)))
 
-            )
-        (copy-db $db (cdr-atom $old-db-content))
-    )
-
-))
 
  ;;TODO: add n atoms to the database
 (= (add_n_atoms_to_db $db $n)
@@ -217,7 +224,7 @@
 
     )
 )
-! (duplicate-and-expand-space (new-space))
+; ! (duplicate-and-expand-space (new-space))
  ;;TODO: remove n atoms from the database
 
 (= (copy-db-by-size $db $old-db-content $n $size)
@@ -228,15 +235,22 @@
 
 )
 )
-! (==== test=== copy-db-by-size=== )
-! (copy-db-by-size (new-space) (collapse (get-atoms (get-space)) ) 0 10)
 
-(= (subsample $db $subsize)
-    (if (>= (db_size $db) $subsize)
-        $db
-        (case (categorize_subsize  $subsize (db_size $db))
-            (
-                (1 (duplicate-and-expand-space $db (- (* $subsize 2) (db_size $db)))) ; if it is in group 1 add atoms to the database
-                (2 (copy-db-by-size (new-space) (collapse (get-atoms $db ) ) 0 (- (* $subsize 2) (db_size $db))))
-                ($_ (copy-db-by-size (new-space) (collapse (get-atoms $db ) ) 0 (- (* $subsize 2) (db_size $db))))
-            )))) ; if it is in group 2 remove atoms from the database
+
+
+! (add-reduct &self (= (get-space) (new-space)))
+! (add-atom (get-space) (Inheritance Abe human))
+! (add-atom (get-space) (Inheritance Rio human))
+! (add-atom (get-space) (Inheritance Bob human))
+! (add-atom (get-space) (Inheritance Mike human))
+! (add-atom (get-space) (Inheritance Mike Nil))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Inheritance Zac human))
+! (add-atom (get-space) (Parent Abe Nil ))
+
+; !(emp-prob (Inheritance $x human) (get-space))
+; !(subsample-py (get-space) 3)
+; !(sup (Inheritance $x $y) (get-space))
+; !(emp_prob_subsmp (Inheritance Abe human) (get-space) 4)
+; ! (emp_prob_helper (Inheritance $x human) (get-space) 5 4)
+!(emp_prob_bs (Inheritance $x human) (get-space) 5 4)

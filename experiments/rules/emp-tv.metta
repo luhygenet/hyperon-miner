@@ -105,8 +105,10 @@
 
  ;;Support: number of data trees matching a given pattern.
 (= (sup $pattern $db)
-    (tuple-count (collapse (match $db $pattern $pattern))))
-
+    (tuple-count 
+        (collapse 
+            (match $db $x (let $pattern $x $pattern))))
+)
  ;;ji_tv_est_mem this function is used to estimate the joint probability of a pattern.
  ;;ji_tv_est_mem is going to implemented in est-tv rule.
 
@@ -228,7 +230,7 @@
  ; $db: The database to be subsampled.
  ; $subsize: The target subset size for the database.
 (= (subsample $db $subsize)
-    (if (>= (db_size $db) $subsize)
+    (if (<= (db_size $db) $subsize)
         $db
         (case (categorize_subsize  $subsize (db_size $db))
             (
