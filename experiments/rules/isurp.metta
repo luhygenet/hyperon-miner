@@ -1,13 +1,14 @@
-
-;;! (register-module! ../../../hyperon-miner)
 ;;! (register-module! ../../experiments)
+;;! (import! &self experiments:utils:common-utils)
+;;! (import! &self experiments:utils:beta-dist)
+;;! (import! &self experiments:utils:constants)
+;;! (import! &self experiments:utils:TruthValue)
+;;! (import! &self experiments:utils:surp-utils)
+;;! (import! &self experiments:utils:miner-utils)
+;;! (import! &self experiments:utils:gen_partition)
 ;;! (import! &self experiments:rules:est-tv)
 ;;! (import! &self experiments:rules:emp-tv)
-
-;;! (import! &database hyperon-miner:experiments:data:sample-data)
-;;! (import! &self hyperon-miner:experiments:utils:common-utils)
-;;! (import! &self hyperon-miner:experiments:utils:TruthValue)
-;;! (import! &self hyperon-miner:experiments:utils:gen_partition)
+;;! (import! &self experiments:rules:emp-prob-pbs)
 
 
 

@@ -91,7 +91,7 @@
  ; It calculates the alpha and beta parameters based on the mean and variance.
  ; It then computes the count and confidence values using these parameters.
  ; The mode is determined based on the values of alpha and beta, following specific conditions.
- ; Finally, it returns an EMPTV (mode, confidence) pair.
+ ; Finally, it returns an STV (mode, confidence) pair.
 ;;(: mk_stv (-> ))
 (=(mk_stv $mean $variance) (
    let* (
@@ -158,7 +158,9 @@
               (cons-atom $beta_dist $dummy))
 ))
 
-(=(get_beta_mean_var $beta $key)(
+
+;; $beta --> (Beta (mean 54) (variance 57))
+(=(get_beta_mean_var_old $beta $key)(
     let* (
            ($temp (cdr-atom $beta));;((mean 54) (variance 57))
            ($mean_tuple (car-atom $temp));; (mean 54)
@@ -174,3 +176,9 @@
       )
       
 ))
+
+
+(=(get_beta_mean_var $beta $key)(
+    let (Beta (mean $mean) (variance $variance )) $beta (
+        if (== $key mean) $mean $variance
+      )))
