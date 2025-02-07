@@ -230,7 +230,7 @@
  ; $db: The database to be subsampled.
  ; $subsize: The target subset size for the database.
 (= (subsample $db $subsize)
-    (if (>= (db_size $db) $subsize)
+    (if (<= (db_size $db) $subsize)
         $db
         (case (categorize_subsize  $subsize (db_size $db))
             (
