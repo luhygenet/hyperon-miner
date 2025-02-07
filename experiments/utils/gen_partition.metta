@@ -7,7 +7,12 @@
  ;  If the link is `And`, it returns the rest of the elements (body) of the expression.
  ;  Otherwise, it returns the input expression itself.
 
-
+(:get-clauses (-> Expression Expression))
+(= (get-clauses $element)
+    (let $link (car-atom $element)
+        (if (== $link And)
+            (cdr-atom $element)
+            $element )))
  ; Function: add-to-subsets
  ; Description: Adds an element to each subset in a list of subsets.
  ; Parameters:
@@ -109,7 +114,7 @@
 (: generet-partition-without-pattern (-> Expression Expression))
 (= (generet-partition-without-pattern $pattern)
     (let* (
-            ($clause (get-cnj-clouses $pattern))
+            ($clause (get-clauses $pattern))
             ($subsets (gen-subsets $clause))
         )
     (gen-partition $subsets $clause)) ; gen-partition is registered

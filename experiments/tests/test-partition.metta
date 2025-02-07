@@ -1,4 +1,5 @@
 ! (register-module! ../../../hyperon-miner)
+! (import! &self hyperon-miner:experiments:utils:common-utils)
 ! (import! &self hyperon-miner:experiments:utils:gen_partition)
 
  ;;;;;;;;;;;;;;;;;;;;
@@ -10,7 +11,7 @@
  ;; input :  (And (Parent John Kalid) (Parent Jalid Beza) (Parent Nati Abis))
  ;; output :  ( (Parent John Kalid) (Parent Jalid Beza) (Parent Nati Abis) )
 
-! (get-clauses (And (Parent John Kalid) (Parent Jalid Beza) (Parent Nati Abis)))
+; ! (get-clauses (And (Parent John Kalid) (Parent Jalid Beza) (Parent Nati Abis)))
 
  ;;;;;;;;;;;;;;;;;;
  ;; gen-subsets ;;;
@@ -35,11 +36,11 @@
  ; ( (Parent John Kalid) (Parent Jalud Beza) (Parent Nati Abis))
  ; )
 
-;! (gen-subsets ( (Parent John Kalid)
-        (Parent Jalud Beza)
-        (Parent Nati Abis)
-    )
-)
+; ! (gen-subsets ( (Parent John Kalid)
+;         (Parent Jalud Beza)
+;         (Parent Nati Abis)
+;     )
+; )
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
