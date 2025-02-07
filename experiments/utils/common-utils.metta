@@ -2,6 +2,8 @@
 ;; Common Utils ;;
 ;;;;;;;;;;;;;;;;;;
 
+(= (pow-py $base $power) ((py-atom numpy.power) $base $power)) 
+
 (= (decons-atom $exp)
     ((car-atom $exp) (cdr-atom $tail))
 )
@@ -227,9 +229,16 @@
  ;   - The tuple-count of the tuple as an integer.
  ;; Count the number elements in an expression
 
-(: tuple-count (-> %Undefined% Number))
-(= (tuple-count $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
 
+;; This is very slow, use the grounded python function instead
+
+   (: tuple-count (-> %Undefined% Number))
+   (= (tuple-count $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
+
+;; Tuple count grounded python function
+; (import! &self  helper)
+; ! (import! &self  helper)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ; Function: sum
  ; Description: Calculates the sum of elements in a list.
  ; Parameters:

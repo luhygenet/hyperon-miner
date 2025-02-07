@@ -6,10 +6,6 @@
 ! (import! &self experiments:utils:bs-utils)
 
 
-(= (pow-py $base $power) ((py-atom numpy.power) $base $power)) 
-
-
-
 
 ! (add-reduct &self (= (get-space) (new-space)))
 ! (add-atom (get-space) (Inheritance Abe human))
@@ -23,13 +19,28 @@
 
 
 
+!(assertEqual (sup (Inheritance $x $y) (get-space)) 7)
+
+!(assertEqual (universe-count (Inheritance $x ) (get-space)) 8)
+
+!(assertEqual (emp-tv (Inheritance Zac $x) (get-space)) (EMPTV 0.25 0.08888888888888889))
+
+!(assertEqual (db_size (duplicate-and-expand-space (get-space) 1)) (+ 1 (db_size (get-space))))
+
+; !(add_n_atoms_to_db (get-space) 4)
+!(assertEqual (db_size (get-space)) 12)
+
+;; if the max size is 10, the size of the new db should be 8 because the size of the old db is 8 and it is less than 10
+!(assertEqual (db_size (copy-db-by-size (new-space) (collapse (get-atoms (get-space)) ) 0 10)) 8)
+
+;; if the max size is 6, the size of the new db should be 6 because the size of the old db is 8 and it is greater than 6 so
+;; we can only copy 6 atoms
+!(assertEqual (db_size (copy-db-by-size (new-space) (collapse (get-atoms (get-space)) ) 0 6)) 6)
 
 ; ! (sup (Inheritance $x $y) (get-space))
 
 ;  ! (prob_to_support (Inheritance $x) (collapse (get-atoms (get-space)) ) 1 )
-;  ! (universe-count $pattern $db)
-; (universe-count ( (Parent $x Nil) (Parent $x Nil)) (get-space))
-; (universe-count (Inheritance $x ) (get-space))
+;  ! (universe-count $pattern $d; !(universe-count ( (Parent $x Nil) (Parent $x Nil)) (get-space))
 
 ;  ! (prob_to_support A (get-space) 1 )
 ; ! (db_size (get-space))
