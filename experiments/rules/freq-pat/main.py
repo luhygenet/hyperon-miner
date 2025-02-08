@@ -112,52 +112,43 @@ def call_python_process(metta: MeTTa):
 
 def replace_with_de_bruijn(metta: MeTTa, pattern):
     str_pattern = str(pattern)
-
-    def get_de_bruijn(index):
-        if index == 0:
-            return "Z"
-        return f"(S {get_de_bruijn(index - 1)})"
-
+    var_map = {}  # Maps variables to De Bruijn indices
     index = 0
-    var_count = len(re.findall(r"\$\w+(?:#\w+)?", str_pattern))
-    for _ in range(var_count):
-        str_pattern = re.sub(
-            r"\$\w+(?:#\w+)?", f"{get_de_bruijn(index)}", str_pattern, count=1
-        )
-        index += 1
+
+    def get_de_bruijn(idx):
+        return "Z" if idx == 0 else f"(S {get_de_bruijn(idx - 1)})"
+
+    # Find all variables
+    variables = re.findall(r"\$\w+(?:#\w+)?", str_pattern)
+
+    for var in variables:
+        print(var)
+        if var not in var_map:
+            var_map[var] = get_de_bruijn(index)
+            index += 1
+        str_pattern = str_pattern.replace(var, var_map[var], 1)
 
     return [metta.parse_single(str_pattern)]
 
 
 def replace_with_variable(metta: MeTTa, pattern):
     str_pattern = str(pattern)
+    de_bruijn_map = {}  
 
-    def match_de_bruijn_indices(string):
-        stack = []
-        for char in string:
-            if char == "(":
-                stack.append(char)
-            elif char == ")":
-                stack.pop()
-        for i in stack:
-            string += ")"
-        return string
+    def match_parentheses(string):
+        missing = string.count("(") - string.count(")")
+        return string + ")" * missing if missing > 0 else string
 
     def generate_random_var():
-        return (
-            "$"
-            + "".join(random.choices(string.ascii_lowercase, k=1))
-            + "".join(random.choices(string.digits, k=2))
-        )
+        return "$" + "".join(random.choices(string.ascii_lowercase, k=1)) + "".join(random.choices(string.digits, k=2))
 
-    matches = re.findall(r"(Z|\(S(.*?)\))", str_pattern)
-    for match in matches:
-        str_pattern = re.sub(
-            re.escape(match_de_bruijn_indices(match[0])),
-            f"{generate_random_var()}",
-            str_pattern,
-            count=1,
-        )
+    # Find all De Bruijn indices
+    de_bruijn_indices = re.findall(r"(Z|\(S(.*?)\))", str_pattern)
+
+    for index in de_bruijn_indices:
+        if index[0] not in de_bruijn_map:
+            de_bruijn_map[index[0]] = generate_random_var()
+        str_pattern = str_pattern.replace(match_parentheses(index[0]), de_bruijn_map[index[0]], 1)
 
     return [metta.parse_single(str_pattern)]
 
