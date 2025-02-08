@@ -86,10 +86,20 @@
  ;	 *  [[C],[B,A]],
  ;	 *  [[A],[C,B]]]
 
-! (generet-partition-without-pattern
-    (
-        (Parent John Kalid)
-        (Parent Jalud Beza)
-        (Parent Nati Abis)
-    )
+; ! (generet-partition-without-pattern
+;     (
+;         (Parent John Kalid)
+;         (Parent Jalud Beza)
+;         (Parent Nati Abis)
+;     )
+; )
+
+! (add-reduct &self (= (get-space) (new-space)))
+
+! (add-atom (get-space) (Inheritance John $y))
+! (add-atom (get-space) (Inheritance $z $y))
+! (add-atom (get-space) (Inheritance $x Abebe))
+
+!(let $pattern (collapse (get-atoms (get-space))) 
+    (generet-partition-without-pattern $pattern)
 )
