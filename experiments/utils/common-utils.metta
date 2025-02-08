@@ -356,10 +356,42 @@
 )
 )
 
+;; Function: intilize
+;; 
+;; Description:
+;;   Initializes the given database by performing the following steps:
+;;     1. Retrieves all atoms from the database ($db) using get-atoms.
+;;     2. Collapses the retrieved atoms to form a simplified representation.
+;;     3. Counts the number of tuples present in the collapsed data.
+;;     4. Adds a new atom to self with the computed tuple count.
+;;
+;; Parameters:
+;;   $db - The database object containing the atoms to process.
+;;
+;; Returns:
+;;   The modified self with the new atom added, encapsulating the tuple count.
+(= (intilize $db) (add-atom &self (db-size $db (tuple-count (collapse (get-atoms $db))))))
+
+;; Function: db_size
+;;
+;; Description:
+;;   Computes the size of a dynamic space by counting the number of atoms present.
+;;
+;; Parameters:
+;;   $db - An instance of hyperon::space::DynSpace representing the database.
+;;
+;; Returns:
+;;   A Number indicating the total count of atoms in the database.
+;;
+;; Details:
+;;   - Retrieves all atoms from the dynamic space using get-atoms.
+;;   - Collapses the list of atoms to a simpler form.
+;;   - Uses tuple-count to determine the number of atoms.
  ;;db size
 (: db_size (-> hyperon::space::DynSpace  Number))
 (= (db_size $db)
-    (tuple-count (collapse (get-atoms $db)))
+    (unify &self (db-size $db $size) $size (tuple-count (collapse (get-atoms $db))))
+    
 )
 
  ;;abs accepts a number and returns an absolute value of a number

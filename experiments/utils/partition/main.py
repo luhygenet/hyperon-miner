@@ -17,11 +17,12 @@ import hyperonpy as hp
 
 def parseFromExpresstion(metta, expresion, dimention):
     if dimention == 1:
-        return [str(child) for child in expresion.get_children()]
+        return [str(child).replace("#", "") for child in expresion.get_children()]
     elif dimention == 2:
         out = []
         for childExp in expresion.get_children():
-            out.append([str(child) for child in childExp.get_children()])
+            out.append([str(child).replace("#", "")
+                       for child in childExp.get_children()])
         return out
 
 
