@@ -62,4 +62,4 @@
 
 
 !(bc &kb (fromNumber 5) (: $prf (Inheritance $what green)))
-;;(: (frog_green_rule ((croaks_eats_flies_frog_rule ECF) EEFF)) (Inheritance Fritz green))
+;;(: (frog_green_rule ((croaks_eats_flies_frog_rule ECF) EEFF)) (Inheritance Fritz green))  

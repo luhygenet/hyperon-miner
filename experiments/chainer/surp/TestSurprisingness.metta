@@ -18,9 +18,11 @@
 ;; of the conclusions before matching the correct premises.
 (: -> (-> Atom Atom Type))
 
+;;(= (isurp $pattern $db $normalize $db_ratio) (yes $pattern))
+
 (=(do-isurp $pattern) (
    isurp $pattern &kb True 0.5
-))
+))` 
 
 
 ;;add facts 
@@ -38,35 +40,18 @@
         (-> (supportOf $ptrn $cnt)
             (surp $ptrn (do-isurp $ptrn))))))
 
-;;!(syn &kb (fromNumber 2) (: $prf (surp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) $value)))
-!(syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value)))
+;!(syn &kb (fromNumber 2) (: $prf (surp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) $value)))
+;;!(syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value)))
 
 
-;;!(do-isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+;!(match &kb (: FACT1 (minsup $x)) (do-isurp $x))
 
 
-(= (substitute $pattern ()) $pattern)
-(= (substitute () $variables) ())
- (= (substitute $pattern $variables)
-     (let* (
-             ($head (car-atom $pattern))
-             ($tail (cdr-atom $pattern)))
+;!(do-isurp (, (Inheritance $x#2428 $y#2429) (Inheritance Abe $y#2429) (Inheritance Zac $y#2429)))
+;;!(do-isurp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
 
-         (if (== (get-metatype $head) Expression)
-             (case $head
-                 ( ( ($link $x $y) (concatTuple
-                             (substitute $head $variables)
-                             (substitute $tail (let $temp (cdr-atom $variables) (cdr-atom $temp)))))
-                     ( ($link $x ) (concatTuple
-                             (substitute $head $variables)
-                             (substitute $tail (cdr-atom $variables))))))
 
-             (if (== (get-metatype $head) Variable)
-                 (concatTuple ( (car-atom $variables)) (substitute $tail (cdr-atom $variables)))
-                 ( (concatTuple ($head) (substitute $tail $variables))))
-         )
- )
- )
+
 
 ;;! (substitute (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)) ($A $B))
 
@@ -82,3 +67,6 @@
 ;;!(compose (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)) (($D $B) ($G $A)))
 
 ;;!(get-type "(, (Inheritance $x#3542 $y#3543) (Inheritance Abe $y#3543) (Inheritance Zac $y#3543) ")
+
+
+[((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $Y)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $X)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $B)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $A)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $B)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $A)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $A)) ()))))))))))]
