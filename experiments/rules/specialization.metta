@@ -12,8 +12,8 @@
 
 (= (specialize-pattern $link $x $y $shabspace $spezspace) (
         superpose (
-            (collapse (match $shabspace (ShallowAbstractionOf X $t) (add-atom $spezspace (SpecializationOf ($link $x $y) ($link $t $y)))))
-            (collapse (match $shabspace (ShallowAbstractionOf Y $t) (add-atom $spezspace (SpecializationOf ($link $x $y) ($link $x $t)))))
+            (match $shabspace (ShallowAbstractionOf X $t) (add-atom $spezspace (SpecializationOf ($link $x $y) ($link $t $y))))
+            (match $shabspace (ShallowAbstractionOf Y $t) (add-atom $spezspace (SpecializationOf ($link $x $y) ($link $x $t))))
         )
 )
 )

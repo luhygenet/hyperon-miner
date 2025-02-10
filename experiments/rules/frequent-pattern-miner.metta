@@ -1,7 +1,7 @@
 ! (register-module! ../../../hyperon-miner)
 ! (import! &dbspace hyperon-miner:experiments:data:sample-data)
 ! (import! &self hyperon-miner:experiments:rules:build-specialization)
-! (import! &self hyperon-miner:experiments:rules:candidate_patterns)
+! (import! &self hyperon-miner:experiments:rules:candidate-patterns)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
 ! (bind! &specspace (new-space))
 ! (bind! &cndpspace (new-space))
