@@ -7,6 +7,8 @@
  ; ! (bind! &cndpspace (new-space))
 ! (import! &self freq-pat)
 
+
+;get candidate patterns based on theri support
 (= (candidatePattern $dbspace $spezspace $minsup $cndpspace)
     (match $spezspace (SpecializationOf $specialized $pattern)
         (let* (

@@ -8,6 +8,8 @@
 ! (bind! &aptrnspace (new-space))
 ! (import! &self freq-pat)
 
+
+; apriori propertie to prevent patterns that dont have a support from being speciallized
 (= (apriori $dbspace $minsup $aptrnspace)
     (match $dbspace $atom
         (if (not (== (get-type $atom) hyperon::space::DynSpace))
@@ -27,12 +29,13 @@ empty
 )
 )
 )
+
+; miner
 (= (frequency-pattern-miner $dbspace $specspace $cndpspace $aptrnspace $minsup )
     (superpose (
-            (apriori $dbspace $minsup $aptrnspace)
-            (match $aptrnspace (AbstractPattern $pattern) (build-specialization $pattern $dbspace $specspace))
-             ; (match $aptrnspace (AbstractPattern $pattern) $pattern)
-            (candidatePattern $dbspace $specspace $minsup $cndpspace)
+            (apriori $dbspace $minsup $aptrnspace) ; prevent patterns that dont have a support from being speciallized
+            (match $aptrnspace (AbstractPattern $pattern) (build-specialization $pattern $dbspace $specspace)) ; specializa abstract patterns
+            (candidatePattern $dbspace $specspace $minsup $cndpspace); get candidate patterns
         ))
 )
 
