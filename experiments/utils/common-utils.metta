@@ -386,7 +386,7 @@
  ;;db size
 (: db_size (-> hyperon::space::DynSpace  Number))
 (= (db_size $db)
-    (unify &self (db-size $db $size) $size (tuple-count (collapse (get-atoms $db))))
+     (tuple-count (collapse (get-atoms $db)))
     
 )
 
@@ -683,3 +683,22 @@
     )
 )
 
+
+(= (support $pattern $db) (
+    let $patterns (get-clouses $pattern) 
+    
+    (if (== $patterns ())
+        1
+        (let* (
+                ($head (car-atom $patterns))
+                ($tail (cdr-atom $patterns))
+                ($sup (sup $head $db))
+
+            )
+            (* $sup (support $tail $db))
+        )
+    )
+      
+)
+)
+ 
