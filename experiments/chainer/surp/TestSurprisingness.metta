@@ -18,11 +18,12 @@
 ;; of the conclusions before matching the correct premises.
 (: -> (-> Atom Atom Type))
 
-;;(= (isurp $pattern $db $normalize $db_ratio) (yes $pattern))
+
 
 (=(do-isurp $pattern) (
-   isurp $pattern &kb True 0.5
-))` 
+  ;; isurp $pattern &kb True 0.5
+  emp-prob-pbs $pattern &kb 0.6
+)) 
 
 
 ;;add facts 
@@ -34,39 +35,46 @@
 !(add-atom &kb (: FACT4 (supportOf (,(Interact_with $x $y)  (Interact_with  Abe $y) (Interact_with  Zac $y)) 5)))
 
 
-;;add the rule to the kb
+;;add the surprisingness  rule to the kb
 !(add-atom &kb (: surprisingness 
     (-> (minsup $ptrn)
-        (-> (supportOf $ptrn $cnt)
-            (surp $ptrn (do-isurp $ptrn))))))
+           (-> (supportOf $ptrn $cnt)
+                 (surp $ptrn 0.2)))))
+
 
 ;!(syn &kb (fromNumber 2) (: $prf (surp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) $value)))
-;;!(syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value)))
+;!(syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value)))
+
+;;!(index-atom ($a $b $c $d $e) (random-int 0 5))
+;!(random-int 0 5)
 
 
-;!(match &kb (: FACT1 (minsup $x)) (do-isurp $x))
+;;(: ((surprisingness FACT1) FACT3) (surp (, (Inheritance $x#3544 $y#3545) (Inheritance Abe $y#3545) (Inheritance Zac $y#3545)) 0.2)),
+;;(: ((surprisingness FACT2) FACT4) (surp (, (Interact_with $x#3542 $y#3543) (Interact_with Abe $y#3543) (Interact_with Zac $y#3543)) 0.2))
+
+;(: insert_N (-> $a (List $a) (List $a)))
+(= (insert_N (value $x) Nil) (Cons (value $x) Nil))
+(= (insert_N (value $x) (Cons ($z $y) $tail))
+   (if (< $x $y)
+       (Cons (value $x) (Cons ($z $y) $tail))
+       (Cons ($z $y) (insert_N (value $x) $tail))))
+
+;; Sort a list
+;(: sort (-> (List $a) (List $a)))
+(= (sort Nil) Nil)
+(= (sort (Cons $head $tail)) (insert_N $head (sort $tail)))
 
 
-;!(do-isurp (, (Inheritance $x#2428 $y#2429) (Inheritance Abe $y#2429) (Inheritance Zac $y#2429)))
-;;!(do-isurp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+;;!(sort (Cons (value 4) (Cons (value 6) (Cons (value 5) Nil))))
 
-
-
-
-;;! (substitute (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)) ($A $B))
-
-(LIST_LINK (INHERITANCE_LINK A $A) (LIST_LINK G $B))
-
- 
-(=(substitute_new $term (, $x $z) $args) (
-    let (, $x $z)  $args $term
+(= (create_list Nil) ())
+(= (create_list (Cons $head $tail)) (
+  let $temp (create_list $tail) (cons-atom $head $temp)
 ))
 
-;;!(substitute_new (LIST_LINK (Inheritance A $x) (Inheritance G $z)) (, $x $z) (, $a $d))
-
-;;!(compose (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)) (($D $B) ($G $A)))
-
-;;!(get-type "(, (Inheritance $x#3542 $y#3543) (Inheritance Abe $y#3543) (Inheritance Zac $y#3543) ")
+!(create_list (sort (Cons (value 4) (Cons (value 6) (Cons (value 5) Nil)))))
 
 
-[((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $Y)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $X)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $B)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $A)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $B)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $A)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $A)) ()))))))))))]
+
+
+

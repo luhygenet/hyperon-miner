@@ -7,5 +7,7 @@
 (Inheritance Mike human)
 (Inheritance Zac human)
 (Inheritance Zac human)
+
+
 (Parent Abe Nil )
 (Inheritance Bob (And human (Or zac))) 
