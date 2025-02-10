@@ -46,7 +46,7 @@
 ;!(syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value)))
 
 ;;!(index-atom ($a $b $c $d $e) (random-int 0 5))
-;!(random-int 0 5)
+!(random-int 0 5)
 
 
 ;;(: ((surprisingness FACT1) FACT3) (surp (, (Inheritance $x#3544 $y#3545) (Inheritance Abe $y#3545) (Inheritance Zac $y#3545)) 0.2)),
@@ -72,7 +72,7 @@
   let $temp (create_list $tail) (cons-atom $head $temp)
 ))
 
-!(create_list (sort (Cons (value 4) (Cons (value 6) (Cons (value 5) Nil)))))
+;!(create_list (sort (Cons (value 4) (Cons (value 6) (Cons (value 5) Nil)))))
 
 
 
