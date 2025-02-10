@@ -141,7 +141,7 @@ def subsmp(metta: MeTTa, db_element, subsize):
 
 def generet_random_subsample(metta: MeTTa, db_element, subsize):
     db_elements = db_element.get_children()
-    subsize = int(str(subsize))
+    subsize = int(float(str(subsize)))
     if subsize == 0:
         return []
     elif len(db_elements) == subsize:
