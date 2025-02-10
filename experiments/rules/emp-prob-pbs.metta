@@ -1,7 +1,7 @@
 
 
 (= (subsmp-size $pattern $db-size $support-estimate)
-    (let* ( ($nc (n-conjuncts $pattern))
+    (let* ( ($nc (n_conjuncts $pattern))
             ($min-subsize 10)
             ($alpha (/ $support-estimate (pow-py $db-size $nc)))
             ($res (pow-py (/ $db-size (* 10 $alpha)) (/ 1 $nc))))
@@ -12,8 +12,8 @@
 
 
 (= (emp-prob-pbs $pattern $db $db-ratio)
-    (if (> 1 (n-conjuncts $pattern))
-        (let ($emin $emax) (ji-prob-est-interval $pattern $db $db-ratio)
+    (if (< 1 (n_conjuncts $pattern))
+        (let ($emin $emax) (ji_prob_est_interval $pattern $db $db-ratio)
 
             (emp-prob-pbs $pattern $db $emax $db-ratio)
         )

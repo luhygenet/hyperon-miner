@@ -117,6 +117,7 @@
             ($clause (get-cnj-clouses $pattern))
             ($subsets (gen-subsets $clause))
         )
+        
     (gen-partition $subsets $clause)
   
    ) ; gen-partition is registered
