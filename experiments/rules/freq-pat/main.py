@@ -122,7 +122,6 @@ def replace_with_de_bruijn(metta: MeTTa, pattern):
     variables = re.findall(r"\$\w+(?:#\w+)?", str_pattern)
 
     for var in variables:
-        print(var)
         if var not in var_map:
             var_map[var] = get_de_bruijn(index)
             index += 1
