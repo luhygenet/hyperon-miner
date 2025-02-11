@@ -20,7 +20,7 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;     emp-prob:
 ;         Computes the empirical probability of a given pattern within a database.
@@ -43,7 +43,7 @@
     (let*
         ( ( ($ucount ) ( (universe-count $pattern $db)))
             ( ($ms) ($ucount))
-            ( ($sup) ( (sup $pattern $db)))
+            ( ($sup) ( (support $pattern $db)))
 
         ) (/ $sup  $ucount)
 ))
@@ -204,6 +204,8 @@
         )
     )
 )
+
+
 
 
 
