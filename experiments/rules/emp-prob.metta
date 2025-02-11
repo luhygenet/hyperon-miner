@@ -20,7 +20,7 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;     emp-prob:
 ;         Computes the empirical probability of a given pattern within a database.
@@ -43,7 +43,7 @@
     (let*
         ( ( ($ucount ) ( (universe-count $pattern $db)))
             ( ($ms) ($ucount))
-            ( ($sup) ( (sup $pattern $db)))
+            ( ($sup) ( (support $pattern $db)))
 
         ) (/ $sup  $ucount)
 ))
@@ -155,7 +155,7 @@
 ;   The function returns the empirical probability of the pattern based on the conditions
 ;   evaluated.
 (= (emp-prob-pbs $pattern $db $db-ratio)
-    (if (< 1 (n-conjuncts $pattern))
+    (if (< 1 (n_conjuncts $pattern))
         (let ($emin $emax) (ji_prob_est_interval $pattern $db $db-ratio)
 
             (emp-prob-pbs $pattern $db $emax $db-ratio)
@@ -204,6 +204,8 @@
         )
     )
 )
+
+
 
 
 
