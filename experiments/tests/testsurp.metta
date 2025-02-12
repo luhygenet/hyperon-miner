@@ -52,15 +52,8 @@ Pattern
 ! (sup Pattern &self)
 ! (sup (lambda   (Parent $x Nil) (Parent $x Nil)) &self)
 ! (universe-count (lambda   (Parent $x Nil) (Parent $x Nil)) (get-space))
- ; (= (emp-prob $pattern $db)
- ;     (let*
- ;         ( ( ($ucount ) ( (universe-count $pattern $db)))
- ;             ( ($ms) ($ucount))
- ;             ( ($sup) ( (sup $pattern $db)))
 
- ;         ) (/ $sup  $ucount)
- ; ))
- ; ! (emp-prob (Nil) &self)
+
 ! (emp-prob (lambda   (Parent $x Nil) (Parent $x Nil)) &self)
 ! (db_size &self)
 ! (subsmp  &self 2)

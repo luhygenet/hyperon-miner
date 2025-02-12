@@ -92,38 +92,12 @@
         (populate_uniform_inheritance_link $n_cpts 0 0  $cpts ))
 )
 
-(= (emp_prob_subsmp $pattern $db $subsize)
 
-    (if (< $subsize (db_size $db))
-        ( emp-prob $pattern (subsample-py $db $subsize))
-        (emp-prob $pattern $db)
-    )
-)
 
-(= (emp_prob_helper $pattern $db $n_resample $subsize) 
-
-    (if (== $n_resample 0) 
-        () 
-        (let* (
-            ($head-emp (emp_prob_subsmp $pattern $db $subsize))
-            ($tail-emp (emp_prob_helper $pattern $db (- $n_resample 1) $subsize))
-
-            )
-        (cons-atom  $head-emp $tail-emp)
-    )
-    )
-)
  
 
 
 
-( = (emp_prob_bs $pattern $db $n_resample $subsize)
-    (if (< $subsize (db_size $db))
-        (avrg (emp_prob_helper $pattern $db $n_resample $subsize))
-        (emp-prob $pattern $db)
-    )
-
-)
 
 
 
@@ -144,14 +118,7 @@
 (= (len Nil) 1)
 (= (len (Cons $head $tail))  (+ 1 (len  $tail)))
 
-(= (emp-prob $pattern $db)
-    (let*
-        ( ( ($ucount ) ( (universe-count $pattern $db)))
-            ( ($ms) ($ucount))
-            ( ($sup) ( (sup $pattern $db)))
 
-        ) (/ $sup  $ucount)
-))
 
 (: abs (-> Number Number))
 (= (abs $x)
