@@ -260,18 +260,12 @@
 
  ;; Count the number of instances of a given pattern
 (: counter (-> hyperon::space::DynSpace Atom Number))
-(= (counter $db ($link $x $y))
-    (let $result (collapse (match $db ($link $x $y) ($link $x $y)))
+(= (counter $db $ptrn)
+    (let $result (collapse (match $db $ptrn $ptrn))
         (tuple-count $result)
     )
 )
 
-(: counter (-> hyperon::space::DynSpace Atom Number))
-(= (counter $db ($link $x))
-    (let $result (collapse (match $db ($link $x) ($link $x)))
-        (tuple-count $result)
-    )
-)
 
  ; Count the number of instances of a given pattern
 (= (count $pattern $db)
