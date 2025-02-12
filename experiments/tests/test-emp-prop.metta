@@ -25,8 +25,8 @@
 ;
 
 
-!(emp-prob-pbs (, (Inheritance $x $z) (Inheritance $x human)) (get-space) 0.4 0.5)
+;!(emp-prob-pbs (, (Inheritance $x $z) (Inheritance $x human)) (get-space) 0.5)
 
 ; !(emp-prob-pbs (Inheritance $x human) (get-space) 0.9 0.5)
 
-; !(emp-prob-pbs (Inheritance $x human) (get-space) 0.5)
+ ;!(emp-prob-pbs (Inheritance $x human) (get-space) 3)

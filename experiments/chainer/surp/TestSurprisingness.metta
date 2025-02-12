@@ -96,7 +96,7 @@
 ;!(tuple_to_list (1, 2, 3))
 
 
-!(tuple_to_list (syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value))))
+;;!(tuple_to_list (syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value))))
 
 
 
@@ -106,5 +106,6 @@
 ;;(: ((surprisingness FACT1) FACT3) (surp (, (Inheritance $x#3544 $y#3545) (Inheritance Abe $y#3545) (Inheritance Zac $y#3545)) 0.2)),
 ;;(: ((surprisingness FACT2) FACT4) (surp (, (Interact_with $x#3542 $y#3543) (Interact_with Abe $y#3543) (Interact_with Zac $y#3543)) 0.2))
 
+!(emp-prob-pbs (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) &kb 0.5 )
 
 
