@@ -8,6 +8,12 @@
 ! (bind! &aptrnspace (new-space))
 ! (import! &self freq-pat)
 
+;steps 
+; 1. get abstract patterns that have minimum support
+; 2. specializa abstract patterns
+; 3. get candidate patterns
+; 4. store candidate patterns
+
 
 ; apriori propertie to prevent patterns that dont have a support from being speciallized
 (= (apriori $dbspace $minsup $aptrnspace)

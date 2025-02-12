@@ -3,6 +3,14 @@
  ; ! (bind! &specspace (new-space))
  ; ! (bind! &specredspace (new-space))
 ! (import! &self freq-pat)
+
+;steps
+; 1. get the pattern
+; 2. get the valuation of the pattern by destructuring the pattern
+; 3. abstract the pattern and handle patterns with depth
+; 4. build the specialization
+; 5. add the specialization to the specialization space
+
  
 ; handle patterns with depth
 (= (abstract-recursive $p)

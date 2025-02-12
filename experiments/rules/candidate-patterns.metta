@@ -7,6 +7,11 @@
  ; ! (bind! &cndpspace (new-space))
 ! (import! &self freq-pat)
 
+;steps
+; 1. get the specialized pattern
+; 2. calculate the support of the pattern
+; 3. store as a candidate if the support is greater than the minimum support
+
 
 ;get candidate patterns based on theri support
 (= (candidatePattern $dbspace $spezspace $minsup $cndpspace)
