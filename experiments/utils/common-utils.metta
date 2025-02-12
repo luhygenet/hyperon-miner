@@ -283,9 +283,9 @@
  ;; Evaluate if the pattern has enough support
 (: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
 
-(= (sup-eval $db ($link $x $y) $ms)
-    (let $sup (counter $db ($link $x $y))
-        (if (>= $sup $ms) (CandidatePattern (Var2Debruijn ($link $x $y))) (superpose ()))
+(= (sup-eval $db $pattern $ms)
+    (let $sup (counter $db $pattern)
+        (if (>= $sup $ms) True False)
     )
 )
 

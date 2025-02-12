@@ -1,61 +1,55 @@
 ! (register-module! ../../../hyperon-miner)
 ! (import! &dbspace hyperon-miner:experiments:data:sample-data)
-! (import! &self hyperon-miner:experiments:rules:valuation-set)
-! (import! &self hyperon-miner:experiments:rules:shallow-abstraction)
-! (import! &self hyperon-miner:experiments:rules:specialization)
+! (import! &self hyperon-miner:experiments:rules:build-specialization)
 ! (import! &self hyperon-miner:experiments:rules:candidate-patterns)
-! (import! &self hyperon-miner:experiments:rules:mined-patterns)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
-! (import! &self hyperon-miner:experiments:utils:DeBruijnIndex)
-! (bind! &shabspace (new-space))
-! (bind! &valspace (new-space))
-! (bind! &spezspace (new-space))
+! (bind! &specspace (new-space))
 ! (bind! &cndpspace (new-space))
-! (bind! &minedpspace (new-space))
+! (bind! &aptrnspace (new-space))
+! (import! &self freq-pat)
 
-(= (depth) (fromNumber 1))
+;steps 
+; 1. get abstract patterns that have minimum support
+; 2. specializa abstract patterns
+; 3. get candidate patterns
+; 4. store candidate patterns
 
-! (add-atom &cndpspace (CandidatePattern (Inheritance (VarIdx Z) (VarIdx (S Z)) )))
 
-(= (cleanup-spaces $valspace $shabspace $spezspace) (
-        superpose (
-            (remove-atom $valspace (ValuationOf $x $y))
-            (remove-atom $shabspace (ShallowAbstractionOf $x $y))
-            (remove-atom $spezspace (SpecializationOf $x $y))
+; apriori propertie to prevent patterns that dont have a support from being speciallized
+(= (apriori $dbspace $minsup $aptrnspace)
+    (match $dbspace $atom
+        (if (not (== (get-type $atom) hyperon::space::DynSpace))
+            (let* (
+                    ( ($link $x $y) $atom)
+                    ($result (sup-eval $dbspace ($link $z $t) $minsup))
+                )
+            (if (== $result True)
+                (superpose (
+                        (remove-atom $aptrnspace (AbstractPattern ($link Z (S Z))))
+                        (add-atom $aptrnspace (AbstractPattern ($link Z (S Z))))
+                    ))
+            empty
         )
-    )
+)
+empty
+)
+)
 )
 
-(= (cleanup-cnd-spec $cndpspace) (
-        match $cndpspace (CandidatePattern ($link $x $y)) (remove-atom $cndpspace (CandidatePattern ($link $x $y)))
-    )
+; miner
+(= (frequency-pattern-miner $dbspace $specspace $cndpspace $aptrnspace $minsup )
+    (superpose (
+            (apriori $dbspace $minsup $aptrnspace) ; prevent patterns that dont have a support from being speciallized
+            (match $aptrnspace (AbstractPattern $pattern) (build-specialization $pattern $dbspace $specspace)) ; specializa abstract patterns
+            (candidatePattern $dbspace $specspace $minsup $cndpspace); get candidate patterns
+        ))
 )
 
-(= (init-miner $minsup $link $x $y $dbspace $valspace $shabspace $spezspace $cndpspace $minedpspace) (
-        (superpose(
-            (let ($link1 $s $t) (Debruijn2var ($link $x $y) (Cons $Xvar (Cons $Yvar Nil))) (valuation-set $link1 $s $t $dbspace $valspace))
-            (shallow-abstraction $valspace $shabspace)
-            (let ($link1 $s $t) (Debruijn2var ($link $x $y) (Cons $Xvar (Cons $Yvar Nil))) (specialize-pattern $link1 $s $t $shabspace $spezspace))
-            (cleanup-cnd-spec $cndpspace)
-            (candidate-pattern $dbspace $spezspace $minsup $cndpspace)
-            (add-mined-pattern $minedpspace $cndpspace)
-            (cleanup-spaces $valspace $shabspace $spezspace)
-            )
-        )
-    )
-)
+ ; ! (apriori &dbspace 2 &aptrnspace)
+ ; ! (match &aptrnspace (AbstractPattern $pattern) $pattern)
 
-(= (run-miner $minsup Z $dbspace $valspace $shabspace $spezspace $cndpspace $minedpspace) (
-        let ($link $x $y) (match $cndpspace (CandidatePattern ($link $x $y)) ($link $x $y)) (init-miner $minsup $link $x $y $dbspace $valspace $shabspace $spezspace $cndpspace $minedpspace)
-    )
-)
-
-(= (run-miner $minsup (S $k) $dbspace $valspace $shabspace $spezspace $cndpspace $minedpspace) ( (superpose (
-                (let ($link $x $y) (match $cndpspace (CandidatePattern ($link $x $y)) ($link $x $y)) (init-miner $minsup $link $x $y $dbspace $valspace $shabspace $spezspace $cndpspace $minedpspace))
-                (run-miner $minsup $k $dbspace $valspace $shabspace $spezspace $cndpspace $minedpspace)))
-    )
-)
-
-! (run-miner 2 (depth) &dbspace &valspace &shabspace &spezspace &cndpspace &minedpspace)
-! (match &cndpspace $h $h)
-! (match &minedpspace $h $h)
+! (frequency-pattern-miner &dbspace &specspace &cndpspace &aptrnspace 2)
+! (match &specspace $x $x)
+! (match &cndpspace $x $x)
+ ; ! (match &dbspace (: $p ($link $x $y)) $p)
+ ; ! (match &dbspace $x (if (not (== (get-type $x) hyperon::space::DynSpace)) $x ()))

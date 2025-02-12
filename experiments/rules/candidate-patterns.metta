@@ -1,40 +1,43 @@
- ;; Rule to add candidate patterns to the candidate space
- ;! (register-module! ../../../hyperon-miner)
- ;! (import! &dbspace hyperon-miner:experiments:data:sample-data)
- ;! (import! &self hyperon-miner:experiments:rules:valuation-set)
- ;! (import! &self hyperon-miner:experiments:rules:shallow-abstraction)
- ;! (import! &self hyperon-miner:experiments:rules:specialization)
- ;! (import! &self hyperon-miner:experiments:utils:common-utils)
- ;! (bind! &shabspace (new-space))
- ;! (bind! &valspace (new-space))
- ;! (bind! &spezspace (new-space))
- ;! (bind! &cndpspace (new-space))
+ ;; Rule to specialization a pattern
+ ; ! (register-module! ../../../hyperon-miner)
+ ; ! (import! &dbspace hyperon-miner:experiments:data:sample-data)
+ ; ! (import! &self hyperon-miner:experiments:rules:build-specialization)
+ ; ! (import! &self hyperon-miner:experiments:utils:common-utils)
+ ; ! (bind! &specspace (new-space))
+ ; ! (bind! &cndpspace (new-space))
+! (import! &self freq-pat)
 
-(= (candidate-pattern $dbspace $spezspace $minsup $cndpspace)
-    (match $spezspace (SpecializationOf $pattern ($link $x $y))
-        (let $result (sup-eval $dbspace ($link $x $y) $minsup)
-            (superpose ( (remove-atom $cndpspace $result) (add-atom $cndpspace $result)))
+;steps
+; 1. get the specialized pattern
+; 2. calculate the support of the pattern
+; 3. store as a candidate if the support is greater than the minimum support
+
+
+;get candidate patterns based on theri support
+(= (candidatePattern $dbspace $spezspace $minsup $cndpspace)
+    (match $spezspace (SpecializationOf $specialized $pattern)
+        (let* (
+                ( $specializedvar (replacev $specialized))
+                ($result (sup-eval $dbspace $specializedvar $minsup))
+            )
+        (if (== $result True)
+            (add-atom $cndpspace (CandidatePattern $specialized))
+            $result
         )
+
 )
+ ; (let $result (counter $dbspace $specialized)
+ ;     $result
+ ; )
+ ;     $specialized
 )
- ;; First, let's run the valuation-set function to populate the &valspace with the valuation sets
- ;! (valuation-set Inheritance $xvalue $yvalue &dbspace &valspace)
 
- ;; Check if valuation sets are inserted correctly
- ;! (match &valspace (ValuationOf $c $d) (ValuationOf $c $d))
+)
 
- ;; let's run the shallow-abstraction function to calculate the shallow abstraction over both variable X and Y
- ;! (shallow-abstraction X Y &valspace &shabspace)
+ ; ! (build-specialization (Inheritance Z (S Z)) &dbspace &specspace)
 
- ;; Check if shallow abstractions are inserted correctly
- ;! (match &shabspace (ShallowAbstractionOf $c $d) (ShallowAbstractionOf $c $d))
+ ; ! (match &specspace (SpecializationOf $x $y) ( $x))
 
- ;; Let's now run the specialization rule
- ;! (specialize-pattern Inheritance $x $y &shabspace &spezspace)
+ ; ! (candidatePattern &dbspace &specspace 2 &cndpspace)
 
- ;; Check if the specializations are inserted correctly
- ;! (match &spezspace (SpecializationOf $x $y) (SpecializationOf $x $y))
-
- ;! (candidatePattern &dbspace &spezspace 2 &cndpspace)
-
- ;! (match &cndpspace $h $h)
+ ; ! (match &cndpspace $h $h)
