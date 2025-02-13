@@ -153,7 +153,7 @@ def generet_random_subsample(metta: MeTTa, db_element, subsize):
         element = db_elements[random_index]
         subsample.append(element)
     mettaSubsample = metta.parse_all(str(subsample).replace(
-        "[", "(").replace("]", ")").replace(",", ""))
+        "[", "(").replace("]", ")").replace(",", "").replace("#", ""))
     return mettaSubsample
 
 
