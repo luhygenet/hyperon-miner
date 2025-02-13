@@ -33,7 +33,7 @@
 ! (add-atom (get-space)  (Inheritance Bob (And human (Or zac))) ) 
 
 
-;!(ji_prob_est_interval (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2)
+!(ji_prob_est_interval (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2)
 ;!(isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True 2)
 ;[0.6455555555555555]
 ;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y)))

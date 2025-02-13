@@ -38,5 +38,5 @@
 
  ;!(emp-prob-pbs (Inheritance $x human) (get-space) 3)
 
- ;;!(emp-prob-pbs (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb  0.2)
+ ;!(emp-prob-pbs (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb  0.2)
  ;!(ji_prob_est_interval (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb  0.2)

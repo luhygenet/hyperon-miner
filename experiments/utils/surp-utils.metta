@@ -62,17 +62,6 @@
 
 
 
- (= (emp-prob $pattern $db)
-    (let*
-        ( ( ($ucount ) ( (universe-count $pattern $db)))
-            ( ($ms) ($ucount))
-            ( ($sup) ( (sup $pattern $db)))
-
-        ) (/ $sup  $ucount)
-))
-
-
-
 
  ; Orchestrating the overall process to calculate the average truth value
 
