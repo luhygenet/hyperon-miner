@@ -13,7 +13,5 @@
 
 (= (avrg-tv-py $x) (mean-tv $x))
 
-(= (min $x $y) (if (> $y $x) $x $y))
-(= (max $x $y) (if (> $y $x) $y $x))
 
 
