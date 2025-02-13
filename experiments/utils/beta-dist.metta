@@ -122,8 +122,8 @@
  ; and uses prior alpha and beta values (both set to 1.0) to calculate the final alpha and beta parameters
  ; for the Beta distribution. The final alpha is the sum of the prior alpha and the positive count, while the
  ; final beta is the sum of the prior beta and the difference between the count and the positive count.
-(=(mk_distribution $Etv)(
-    let*(
+(=(mk_distribution_old $Etv)(
+    let* (
         ($tail (cdr-atom $Etv))
         ($tv (car-atom $tail))
         ($tv_mean (get_tv_mean $tv))
@@ -136,6 +136,19 @@
 
     )
         $_beta_dist
+))
+
+(=(mk_distribution $Etv) (
+    let* (
+         ((EMPTV $tv_mean $tv_conf) $Etv)
+         ($count (confidence->count $tv_conf))
+         ($pos_count (* $tv_mean $count))
+         ($alpha (+ (prior-alpha) $pos_count) )
+         ($beta (+ (prior-beta) (- $count $pos_count ))) 
+         ($_beta_dist (_beta_distribution $alpha $beta))
+
+    )
+       $_beta_dist        
 ))
 
 
@@ -151,12 +164,15 @@
 ;;!(_beta_distribution 2 5)
 (=(mk_distribution_list $patten_list)(
     if (== $patten_list ()) () (
-        let*(( ($head $tail)(decons-atom $patten_list))
+        let*(
+            ( ($head $tail)(decons-atom $patten_list))
             ($beta_dist (mk_distribution $head))
             ($dummy (mk_distribution_list $tail))
         )
               (cons-atom $beta_dist $dummy))
 ))
+
+
 
 
 ;; $beta --> (Beta (mean 54) (variance 57))

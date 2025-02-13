@@ -14,10 +14,12 @@
 (=(pro_prob_without_joint $db $subpatterns )(
     let* (
         ($tv (emp_tv_mem $subpatterns $db))  
-       ($prod_etv (avrg_tv $tv))
+        ($prod_etv (avrg_tv $tv))
     )
-      $prod_etv     
+        $prod_etv      
 ))
+
+
 
 
 ;;A function that calculates the set of values that Xi can take when its corresponding component is matched against the database alone,
@@ -93,6 +95,9 @@
     
          ))
 )
+
+
+
 
 
 

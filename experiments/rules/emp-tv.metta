@@ -27,7 +27,7 @@
     (let*
         ( ( ($ucount ) ( (universe-count $pattern $db)))
             ( ($ms) ($ucount)) ;;  we didn't use ms for support calculation
-            ( ($sup) ( (sup $pattern $db)))
+            ( ($sup) ( (sup-num $pattern $db)))
 
             ( ($conf) ( (count_to_confidence $ucount)) )
             ($mean (/ $sup $ucount))
@@ -123,7 +123,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; MOCKING ;;;;;;
 ;;;;;;;;;;;;;;;;;
-( = (do-ji-tv-est $db $pattern) (                     
+( = (do-ji-tv-est-dummy $db $pattern) (                     
     $pattern  (ETV 0.6 0.9)                           
 ))                                                    
                                                       

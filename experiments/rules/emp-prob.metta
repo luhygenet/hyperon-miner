@@ -154,11 +154,11 @@
 ; Return:
 ;   The function returns the empirical probability of the pattern based on the conditions
 ;   evaluated.
-(= (emp-prob-pbs $pattern $db $db-ratio)
+(= (emp-prob-pbs $pattern $db $db_ratio)
     (if (< 1 (n_conjuncts $pattern))
-        (let ($emin $emax) (ji_prob_est_interval $pattern $db $db-ratio)
+        (let ($emin $emax) (ji_prob_est_interval $pattern $db $db_ratio)
 
-            (emp-prob-pbs $pattern $db $emax $db-ratio)
+            (emp-prob-pbs $pattern $db $emax $db_ratio)
         )
     (emp-prob $pattern $db)
 )

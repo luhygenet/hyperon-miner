@@ -52,12 +52,13 @@
     if (== $pattern_list ()) () (
         let* (  
               (($head $tail) (decons-atom $pattern_list))
-              ($emp_value (emp-tv $head $db))
+              ($emp_value (emp-tv (remove-parenthesis $head) $db))
               ($dummy (emp_tv_mem $tail $db))
         )  
             (cons-atom $emp_value $dummy)
     )
  ))
+
 
 
 
@@ -89,7 +90,7 @@
  ;  * 8. Create the final truth value using the average mean and variance.
  ;  * 9. Return the final truth value.
 
-(=(avrg_tv $tv)(
+(=(avrg_tv $tv) (
     let* (
         ($tv_list (mk_distribution_list $tv))
         ($size (tuple-count $tv_list))
@@ -101,6 +102,7 @@
      ($mode (car-atom $confidence) ) 
        
 ))
+
 
 
 
