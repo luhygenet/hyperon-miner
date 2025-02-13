@@ -682,6 +682,34 @@
 )
 
 
+;; ------------------------------------------------------------------
+;; Function: support
+;;
+;; Description:
+;;   Computes the support value for a given pattern in relation to a
+;;   database. The function recursively evaluates the support for each
+;;   component (or "clouse") within the pattern.
+;;
+;; Parameters:
+;;   $pattern - The pattern for which support is calculated. It can 
+;;              consist of multiple sub-patterns obtained via get-clouses.
+;;   $db      - The database context against which the pattern support
+;;              is computed.
+;;
+;; Behavior:
+;;   1. Retrieves the list of sub-patterns (clouses) using get-clouses.
+;;   2. If the sub-pattern list is empty, returns a support value of 1,
+;;      representing a base or trivial support.
+;;   3. Otherwise, the function:
+;;         - Decomposes the sub-pattern list into the head and tail.
+;;         - Computes the support of the head using a separate
+;;           support evaluation function (sup).
+;;         - Recursively computes the support for the tail.
+;;         - Multiplies the results to generate the overall support.
+;;
+;; Returns:
+;;   A numeric value representing the cumulative support for the pattern.
+;; ------------------------------------------------------------------
 (= (support $pattern $db) (
     let $patterns (get-clouses $pattern) 
     
@@ -700,3 +728,32 @@
 )
 )
  
+
+
+;; Documentation for add-conjunct:
+;; 
+;; Description:
+;;   This function ensures that a given pattern starts with a comma.
+;;   - If the input pattern is empty, it simply returns an empty pattern.
+;;   - If the pattern is non-empty, the function checks its first element.
+;;   - If the first element is already a comma, the pattern is returned unchanged.
+;;   - Otherwise, it prepends a comma to the pattern and returns the new pattern.
+;;
+;; Parameters:
+;;   $pattern - The list or pattern to which a comma may need to be added.
+;;
+;; Returns:
+;;   A pattern that either remains unchanged (if it already starts with a comma or is empty)
+;;   or has a comma prepended if the first element is not a comma.
+( = (add-conjunct $pattern)
+    (if (== $pattern ()) 
+        () 
+        (let $front-link (car-atom $pattern) 
+            (if (== $front-link ,) 
+            $pattern 
+            (cons-atom , $pattern)
+            )
+        )
+    )
+)
+

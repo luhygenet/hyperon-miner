@@ -10,7 +10,6 @@
  ;;;;;;;;;;;;;;;;;;
  ;; Constructor ;;
  ;;;;;;;;;;;;;;;;;;
-
  ;; Takes pattern and db_ratio to form an
  ;; empirical truth value.
 (: EMPTV (-> $a $b TruthValue))
@@ -109,6 +108,7 @@
         (collapse 
             (match $db $x (let $pattern $x $pattern))))
 )
+((A) ( B C))
  ;;ji_tv_est_mem this function is used to estimate the joint probability of a pattern.
  ;;ji_tv_est_mem is going to implemented in est-tv rule.
 
@@ -306,7 +306,7 @@
 
  ; Function: subsmp-size
  ; Arguments:
- ;   $pattern - The pattern to be matched.  
+ ;   $pattern - The pattern to be matched.
  ;   $db-size - The size of the database.
  ;   $support-estimate - The estimated support value.
  ;   $min-subsize - The minimum sub-sample size.
