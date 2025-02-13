@@ -11,6 +11,10 @@
 ! (import! &self experiments:rules:est-tv)
 ! (import! &self experiments:rules:emp-tv)
 ! (import! &self experiments:rules:emp-prob)
+! (import! &self experiments:utils:emp-tv-bs)
+! (import! &self experiments:utils:bs-utils)
+! (import! &kbb experiments:data:ugly_man_sodaDrinker)
+
 
 
 ;;;;;;;;;;;
@@ -31,7 +35,7 @@
 
 
 (=(do-isurp $pattern) (
-  isurp $pattern &kb True 0.5
+  ;;isurp $pattern &kb True 0.5
 )) 
 
 
@@ -106,6 +110,7 @@
 ;;(: ((surprisingness FACT1) FACT3) (surp (, (Inheritance $x#3544 $y#3545) (Inheritance Abe $y#3545) (Inheritance Zac $y#3545)) 0.2)),
 ;;(: ((surprisingness FACT2) FACT4) (surp (, (Interact_with $x#3542 $y#3543) (Interact_with Abe $y#3543) (Interact_with Zac $y#3543)) 0.2))
 
-!(emp-prob-pbs (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) &kb 0.5 )
+!(emp-prob-pbs (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) &kbb 0.5 0.7)
+;!(ji_prob_est_interval (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) &kb 0.5 )
 
 
