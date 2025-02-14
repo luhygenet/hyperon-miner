@@ -14,7 +14,7 @@
 
 ;; Calculate the empirical probability of pattern, using
 ;; boostrapping if necessary
-(=(emp_prob_pbs_mem $subpattern $db  $db_ratio) 0.4)
+(=(emp_prob_pbs_mem $subpattern $db  $db_ratio) )
 
 
 ;; Calculate the product of the probability over subpatterns
@@ -22,7 +22,7 @@
 (=(pro-prob-wout-joint $subpatterns $db $db_ratio $p) (
   if (== $subpatterns ()) $p (
     let* ((($subpattern $tail) (decons-atom $subpatterns))
-           ($empr (emp_prob_pbs_mem $subpattern $db  $db_ratio))
+           ($empr (emp-prob-pbs  $subpattern $db  $db_ratio))
            ($new_prob (* $p $empr)))
        (pro-prob-wout-joint $tail $db $db_ratio $new_prob)
   )
@@ -60,15 +60,25 @@
 
 
 
-(=(isurp $pattern $db $normalize $db_ratio) (
+(=(isurp_old $pattern $db $normalize $db_ratio) (
     let* (
       (($emin $emax) (ji_prob_est_interval $pattern $db $db_ratio))
-           ($emp (emp_prob_pbs_mem $pattern $db $emax $db_ratio))
+           ($emp (emp-prob-pbs  $pattern $db $emax $db_ratio))
             ($dst (dst_from_interval $emin $emax $emp))
              ($maxprb (max ($emp $emax))))
                (min ((if $normalize (/ $dst $maxprb) $dst) 1.0))
 ))
 
+(=(isurp $pattern $db $normalize $db_ratio) (
+    let* (
+      (($emin $emax) (ji_prob_est_interval $pattern $db $db_ratio))
+           ;($emp (emp-prob-pbs  $pattern $db $emax $db_ratio))
+           ; ($dst (dst_from_interval $emin $emax $emp))
+            ; ($maxprb (max ($emp $emax)))
+            )
+               ;(min ((if $normalize (/ $dst $maxprb) $dst) 1.0))
 
+               ($emin $emax)
+))
 
 
