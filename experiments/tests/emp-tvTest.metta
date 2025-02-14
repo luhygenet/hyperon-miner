@@ -56,6 +56,25 @@
 
 !(assertEqual (do_emp_tv (Inheritance $x Nil) (get-space) 1 ) (EMPTV 0.08333333333333333 0.09230769230769231))
 
+
+!(assertEqual (get-element 2 ((Inheritance Abe human) (Inheritance Rio human) (Inheritance Bob human) (Inheritance Mike human) (Inheritance Mike Nil) (Inheritance Zac human) (Inheritance Zac human) (Parent Abe Nil ))) (Inheritance Bob human))
+
+!(assertEqual (subsmp-size (Inheritance Abe human) 20 0.9) ((py-atom numpy.power) 44.44444444444445 1))
+
+
+!(assertEqual (emp-tv-bs (Inheritance Zac $x) (get-space) 8 0.6 0.9) (EMPTV 0.2428095704426711 0.04109232092138521))
+
+!(assertEqual (mk-stv 1.7689693569125715 1.0178393379503528 ) (EMPTV 0 0.0001249843769528809))
+
+
+
+
+
+
+
+
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ; ; ! (sup (Inheritance $x $y) (get-space))
 
 ;  ! (prob_to_support (Inheritance $x) (collapse (get-atoms (get-space)) ) 1 )
