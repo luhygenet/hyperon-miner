@@ -34,9 +34,7 @@
 (: -> (-> Atom Atom Type))
 
 
-(=(do-isurp $pattern) (
-     isurp $pattern &kb True 0.5
-)) 
+
 
 
 ;;add facts 
@@ -47,6 +45,9 @@
 !(add-atom &kb (: FACT3 (supportOf (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) 5)))
 !(add-atom &kb (: FACT4 (supportOf (,(Interact_with $x $y)  (Interact_with  Abe $y) (Interact_with  Zac $y) (Interact_with  Zac $y)) 5)))
 
+(=(do-isurp $pattern) (
+     isurp $pattern &kb False 0.5
+)) 
 
 ;;add the surprisingness  rule to the kb
 !(add-atom &kb (: surprisingness 
@@ -55,7 +56,7 @@
                  (surp $ptrn (do-isurp $ptrn))))))
 
 
-;!(syn &kb (fromNumber 2) (: $prf (surp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) $value)))
+!(syn &kb (fromNumber 2) (: $prf (surp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) $value)))
 ;!(syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value)))
 
 
@@ -110,7 +111,8 @@
 ;;(: ((surprisingness FACT1) FACT3) (surp (, (Inheritance $x#3544 $y#3545) (Inheritance Abe $y#3545) (Inheritance Zac $y#3545)) 0.2)),
 ;;(: ((surprisingness FACT2) FACT4) (surp (, (Interact_with $x#3542 $y#3543) (Interact_with Abe $y#3543) (Interact_with Zac $y#3543)) 0.2))
 
-!(emp-prob-pbs (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) &kb 1.0 0.7)
+;!(emp-prob-pbs (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) &kb 1.0 0.7)
 ;!(ji_prob_est_interval (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) &kb 0.5 )
+;!(do-isurp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
 
 

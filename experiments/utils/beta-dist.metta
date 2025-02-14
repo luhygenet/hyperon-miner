@@ -11,15 +11,12 @@
 (=(min $num1 $num2)(
     if (< $num1 $num2) $num1 $num2
 ))
-(:max (-> Number Number Number))
-(=(max $num1 $num2)(
-    if (> $num1 $num2) $num1 $num2
-))
 
 (:max (-> Number Number Number))
 (=(max $num1 $num2)(
     if (> $num1 $num2) $num1 $num2
 ))
+
 
 
 

@@ -60,7 +60,7 @@
 
 
 
-(=(isurp_old $pattern $db $normalize $db_ratio) (
+(=(isurp $pattern $db $normalize $db_ratio) (
     let* (
       (($emin $emax) (ji_prob_est_interval $pattern $db $db_ratio))
            ($emp (emp-prob-pbs  $pattern $db $emax $db_ratio))
@@ -69,16 +69,5 @@
                (min ((if $normalize (/ $dst $maxprb) $dst) 1.0))
 ))
 
-(=(isurp $pattern $db $normalize $db_ratio) (
-    let* (
-      (($emin $emax) (ji_prob_est_interval $pattern $db $db_ratio))
-           ;($emp (emp-prob-pbs  $pattern $db $emax $db_ratio))
-           ; ($dst (dst_from_interval $emin $emax $emp))
-            ; ($maxprb (max ($emp $emax)))
-            )
-               ;(min ((if $normalize (/ $dst $maxprb) $dst) 1.0))
-
-               ($emin $emax)
-))
 
 
