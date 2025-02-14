@@ -14,12 +14,10 @@
 (=(pro_prob_without_joint $db $subpatterns )(
     let* (
         ($tv (emp_tv_mem $subpatterns $db))  
-        ($prod_etv (avrg_tv $tv))
+       ($prod_etv (avrg_tv $tv))
     )
-        $prod_etv      
+      $prod_etv     
 ))
-
-
 
 
 ;;A function that calculates the set of values that Xi can take when its corresponding component is matched against the database alone,
@@ -81,7 +79,10 @@
 
 
 
-(= (ji-est-tv $db $db_size $pattern $partitions)
+
+
+
+(= (ji-est-tv-old $db $db_size $pattern $partitions)
 (   if (== $partitions ()) () (
         let* ((($head $tail) (decons-atom $partitions))
                ($prod_etv (pro_prob_without_joint $db $head))
@@ -97,7 +98,20 @@
 )
 
 
+(= (ji-est-tv $db $db_size $pattern $partitions)
+(   if (== $partitions ()) () (
+        let* (
+            (($head $tail) (decons-atom $partitions))
+               ($prod_etv (pro_prob_without_joint $db $head))
+               (($rp $rc) (decons-atom $prod_etv))
+              ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $head) (joint-variables-init $pattern (remove-parenthesis $head)) 1))
+              (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
+               ($dummy (ji-est-tv $db $db_size $pattern $tail))
+              ) 
 
+              (cons-atom (STV $strength $confidence)  $dummy) 
+         ))
+)
 
 
 
@@ -105,13 +119,21 @@
 ;; independent assumption of between each partition block, taking
 ;; into account the linkage probability.
 
-(=(do-ji-tv-est $db $pattern) (
+(=(do-ji-tv-est-old $db $pattern) (
     let $prtns (generet-partition-without-pattern $pattern)  
           ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
           ($pattern  (STV $strength $confidence)))            
 ))
 
+(=(do-ji-tv-est $db $pattern) (
+    let $prtns (generet-partition-without-pattern $pattern)  
+          ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
+                   ($pattern  (STV $strength $confidence)))   
+              
+           
+))
 
+(((((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (STV 0.0016129032258064516 0.010044027746982993)) ((((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x sodaDrinker))) (STV 0.0016129032258064516 0.010044027746982993)) ((((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))) (STV 0.0016129032258064516 0.010044027746982993)) ((((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (STV 0.0016129032258064516 0.010044027746982993)))
 
 
 

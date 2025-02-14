@@ -144,9 +144,9 @@
         $_beta_dist
 ))
 
-(=(mk_distribution $Etv) (
+(=(mk_distribution $tv) (
     let* (
-         ((EMPTV $tv_mean $tv_conf) $Etv)
+         (($label $tv_mean $tv_conf) $tv)
          ($count (confidence->count $tv_conf))
          ($pos_count (* $tv_mean $count))
          ($alpha (+ (prior-alpha) $pos_count) )

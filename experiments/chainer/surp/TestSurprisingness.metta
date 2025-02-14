@@ -17,6 +17,7 @@
 
 
 
+
 ;;;;;;;;;;;
 ;; To Do ;;
 ;;;;;;;;;;;
@@ -56,7 +57,7 @@
                  (surp $ptrn (do-isurp $ptrn))))))
 
 
-!(syn &kb (fromNumber 2) (: $prf (surp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) $value)))
+;!(syn &kb (fromNumber 2) (: $prf (surp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) $value)))
 ;!(syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value)))
 
 
@@ -102,6 +103,10 @@
 
 
 ;;!(tuple_to_list (syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value))))
+
+
+
+
 
 
 
