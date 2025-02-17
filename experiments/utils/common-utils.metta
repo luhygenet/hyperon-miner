@@ -283,7 +283,7 @@
 (= (sup-eval $db $pattern $ms)
     (let $sup (counter $db $pattern)
         (if (>= $sup $ms) True False)
-    )
+    ) )
 
 ;; returns the number of support of a pattern
 
@@ -598,18 +598,7 @@
  ;     )
  ; ))
 
- ;helper function to concat two tuples
-(= (concatTuple $xs $ys)
-    (if (== $xs ())
-        $ys
-        (let* ( ($head (car-atom $xs))
-                ($tail (cdr-atom $xs))
-                ($tailNew (concatTuple $tail $ys)))
-            (cons-atom $head $tailNew))
-    )
-)
 
- ;! (concatTuple (A B C) (D E F))
 
 (= (is_subclause_helper $head $pattern)
     (if (== $pattern ())

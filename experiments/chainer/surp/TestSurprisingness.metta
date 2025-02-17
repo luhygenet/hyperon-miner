@@ -37,7 +37,6 @@
 
 
 
-
 ;;add facts 
 !(import! &kb experiments:chainer:surp:kb)
 !(match &kb $x (if (== (get-type $x) hyperon::space::DynSpace) (remove-atom &kb $x) (Empty) ))
@@ -46,19 +45,55 @@
 !(add-atom &kb (: FACT3 (supportOf (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) 5)))
 !(add-atom &kb (: FACT4 (supportOf (,(Interact_with $x $y)  (Interact_with  Abe $y) (Interact_with  Zac $y) (Interact_with  Zac $y)) 5)))
 
+
+
+;; Rules 
+(= (minSup-rule) 
+  (: minsupport 
+    (-> (supportOf $ptrn $cnt)
+        (-> (ms_threshold $ms)
+            (-> (⍃ $ms $cnt)
+                (minsup $ptrn))))))
+
+(= (surp-rule)
+  (: surprisingness 
+    (-> (minsup $ptrn)
+           (-> (AbsentOf $ptrn $cnt)
+                 (surp $ptrn 0.2)))))
+
+
+;;Add  rules  to the kb
+!(add-reduct &kb (minSup-rule))
+!(add-reduct &kb (surp-rule))
+
+
+;; Add constants to kb
+!(add-atom &kb (ms_threshold 6))
+
+;; Action Functions
 (=(do-isurp $pattern) (
      isurp $pattern &kb False 0.5
 )) 
 
-;;add the surprisingness  rule to the kb
-!(add-atom &kb (: surprisingness 
-    (-> (minsup $ptrn)
-           (-> (supportOf $ptrn $cnt)
-                 (surp $ptrn (do-isurp $ptrn))))))
+(=(is-number $x) (
+  if (== (get-type $x) Number) True False
+))
+
+
+;; define system proofs 
+;; System proof for ⍃
+;; if conclusion equals (⍃ $X $Y), then return (: CPU (⍃ $X $Y)) 
+;; if $x and $Y are fully grounded and (< $X $Y)
+(= (syn $s_ $s_ (: CPU (⍃ $X $Y))) 
+    (if (and (and (is-number $X) (is-number $Y)) (< $X $Y))
+        (: CPU (⍃ $X $Y))
+        (empty)))
 
 
 ;!(syn &kb (fromNumber 2) (: $prf (surp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) $value)))
 ;!(syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value)))
+
+
 
 
 ;;;;;;;;;; functions related to Conjunction ;;;;;;;;;;;;
@@ -135,24 +170,25 @@
 
 [((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $Y)) 
   ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $X)) 
-   ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $B)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $A)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $B)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $A)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $A)) ()))))))))))]
+   ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $B))
+    ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $D))
+     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $A)) 
+     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $B)) 
+     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $D)) 
+     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $A)) 
+     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $D)) 
+     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $A)) ()))))))))))]
 
 
 
 
 
-!(flatten (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $B)))
+;!(flatten (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $B)))
 
 
-;!(get-conjuncts (, (, (Inheritance Abe $x) (Inheritance $y $x)) (Human Abe)))
-;!(push-back 1 (2))
-;!(append)
+;!(is-number 2)
 
 
-;!(reverse-list (1 2 3))
 
 
-(=(flatter2 $cnj) (
-  let ($head $tail) (decons-atom $cnj)  
-))
 
