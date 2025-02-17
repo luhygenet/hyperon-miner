@@ -101,7 +101,7 @@
                         ($temp (cdr-atom $variables))
                         ($tail (car-atom $temp)))
                     $tail)))
-    )
+    ))
 
  ; Parse a list that is like:- (Inheritance ($X ($Y (End (Inheritance ($X ($Y (End  ...))))))))
  ; into ((Inheritance $X $Y) (Inheritance $X $Y) ...) FOR later combination with cnjtion and
@@ -222,3 +222,5 @@
 
  ; One CE output for (Inheritance $X $Y) (LIST_LINK $X $Y) with ms 2
 ! (match &self (, (INHERITANCE_LINK $X $Y) (LIST_LINK $Y $X-78235323)) ($X $Y $X-78235323))
+
+

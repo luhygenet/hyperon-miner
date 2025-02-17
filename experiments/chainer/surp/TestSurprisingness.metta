@@ -61,10 +61,21 @@
 ;!(syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value)))
 
 
+;;;;;;;;;; functions related to Conjunction ;;;;;;;;;;;;
+
+;; Extracts conjuncts from a conjunctive expression,
+(= (get-conjuncts $cnj) (
+  unify (, $ncnj $ptrn) $cnj (let $result (get-conjuncts $ncnj) (cons-atom $ptrn $result) ) ($cnj)
+))
+
+;; Flattens a conjunctive expression by extracting its conjuncts using `get-conjuncts`,
+;; reversing the list to maintain order, and reassembling the conjuncts into a single expression.
+(= (flatten $cnj) (
+  let $flatten  (reverse-list (get-conjuncts $cnj))   (cons-atom , $flatten)
+))
 
 
 ;;;;;;;;;;;;; Sorting function ;;;;;;;;;;;;;
-;;($prf ($lable $patrn $value))
 
 ;(: insert_N (-> $a (List $a) (List $a)))
 (= (insert_N $x Nil) (Cons $x Nil))
@@ -74,30 +85,31 @@
        (Cons $x (Cons $head $tail))
        (Cons $head (insert_N $x $tail)))))
 
-;; Sort a list
-;(: sort (-> (List $a) (List $a)))
-(= (sort Nil) Nil)
-(= (sort (Cons $head $tail)) (insert_N $head (sort $tail)))
+;; Sorts a list of patterns by their surprisingness value using insertion sort.
+;(: sort_surp_list (-> (List $a) (List $a)))
+(= (sort_surp_list Nil) Nil)
+(= (sort_surp_list (Cons $head $tail)) (insert_N $head (sort_surp_list $tail)))
 
 
-
-;(sort (Cons (: ((surprisingness FACT1) FACT3) (surp (, (Inheritance $x $y) (Inheritance Abe $y) (Inheritance Zac $y)) 0.4))
-              ;(Cons (: ((surprisingness FACT2) FACT4) (surp (, (Interact_with $x $y) (Interact_with Abe $y) (Interact_with Zac $y)) 0.2)) Nil)))
-
-              
-
+;;;;;;;;;;; converters ;;;;;;;;; 
+;; Converts a list to a tuple
 (= (list_to_tuple Nil) ())
 (= (list_to_tuple (Cons $head $tail)) (
   let $temp (list_to_tuple $tail) (cons-atom $head $temp)
 ))
 
-
-;;!(list_to_tuple  (Cons (value 4) (Cons (value 6) (Cons (value 5) Nil))))
-
+;; Converts a tuple back to a list
 (=(tuple_to_list ()) Nil)
 (=(tuple_to_list $list)( 
   let ($head $tail) (decons-atom $list) (Cons $head (tuple_to_list $tail))
 ))
+
+
+;(sort (Cons (: ((surprisingness FACT1) FACT3) (surp (, (Inheritance $x $y) (Inheritance Abe $y) (Inheritance Zac $y)) 0.4))
+              ;(Cons (: ((surprisingness FACT2) FACT4) (surp (, (Interact_with $x $y) (Interact_with Abe $y) (Interact_with Zac $y)) 0.2)) Nil)))
+
+ ;;!(list_to_tuple  (Cons (value 4) (Cons (value 6) (Cons (value 5) Nil))))             
+
 
 ;!(tuple_to_list (1, 2, 3))
 
@@ -120,4 +132,27 @@
 ;!(ji_prob_est_interval (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) &kb 0.5 )
 ;!(do-isurp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
 
+
+[((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $Y)) 
+  ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $X)) 
+   ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $B)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $A)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $B)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $A)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $D)) ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $A)) ()))))))))))]
+
+
+
+
+
+!(flatten (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $B)))
+
+
+;!(get-conjuncts (, (, (Inheritance Abe $x) (Inheritance $y $x)) (Human Abe)))
+;!(push-back 1 (2))
+;!(append)
+
+
+;!(reverse-list (1 2 3))
+
+
+(=(flatter2 $cnj) (
+  let ($head $tail) (decons-atom $cnj)  
+))
 

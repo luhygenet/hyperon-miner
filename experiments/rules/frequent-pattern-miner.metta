@@ -1,5 +1,5 @@
 ! (register-module! ../../../hyperon-miner)
-! (import! &dbspace hyperon-miner:experiments:data:sample-data)
+! (import! &dbspace hyperon-miner:experiments:data:ugly_man_sodaDrinker) ;; db changed for testing
 ! (import! &self hyperon-miner:experiments:rules:build-specialization)
 ! (import! &self hyperon-miner:experiments:rules:candidate-patterns)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
@@ -48,8 +48,12 @@ empty
  ; ! (apriori &dbspace 2 &aptrnspace)
  ; ! (match &aptrnspace (AbstractPattern $pattern) $pattern)
 
-! (frequency-pattern-miner &dbspace &specspace &cndpspace &aptrnspace 2)
-! (match &specspace $x $x)
+! (frequency-pattern-miner &dbspace &specspace &cndpspace &aptrnspace 10)
+;! (match &specspace $x $x)
 ! (match &cndpspace $x $x)
  ; ! (match &dbspace (: $p ($link $x $y)) $p)
  ; ! (match &dbspace $x (if (not (== (get-type $x) hyperon::space::DynSpace)) $x ()))
+
+
+ 
+(CandidatePattern (Inheritance Z man)), (CandidatePattern (Inheritance Z human)), (CandidatePattern (Inheritance Rio Z)), (CandidatePattern (Inheritance Hessley Z)), (CandidatePattern (Inheritance Z sodaDrinker)), (CandidatePattern (Inheritance Davion Z)), (CandidatePattern (Inheritance Jadrian Z)), (CandidatePattern (Inheritance Sophia Z)), (CandidatePattern (Inheritance Cason Z)), (CandidatePattern (Inheritance Alaura Z)), (CandidatePattern (Inheritance Allen Z)), (CandidatePattern (Inheritance Abe Z)), (CandidatePattern (Inheritance Jassy Z)), (CandidatePattern (Inheritance Breonna Z)), (CandidatePattern (Inheritance Zac Z)), (CandidatePattern (Inheritance Bob Z)), (CandidatePattern (Inheritance Z ugly)), (CandidatePattern (Inheritance Mike Z)), (CandidatePattern (Inheritance Jaleesa Z)), (CandidatePattern (Inheritance Emily Z)), (CandidatePattern (Inheritance Kecia Z)), (CandidatePattern (Inheritance Jenica Z)), (CandidatePattern (Inheritance Lucy Z)), (CandidatePattern (Inheritance Z woman)), (CandidatePattern (Inheritance Lily Z))
