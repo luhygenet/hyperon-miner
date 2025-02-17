@@ -67,30 +67,6 @@
 
  ; )
 
- ; ! (get_variables_for_tree  (Inheritance (Human $X) (Inheritance $Y (Human $Z))))
- ; (= (substitute $pattern ()) $pattern)
- ; (= (substitute () $variables) ())
- ; (= (substitute () ()) ())
- ; (= (substitute $pattern $variables)
- ;     (let* (
- ;             ($head (car-atom $pattern))
- ;             ($tail (cdr-atom $pattern)))
-
- ;         (if (== (get-metatype $head) Expression)
- ;             (case $head
- ;                 ( ( ($link $x $y) (concatTuple
- ;                             (substitute $head $variables)
- ;                             (substitute $tail (let $temp (cdr-atom $variables) (cdr-atom $temp)))))
- ;                     ( ($link $x ) (concatTuple
- ;                             (substitute $head $variables)
- ;                             (substitute $tail (cdr-atom $variables))))))
-
- ;             (if (== (get-metatype $head) Variable)
- ;                 (concatTuple ( (car-atom $variables)) (substitute $tail (cdr-atom $variables)))
- ;                 ( (concatTuple ($head) (substitute $tail $variables))))
- ;         )
- ; )
- ; )
 
 (= (get_variables_for_tree $pattern)
     (if (== $pattern ())
@@ -112,55 +88,37 @@
 )
 
  ; ! (get_variables_for_tree  (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)))
- ; (= (substitute $pattern $variables $replacements)
- ;     (let $variables $replacements $pattern)
- ; )
- ; (= (substituter $pattern $replacements)
- ;     (let* (
- ;             ( $var (get_variables_for_tree $pattern))
- ;              ; ( $replacements (alpha_convert $variables $variables))
- ;             ( $sub (substitute $pattern $var $replacements))
- ;         )
- ;     (
- ;         $sub
- ;     )
- ; )
- ; )
- ; ! (substitute (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)) ( get_variables_for_tree (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G))) ($C $B))
- ; ! (substitute (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)) ($D $G $E) ($C $B))
- ; ! (substituter (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)) ($C $B))
- ; (= (substituer))
- ; ! (substitute (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)) ($D $G) ($A $B))
- ; (= (substitute $pattern $variables)
- ;     (if (== $variables ())
- ;         $pattern
- ;         (if (== $pattern ())
- ;             ()
- ;             (let* (
- ;                     ($head (car-atom $pattern))
- ;                     ($tail (cdr-atom $pattern)))
+;; inprogress
+(= (get_variable_for_pattern $pattern)
+    (case ($pattern) (
+            ( (()) ())
+             ; ( ( ($pattern) () ) $pattern)
+            (  (($x))
+                (if (== (get-metatype $x) Variable)
+                    ($x)
+                () ;; Not actually a variable
+            ))
+    ( (  ($link $x $y))
+        (let* (
+                ( $subx (if ( == ( get-metatype $x ) Expression) (get_variable_for_pattern $x) (get_variable_for_pattern ($x))))
 
- ;                 (if (== (get-metatype $head) Expression)
- ;                     (case $head
- ;                         ( ( ($link $x $y) (concatTuple
- ;                                     (substitute $head $variables)
- ;                                     (substitute $tail (let $temp (cdr-atom $variables) (cdr-atom $temp)))))
- ;                             ( ($link $x ) (concatTuple
- ;                                     (substitute $head $variables)
- ;                                     (substitute $tail (cdr-atom $variables))))))
-
- ;                     (if (== (get-metatype $head) Variable)
- ;                         (concatTuple ( (car-atom $variables)) (substitute $tail (cdr-atom $variables)))
- ;                         ( (concatTuple ($head) (substitute $tail $variables)))))))
- ;     )
- ; )
-(= (concat $term1 $term2)
-    (Inheritance (car-atom $term1) $term2)
+                ( $suby (if (== (get-metatype $y) Expression) (get_variable_for_pattern $y) (get_variable_for_pattern ($y))))
+            )
+        ($subx $suby)
+         ; ( ($subx $remaining))
+    )
 )
- ; ! (concat ($a $b ) $b)
- ; ! ( let $cdr (cdr-atom (LIST_LINK (INHERITANCE_LINK (A $A)) (LIST_LINK G $G))) (cdr-atom $cdr))
- ; ! ( let $cdr (cdr-atom ($a $b $c $d $t)) (cdr-atom $cdr))
-
+; ( ( ($link $x) $variables)
+;     (let* (
+;             ( ($subx $remaining) (if ( == ( get-metatype $x ) Expression) (substitute $x $variables) (substitute ($x) $variables)))
+;         )
+;     ( ($link $subx) $remaining)
+; )
+; )
+)
+)
+)
+;  ! (get_variable_for_pattern  (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)))
 (= (substitute $pattern $variables)
     (case ($pattern $variables) (
             ( ( () $variables) ())
@@ -180,7 +138,6 @@
                 ( ($suby $final) (if (== (get-metatype $y) Expression) (substitute $y $remaining) (substitute ($y) $remaining)))
             )
         ( ($link $subx $suby) $final)
-         ; ( ($subx $remaining))
     )
 )
 ( ( ($link $x) $variables)
@@ -194,14 +151,7 @@
 )
 )
 
- ; ! (let $sub (substitute (Inheritance (Human $X) (Inheritance $Y (Human $z))) ()) $sub)
- ; ! (let $sub (substitute (inheritance (list (link $x $y) p) (another $g b)) ($A $B $p $d)) $sub)
- ; ! (let $sub (substitute  (link $t $x) ($A $B $c)) $sub)
- ; ! (let $sub (substitute  ($x) ($A $B)) $sub)
-! (let $sub (substitute (Inheritance (Human $X) (Inheritance $Y (Human $z))) ($A $B $C)) (car-atom $sub))
-! (let $sub (substitute (LIST_LINK (INHERITANCE_LINK $A (link $g $D)) (LIST_LINK $k $G)) ($y $B $c $h $p)) (car-atom $sub))
- ; ! (let $sub (substitute (A) ($A $B)) (cdr-atom $sub))
- ; (LIST_LINK (INHERITANCE_LINK $D A) (LIST_LINK G $G))
+
 
  ;############################################################
  ;###############   alpha convert  ###########################
@@ -305,76 +255,62 @@
 
 (= (expand_conjunction_rec $cnjtion $apat $db $ms)
     (let $npat (expand_conjunction_connect $cnjtion $apat (get_variables_for_tree $cnjtion) (get_variables_for_tree $apat))
-         ; (checker $db (let $single (collapse $npat) (car-atom $single)) $ms)
-        $npat
+         (checker $db (let $single (collapse $npat) (car-atom $single)) $ms)
+        ; $npat
 
     )
 )
 
 (= (expand_conjunction_connect $cnjtion $pattern $cv $pv)
     (let $list (replace_pattern $cnjtion $pattern (combine_lists $cv $pv))
-         ; (let $list  (combine_lists $cv $pv)
-         ; (remove_alpha_similar $list)
+        ;  (let $list  (combine_lists $cv $pv)
+        ;  (remove_alpha_similar $list)
         $list
          ; (get-metatype $list)
     )
- ;     (let* (
- ;             ($list (combine_lists $cv $pv))
- ;             ($list2 (replace_pattern $cnjtion $pattern $list))
- ;             ($list3 (remove_alpha_similar $list2))
- ;         )
- ;     $list3
- ; )
+;      (let* (
+;              ($list (combine_lists $cv $pv))
+;              ($list2 (replace_pattern $cnjtion $pattern $list))
+;              ($list3 (remove_alpha_similar $list2))
+;          )
+;      $list3
+;  )
 )
 (= (replace_pattern $cnjtion $pattern ())
     ()
 )
- ; ! (get_variables_for_tree (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)))
- ; ! (get_variables_for_tree (LIST_LINK $R-D1737102179 $A))
- ; ! (combine_lists ($X $Y $X $B) ($R-D1737102179 $A))
 (= (replace_pattern $cnjtion $pattern $pv2cv)
-     ; (if (== $pv2cv ())
-     ;     ()
-     ; ( (, $cnjtion (let $exp (substitute $pattern (car-atom $pv2cv)) (car-atom $exp)))
-     ;     (replace_pattern $cnjtion $pattern (cdr-atom $pv2cv)))
-     ;      ; )
     (let* (
-             ; ($ge (get-metatype $pv2cv))
             ($head (car-atom $pv2cv))
             ($tail (cdr-atom $pv2cv))
             ($exp (substitute $pattern $head))
             ($new_cnjtion (, $cnjtion (car-atom $exp)))
-             ; ($recur ($new_cnjtion (replace_pattern $cnjtion $pattern $tail)))
         )
     (
-        $head
-         ; $recur
-         ; $new_cnjtion
-         ; (car-atom $exp)
-         ; (replace_pattern $cnjtion $pattern $tail)
+         $new_cnjtion
+         (replace_pattern $cnjtion $pattern $tail)
 
     )
 )
- ; )
- ; (let ($head $tail) $pv2cv $head)
 )
 
- ; ! (replace_pattern (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $R-D1737102179 $A) ( ($X $Y) ($X $X) ($X $B) ($X $R-D1737102179) ($X $A) ($Y $X) ($Y $B) ($Y $R-D1737102179) ($Y $A) ($X $B) ($X $R-D1737102179) ($X $A)))
- ; ! (replace_pattern (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $R-D1737102179 $A) ( ($X $Y) ($X $X) ($X $B) ($X $R-D1737102179) ($X $A) ($Y $X) ($Y $B) ($Y $R-D1737102179) ($Y $A) ($X $B) ($X $R-D1737102179) ($X $A) ($W $Z) ($A $Y) ($A $B)))
- ; ! (let  $val (car-atom ( ($X $Y) ($X $X) ($X $B) ($X $R-D1737102179) ($X $A) ($Y $X) ($Y $B) ($Y $R-D1737102179) ($Y $A) ($X $B) ($X $R-D1737102179) ($X $A) ($W $Z) ($A $Y) )) $val)
 (= (checker $db () $ms) ())
+
 (= (checker $db ($x $xs) $ms)
-    (if (support_evaluation $db $x $ms)
-        ($x (checker $db $xs $ms))
+   (let $sup (support_evaluation $db $x $ms)
+    (if (> $sup 0)
+        (($x $sup)(checker $db $xs $ms))
         (checker $db $xs $ms)
-    )
+    ))
 )
+
+
 
 (= (support_evaluation $db $pattern $ms)
     (let $sup (counter $db $pattern)
         (if (>= $sup $ms)
-            True
-            False)
+            $sup
+            0)
     )
 )
 
@@ -429,4 +365,5 @@
 (INHERITANCE_LINK X D)
 
  ;(expand_conjunction_inputs cnjtion pattern db ms mv es)
-! (expand_conjunction (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $B)) (LIST_LINK (INHERITANCE_LINK A $D) (LIST_LINK G $G)) &self 1 2 False)
+! (expand_conjunction (,(INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $F) &self 5 2 False)
+; !(match &self (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)) (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)))
