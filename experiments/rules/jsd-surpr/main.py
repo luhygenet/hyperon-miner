@@ -43,8 +43,13 @@ def generate_variables(metta,prefix,n):
             
     reconstructed_vars += ")"
     combined_pattern = " ".join(("{}".format(var) for var in variables))
+    combined_pattern = "("+combined_pattern+")"
+    print(combined_pattern)
     atoms = metta.parse_all(combined_pattern)
-    return (atoms)
+    print(atoms)
+    print(type(atoms))
+	
+    return (atoms[0])
 
     
 @register_atoms(pass_metta=True)

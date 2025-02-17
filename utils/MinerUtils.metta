@@ -1,5 +1,5 @@
 ; !(register-module! ../../hyperon-miner)
-!(import! &self hyperon-miner:utils:DeBruijnIndex)
+;!(import! &self hyperon-miner:utils:DeBruijnIndex)
 
 ;;;;;;;;;
 ;; Nat ;;
@@ -32,7 +32,7 @@
 ;; Tuple count grounded python function
 ;;!(extend-py! ../utils/helper.py)
 ;; This is very slow, use the grounded python function instead
-(= (tuple-count $tuple) (if (== $tuple ()) 0 (+ 1 (tuple-count (cdr-atom $tuple)))))
+;;(= (tuple-count $tuple) (if (== $tuple ()) 0 (+ 1 (tuple-count (cdr-atom $tuple)))))
 
 !(bind! &specializations (new-space))
 !(bind! &abstractions (new-space))
@@ -134,6 +134,7 @@
 
 ;; Probability formula
 (= (prob $count) (/ $count (universe-size)))
+
 
 ;; iSurprisingness formula
 (= (iSurprisingness $pattern)
