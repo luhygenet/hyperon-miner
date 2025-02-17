@@ -89,7 +89,7 @@
  ; $db_size: The effective size of the database.
  ; $support_estimate: The estimated support of the pattern in the database.
  ; Return Values
- ; emp_tv_bs: Called if the support estimate is greater than or equal to the database size,
+ ; emp-tv-bs: Called if the support estimate is greater than or equal to the database size,
  ;  using bootstrapping to calculate the empirical truth value.
  ; emp_tv: Called if the support estimate is less than the database size, directly calculating the empirical truth value.
  ; emp_tv: Default case, directly calculating the empirical truth value.
@@ -97,7 +97,7 @@
 (= (emp_tv_pbs $pattern $db $prob_estimate $db_ratio $db_size $support_estimate)
     (case (categorize_by_support_estimate  $db_size $support_estimate)
         (
-            (1 (emp_tv_bs $pattern $db $db_size $db_ratio $support_estimatje))
+            (1 (emp-tv-bs $pattern $db $db_size $db_ratio $support_estimate))
             (2 (emp-tv $pattern $db))
             ($_ (emp-tv $pattern $db))
         )))
@@ -124,14 +124,14 @@
 ;;;; MOCKING ;;;;;;
 ;;;;;;;;;;;;;;;;;
 ( = (do-ji-tv-est-dummy $db $pattern) (                     
-    $pattern  (ETV 0.6 0.9)                           
+    $pattern  (STV 0.0016129032258064761 0.012488011224382688)                        
 ))                                                    
                                                       
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (= (ji_tv_est $pattern $db) 
     (let* 
     (
-        ($out_est (do-ji-tv-est $db $pattern)) 
+        ($out_est (do-ji-tv-est-dummy $db $pattern)) 
         (($pat $tv) $out_est)
     )
     $tv
@@ -248,12 +248,11 @@
  
 (= (do_emp_tv $pattern $db $db_ratio )
     (let* ( ($db_sequence (collapse (get-atoms $db) ))
-            ($jte  (ji_tv_est $pattern $db))
 
-             ;; after we get jte we must extract the mean
-            ($mean (get-strength $jte)))
-
-        (support_estimate_calculator  $pattern $db $mean $db_ratio))
+            ($jte  (ji_tv_est $pattern $db))         ;; after we get jte we must extract the mean
+            (($link $mean $confidence) $jte)
+            )
+           (support_estimate_calculator  $pattern $db $mean $db_ratio))
 )
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
