@@ -49,24 +49,6 @@
      ; )
 )
 (= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
- ; (= (get_variables_for_tree ()) ())
- ; (= (get_variables_for_tree $pattern)
- ;     (let* (
- ;             ($head (car-atom $pattern))
- ;             ($tail (cdr-atom $pattern)))
-
- ;         (if (== (get-metatype $head) Expression)
- ;             (concatTuple (get_variables_for_tree $head)
- ;                 (get_variables_for_tree $tail))
- ;             (if (== (get-metatype $head) Variable)
- ;                 (concatTuple
- ;                     ($head)
- ;                     (get_variables_for_tree $tail))
-
- ;                 (get_variables_for_tree $tail))))
-
- ; )
-
 
 (= (get_variables_for_tree $pattern)
     (if (== $pattern ())
@@ -263,18 +245,9 @@
 
 (= (expand_conjunction_connect $cnjtion $pattern $cv $pv)
     (let $list (replace_pattern $cnjtion $pattern (combine_lists $cv $pv))
-        ;  (let $list  (combine_lists $cv $pv)
         ;  (remove_alpha_similar $list)
         $list
-         ; (get-metatype $list)
     )
-;      (let* (
-;              ($list (combine_lists $cv $pv))
-;              ($list2 (replace_pattern $cnjtion $pattern $list))
-;              ($list3 (remove_alpha_similar $list2))
-;          )
-;      $list3
-;  )
 )
 (= (replace_pattern $cnjtion $pattern ())
     ()
