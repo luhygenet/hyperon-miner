@@ -34,16 +34,9 @@
 ;; of the conclusions before matching the correct premises.
 (: -> (-> Atom Atom Type))
 
-
-
-
 ;;add facts 
 !(import! &kb experiments:chainer:surp:kb)
 !(match &kb $x (if (== (get-type $x) hyperon::space::DynSpace) (remove-atom &kb $x) (Empty) ))
-!(add-atom &kb (: FACT1 (minsup (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))))
-!(add-atom &kb (: FACT2 (minsup (,(Interact_with  $x $y) (Interact_with  Abe $y) (Interact_with  Zac $y) (Interact_with  Zac $y)))))
-!(add-atom &kb (: FACT3 (supportOf (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) 5)))
-!(add-atom &kb (: FACT4 (supportOf (,(Interact_with $x $y)  (Interact_with  Abe $y) (Interact_with  Zac $y) (Interact_with  Zac $y)) 5)))
 
 
 
@@ -58,7 +51,7 @@
 (= (surp-rule)
   (: surprisingness 
     (-> (minsup $ptrn)
-           (-> (AbsentOf $ptrn $cnt)
+           (-> (surpabsent $ptrn $cnt)
                  (surp $ptrn 0.2)))))
 
 
@@ -86,8 +79,16 @@
 ;; if $x and $Y are fully grounded and (< $X $Y)
 (= (syn $s_ $s_ (: CPU (⍃ $X $Y))) 
     (if (and (and (is-number $X) (is-number $Y)) (< $X $Y))
-        (: CPU (⍃ $X $Y))
-        (empty)))
+          (: CPU (⍃ $X $Y))
+             (empty)))
+
+;; System proof for Surpabsent
+;; check if surprisingness value already calculated 
+;; if count > 0 then no proof for the absent of the surprisingness value 
+(= (syn $db $s_ (: CPUSurpAb (surpabsent $ptrn))) 
+      (if (> (counter $db ((surp $ptrn $value))) 0)
+            (empty)
+               (: CPUSurpAb (surpabsent $ptrn))))
 
 
 ;!(syn &kb (fromNumber 2) (: $prf (surp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) $value)))
@@ -166,6 +167,11 @@
 ;!(emp-prob-pbs (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) &kb 1.0 0.7)
 ;!(ji_prob_est_interval (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) &kb 0.5 )
 ;!(do-isurp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+
+;;!(add-atom &kb (: FACT1 (minsup (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))))
+;;!(add-atom &kb (: FACT2 (minsup (,(Interact_with  $x $y) (Interact_with  Abe $y) (Interact_with  Zac $y) (Interact_with  Zac $y)))))
+;;!(add-atom &kb (: FACT3 (supportOf (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) 5)))
+;;!(add-atom &kb (: FACT4 (supportOf (,(Interact_with $x $y)  (Interact_with  Abe $y) (Interact_with  Zac $y) (Interact_with  Zac $y)) 5)))
 
 
 [((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $Y)) 
