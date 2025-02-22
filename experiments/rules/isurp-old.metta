@@ -96,8 +96,8 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ;; minimum and maximum probabilities derived from independent partitions, and the 
 ;; distance of the pattern probability from this interval. Optionally, the surprisingness 
 ;; value can be normalized.
-;(: isurp_old (-> Pattern db boolean Number))
-(=(isurp_old $pattern $db $normalize) (
+;(: isurp-old (-> Pattern db boolean Number))
+(=(isurp-old $pattern $db $normalize) (
     let* (
         ($pattern_prob (prob $pattern $db ))
          (($emin $emax) (min-max (iprob (generet-partition-without-pattern $pattern) $db)))

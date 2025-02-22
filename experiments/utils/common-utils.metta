@@ -263,7 +263,7 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
  ;; Count the number of instances of a given pattern
-(: counter (-> hyperon::space::DynSpace Atom Number))
+;;(: counter (-> hyperon::space::DynSpace Atom Number))
 (= (counter $db $ptrn)
     (let $result (collapse (match $db $ptrn $ptrn))
         (tuple-count $result)

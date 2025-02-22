@@ -18,25 +18,20 @@
 
 
 
-;;;;;;;;;;;
-;; To Do ;;
-;;;;;;;;;;;
-
-;: - Initialize Miner – Create a function to initialize the frequent pattern miner.
-;: - Mine Patterns – Extract patterns that meet the minsup threshold.
-;: - Launch Backward Chainer – Use the mined patterns and the surprisingness rule in the backward chainer.
-;: - Calculate Surprisingness – The rule triggers do-isurp to compute the surprisingness value for patterns that satisfy it.
-;: - Sort & Return – Return patterns sorted by their surprisingness value.
 
 
 
-;; Type definition for -> to prevent early reduction
-;; of the conclusions before matching the correct premises.
-(: -> (-> Atom Atom Type))
+
 
 ;;add facts 
 !(import! &kb experiments:chainer:surp:kb)
 !(match &kb $x (if (== (get-type $x) hyperon::space::DynSpace) (remove-atom &kb $x) (Empty) ))
+!(add-atom &kb (: FACT1 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)) 4)))
+!(add-atom &kb (: FACT2 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $D)) (LIST_LINK A G)) 8)))
+!(add-atom &kb (: FACT3 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $D)) 5)))
+!(add-atom &kb (: FACT4 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k))  16)))
+;!(add-atom &kb (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $D)) (LIST_LINK A G)) 8))
+
 
 
 
@@ -46,12 +41,12 @@
     (-> (supportOf $ptrn $cnt)
         (-> (ms_threshold $ms)
             (-> (⍃ $ms $cnt)
-                (minsup $ptrn))))))
+                 (minsup $ptrn))))))
 
 (= (surp-rule)
   (: surprisingness 
     (-> (minsup $ptrn)
-           (-> (surpabsent $ptrn $cnt)
+           (-> (surpabsent $ptrn)
                  (surp $ptrn 0.2)))))
 
 
@@ -61,84 +56,35 @@
 
 
 ;; Add constants to kb
-!(add-atom &kb (ms_threshold 6))
+!(add-atom &kb (: msT (ms-threshold 6)))
+   !(add-atom &kb     (surp-mod 8)) 
+      !(add-atom &kb   (db-ratio 9)) 
+       !(add-atom &kb  (db-size 10))
 
-;; Action Functions
-(=(do-isurp $pattern) (
-     isurp $pattern &kb False 0.5
-)) 
+
+
+ ;!(let ((db-size $value)) (superpose (match &kb $x $x)) ($value))
+ ;!(let ((db-size $val) (db-ratio $val2)) ((db-size 19) (db-ratio 5) ) ($val $val2))
 
 (=(is-number $x) (
   if (== (get-type $x) Number) True False
 ))
 
 
-;; define system proofs 
-;; System proof for ⍃
-;; if conclusion equals (⍃ $X $Y), then return (: CPU (⍃ $X $Y)) 
-;; if $x and $Y are fully grounded and (< $X $Y)
-(= (syn $s_ $s_ (: CPU (⍃ $X $Y))) 
-    (if (and (and (is-number $X) (is-number $Y)) (< $X $Y))
-          (: CPU (⍃ $X $Y))
-             (empty)))
-
-;; System proof for Surpabsent
-;; check if surprisingness value already calculated 
-;; if count > 0 then no proof for the absent of the surprisingness value 
-(= (syn $db $s_ (: CPUSurpAb (surpabsent $ptrn))) 
-      (if (> (counter $db ((surp $ptrn $value))) 0)
-            (empty)
-               (: CPUSurpAb (surpabsent $ptrn))))
 
 
 ;!(syn &kb (fromNumber 2) (: $prf (surp (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) $value)))
-;!(syn &kb (fromNumber 2) (: $prf (surp $what_is_surprise $value)))
+;!(syn &kb (fromNumber 5) (: $prf (surp $what_is_surprise $value)))
+;!(syn &kb (fromNumber 5) (: $prf (surpabsent (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $D)) (LIST_LINK A $D)))))
+;!(syn &kb (fromNumber 5) (: $prf (surpabsent (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X G)))))
+;;(, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $D)) (LIST_LINK A $D))
 
 
 
 
-;;;;;;;;;; functions related to Conjunction ;;;;;;;;;;;;
-
-;; Extracts conjuncts from a conjunctive expression,
-(= (get-conjuncts $cnj) (
-  unify (, $ncnj $ptrn) $cnj (let $result (get-conjuncts $ncnj) (cons-atom $ptrn $result) ) ($cnj)
-))
-
-;; Flattens a conjunctive expression by extracting its conjuncts using `get-conjuncts`,
-;; reversing the list to maintain order, and reassembling the conjuncts into a single expression.
-(= (flatten $cnj) (
-  let $flatten  (reverse-list (get-conjuncts $cnj))   (cons-atom , $flatten)
-))
 
 
-;;;;;;;;;;;;; Sorting function ;;;;;;;;;;;;;
 
-;(: insert_N (-> $a (List $a) (List $a)))
-(= (insert_N $x Nil) (Cons $x Nil))
-(= (insert_N $x (Cons $head $tail))
-   (let ((: $prf ($lable $patrn $value)) (: $Tprf ($Tlable $Tpatrn $Tvalue))) ($x $head)
-    ( if (< $value $Tvalue)
-       (Cons $x (Cons $head $tail))
-       (Cons $head (insert_N $x $tail)))))
-
-;; Sorts a list of patterns by their surprisingness value using insertion sort.
-;(: sort_surp_list (-> (List $a) (List $a)))
-(= (sort_surp_list Nil) Nil)
-(= (sort_surp_list (Cons $head $tail)) (insert_N $head (sort_surp_list $tail)))
-
-
-;;;;;;;;;;; converters ;;;;;;;;; 
-;; Converts a list to a tuple
-(= (list_to_tuple Nil) ())
-(= (list_to_tuple (Cons $head $tail)) (
-  let $temp (list_to_tuple $tail) (cons-atom $head $temp)
-))
-
-;; Converts a tuple back to a list
-(=(tuple_to_list ()) Nil)
-(=(tuple_to_list $list)( 
-  let ($head $tail) (decons-atom $list) (Cons $head (tuple_to_list $tail))
-))
 
 
 ;(sort (Cons (: ((surprisingness FACT1) FACT3) (surp (, (Inheritance $x $y) (Inheritance Abe $y) (Inheritance Zac $y)) 0.4))
@@ -174,17 +120,16 @@
 ;;!(add-atom &kb (: FACT4 (supportOf (,(Interact_with $x $y)  (Interact_with  Abe $y) (Interact_with  Zac $y) (Interact_with  Zac $y)) 5)))
 
 
-[((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $Y)) 
-  ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $X)) 
-   ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $B))
-    ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $D))
-     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $X $A)) 
-     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $B)) 
-     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $D)) 
-     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $Y $A)) 
-     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $D)) 
-     ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $X $B)) (LIST_LINK $B $A)) ()))))))))))]
 
+
+
+
+
+
+[(Cons ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)) (sup 8)) 
+ (((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $F)) 8) 
+  (((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $D)) 16) 
+   (((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $F $D)) 16) ()))))]
 
 
 
@@ -193,6 +138,7 @@
 
 
 ;!(is-number 2)
+
 
 
 

@@ -33,7 +33,7 @@
 ! (add-atom (get-space)  (Inheritance Bob (And human (Or zac))) ) 
 
 
-!(ji_prob_est_interval (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2)
+;!(ji_prob_est_interval (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2)
 ;!(isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True 2)
 ;[0.6455555555555555]
 ;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y)))
@@ -43,7 +43,7 @@
 
 ;!(get-variables (Inheritance $x $y))
 ;!(concatTuple ((A) (B)) ((C) (D)))
-;!(joint-variables-init (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Abe $x)) (remove-parenthesis(((Inheritance $x $y)) ((Inheritance Abe $y)) ( (Inheritance Abe $x)))))
+
 ;!(joint-variables-init  (Inheritance Abe (Human $x (Or Bob $x)))  (remove-parenthesis (((Or Bob $x)) ((Human $x (Or Bob $x))))) )
 ;!(get-unique-vars (,(Inheritance $x $y)  (Inheritance Abe (And $z $w))))
 ;!(get-unique-vars (,(Inheritance $x $y)  (Inheritance Abe (And $z $w))))
@@ -58,3 +58,4 @@
 
 ;!(emp-prob-pbs (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 3)
 
+;;!(joint-variables-init (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Abe $x)) (remove-parenthesis(((Inheritance $x $y)) ((Inheritance Abe $y)) ( (Inheritance Abe $x)))))

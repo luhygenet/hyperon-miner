@@ -343,7 +343,3 @@
 ; !(match &self (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)) (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)))
 
 
-[(Cons ((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)) (sup 8)) 
- (((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $F)) 8) 
-  (((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $D)) 16) 
-   (((, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $F $D)) 16) ()))))]

@@ -12,6 +12,8 @@
 ! (import! &kb experiments:data:ugly_man_sodaDrinker)
 ! (import! &self experiments:rules:isurp)
 ! (import! &self experiments:utils:gen_partition)
+! (import! &self experiments:utils:beta-dist)
+
 
 
 
@@ -38,5 +40,5 @@
 
  ;!(emp-prob-pbs (Inheritance $x human) (get-space) 3)
 
- ;!(emp-prob-pbs (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb  0.2)
- ;!(ji_prob_est_interval (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb  0.2)
+ ;!(emp-prob-pbs (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb  0.5 0.2)
+ !(ji_prob_est_interval (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb  0.2)

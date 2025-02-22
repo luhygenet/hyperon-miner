@@ -14,7 +14,7 @@
 
 ;; Calculate the empirical probability of pattern, using
 ;; boostrapping if necessary
-(=(emp_prob_pbs_mem $subpattern $db  $db_ratio) )
+(=(emp_prob_pbs_mem $subpattern $db  $db_ratio) 0.4)
 
 
 ;; Calculate the product of the probability over subpatterns
