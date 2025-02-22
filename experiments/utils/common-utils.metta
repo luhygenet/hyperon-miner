@@ -2,11 +2,8 @@
 ;; Common Utils ;;
 ;;;;;;;;;;;;;;;;;;
 
-(= (pow-py $base $power) ((py-atom numpy.power) $base $power)) 
+(= (pow-py $base $power) (pow-math $base $power)) 
 
-(= (decons-atom $exp)
-    ((car-atom $exp) (cdr-atom $tail))
-)
 
 (= (concatTuple $xs $ys)
     (if (== $xs ())
@@ -233,7 +230,7 @@
 ;; This is very slow, use the grounded python function instead
 
    (: tuple-count (-> %Undefined% Number))
-   (= (tuple-count $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
+   (= (tuple-count $atom) (size-atom $atom))
 
 ;; Tuple count grounded python function
 ; (import! &self  helper)
@@ -284,7 +281,7 @@
     (let $sup (counter $db $pattern)
         (if (>= $sup $ms) True False)
     )
-
+)
 ;; returns the number of support of a pattern
 
 (= (sup-num $db $pattern)
@@ -336,7 +333,6 @@
  ;             (get-arity (cdr-atom $pattern))
  ;             1)))
 
- ; TODO: import is-pattern function from other branch, it implmented in est branch
 (= (n_conjuncts $pattern) (
         if (not (is-pattern-et $pattern))
         0
@@ -424,7 +420,7 @@
 
  ;; universe count
 (= (universe-count $pattern $db)
-    (pow (db_size $db) (n_conjuncts $pattern))
+    (pow-math (db_size $db) (n_conjuncts $pattern))
 
 )
 

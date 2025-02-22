@@ -108,7 +108,7 @@
         (collapse 
             (match $db $x (let $pattern $x $pattern))))
 )
-((A) ( B C))
+
  ;;ji_tv_est_mem this function is used to estimate the joint probability of a pattern.
  ;;ji_tv_est_mem is going to implemented in est-tv rule.
 
@@ -256,11 +256,13 @@
 )
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;TODO: suspeceted for change 
 
 (= (gen-random $max-value)  (
         (py-dot np-rnd randint) $max-value)
 )
 
+;TODO: suspeceted for change 
 (= (get-element $index $list)
     (if (== $index 0)
         (car-atom $list) ; Return the first element if index is 0
@@ -320,10 +322,10 @@
 (= (subsmp-size $pattern $db-size $support-estimate)
     (let* ( ($nc (n_conjuncts $pattern))    
             (($min-size) (10))   
-            ($alpha (/ $support-estimate (pow-py $db-size $nc)))
+            ($alpha (/ $support-estimate (pow-math $db-size $nc)))
             ($base (/ $db-size (* 10 $alpha)))
             ($power (/ 1 $nc))
-            ($res (pow-py $base $power))
+            ($res (pow-math $base $power)) 
     )
         (max $res (min $min-size $db-size))
     )
