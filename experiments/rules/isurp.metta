@@ -41,6 +41,7 @@
 
 
 
+
 ; (=(do-ji-prob $partitions $pattern $db $db_ratio) (
 ;   if (== $partitions ()) () (
 ;      let* ((($partition $tail) (decons-atom $partitions))
@@ -49,7 +50,25 @@
 ;              (cons-atom $jip $dummy) ))
 ; )
 
-;; Alternative implmentation for do-ji-prob using non diterministic property of metta and avoiding recursion 
+
+;; Previous Implementation: ^
+;; - Utilizes explicit recursion to operate over the list of partitions.
+;; - Decomposes the partitions list using a deconstructing approach (decons-atom).
+;; - For each partition, it computes the probability estimate using ji-prob-est.
+;; - Recursively processes the remaining partitions until an empty list is reached.
+;; - This method leverages conditional checks and explicit recursion, which can lead to deeper call stacks.
+;;
+;; New Implementation: v
+;; - Avoids explicit recursion by exploiting metta's non-deterministic properties.
+;; - Uses the 'superpose' function to combine results directly from all partitions.
+;; - Applies 'collapse' to aggregate the result of ji-prob-est computed on the combined partitions.
+;; - This approach is more concise and potentially more efficient as it abstracts the iteration over partitions.
+;;
+;; Overall Comparison:
+;; - Both versions aim to calculate the ji-prob-est over partitions with a given pattern and database ratio.
+;; - The older recursive approach handles each partition individually, while the new version collectively processes
+;;   the partitions via superposition and collapse.
+;; - The new implementation simplifies the code and leverages metta's capabilities to avoid deep recursion.
 
 (=(do-ji-prob $partitions $pattern $db $db_ratio) (
    collapse (ji-prob-est (superpose $partitions) $pattern $db $db_ratio)

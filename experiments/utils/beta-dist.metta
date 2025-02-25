@@ -168,15 +168,23 @@
 
 
 ;;!(_beta_distribution 2 5)
-(=(mk_distribution_list $patten_list)(
-    if (== $patten_list ()) () (
-        let*(
-            ( ($head $tail)(decons-atom $patten_list))
-            ($beta_dist (mk_distribution $head))
-            ($dummy (mk_distribution_list $tail))
-        )
-              (cons-atom $beta_dist $dummy))
-))
+;TODO: suspect for change 
+; (=(mk_distribution_list $patten_list)(
+;     if (== $patten_list ()) () (
+;         let*(
+;             ( ($head $tail)(decons-atom $patten_list))
+;             ($beta_dist (mk_distribution $head))
+;             ($dummy (mk_distribution_list $tail))
+;         )
+;               (cons-atom $beta_dist $dummy))
+; ))
+
+;; 
+(=(mk_distribution_list $patten_list)
+     (collapse (mk_distribution (superpose $patten_list)))
+         
+)
+
 
 
 
