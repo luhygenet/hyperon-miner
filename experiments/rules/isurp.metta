@@ -41,13 +41,19 @@
 
 
 
+; (=(do-ji-prob $partitions $pattern $db $db_ratio) (
+;   if (== $partitions ()) () (
+;      let* ((($partition $tail) (decons-atom $partitions))
+;             ($jip (ji-prob-est $partition $pattern $db $db_ratio))
+;              ($dummy (do-ji-prob $tail $pattern $db $db_ratio)))
+;              (cons-atom $jip $dummy) ))
+; )
+
+;; Alternative implmentation for do-ji-prob using non diterministic property of metta and avoiding recursion 
+
 (=(do-ji-prob $partitions $pattern $db $db_ratio) (
-  if (== $partitions ()) () (
-     let* ((($partition $tail) (decons-atom $partitions))
-            ($jip (ji-prob-est $partition $pattern $db $db_ratio))
-             ($dummy (do-ji-prob $tail $pattern $db $db_ratio)))
-             (cons-atom $jip $dummy) ))
-)
+   collapse (ji-prob-est (superpose $partitions) $pattern $db $db_ratio)
+))
 
 
 ;; Calculate the probability estimate of each partition based on
