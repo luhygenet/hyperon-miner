@@ -595,15 +595,6 @@
  ; ))
 
  ;helper function to concat two tuples
-(= (concatTuple $xs $ys)
-    (if (== $xs ())
-        $ys
-        (let* ( ($head (car-atom $xs))
-                ($tail (cdr-atom $xs))
-                ($tailNew (concatTuple $tail $ys)))
-            (cons-atom $head $tailNew))
-    )
-)
 
  ;! (concatTuple (A B C) (D E F))
 
