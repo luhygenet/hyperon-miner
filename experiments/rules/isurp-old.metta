@@ -41,16 +41,30 @@
 
 ;;Recursively calculates the support for each component of a 
 ;;conjunctive pattern by retrieving their support numbers (`sup-num`) from the database.
-(=(compute-component-support $cps $db)(
-  if (== $cps ()) () (
-    let* (  (($head $tail) (decons-atom $cps)) 
-            ($sup_num (sup-num $db $head) )
-            ($dummy (compute-component-support $tail $db))
-    )
-       (cons-atom $sup_num $dummy)
-    )
-  )
-) 
+
+; (=(compute-component-support $cps $db)(
+;   if (== $cps ()) () (
+;     let* (  (($head $tail) (decons-atom $cps)) 
+;             ($sup_num (sup-num $db $head) )
+;             ($dummy (compute-component-support $tail $db))
+;     )
+;        (cons-atom $sup_num $dummy)
+;     )
+;   )
+; ) 
+
+
+;;; compute-component-support:
+;;;   Calculates the support for components by first applying a superposition on the provided
+;;;   component support list (cps) and then computing the numeric support value using the database (db).
+;;;   The computation leverages the 'superpose' function to combine or aggregate component data,
+;;;   and subsequently, the 'sup-num' function extracts the resulting numerical support from the database.
+
+(=(compute-component-support $cps $db)
+(sup-num $db (superpose $cps)) 
+)
+
+
 
 ;; Calculate the support for each component of the conjunctive 
 ;; pattern and return the product of their results.
