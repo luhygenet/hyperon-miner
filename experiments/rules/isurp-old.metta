@@ -87,13 +87,26 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 (=(blk-prob $partition $db) (prob (add-pattern $partition $db) $db))
 
 
-;; Recursively computes the probabilities of all blocks in a partition. 
-(=(p-blk-prob $partition $db) (
-    if (== $partition ()) () (let* ((($blk $tail) (decons-atom $partition))
-                                    ( $res (blk-prob $blk $db) )
-                                    ($dummy (p-blk-prob $tail $db))) 
-                                    (cons-atom $res $dummy))))
+; ;; Recursively computes the probabilities of all blocks in a partition. 
+; (=(p-blk-prob $partition $db) (
+;     if (== $partition ()) () (let* ((($blk $tail) (decons-atom $partition))
+;                                     ( $res (blk-prob $blk $db) )
+;                                     ($dummy (p-blk-prob $tail $db))) 
+;                                     (cons-atom $res $dummy))))
 
+
+;; p-blk-prob computes the block probability for a given partition and database.
+;;
+;; It achieves this by applying the superpose function to the partition before
+;; calculating the block probability using the blk-prob predicate.
+;;
+;; In other words, the relation p-blk-prob is defined to be equivalent to blk-prob
+;; where the partition is first transformed by the superpose function.
+
+(=(p-blk-prob $partition $db) 
+   (blk-prob (superpose $partition) $db) 
+)
+                                
 
 
 ;;Estimates the probability of each partition under the assumption that blocks 
