@@ -111,10 +111,25 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 
 ;;Estimates the probability of each partition under the assumption that blocks 
 ;;within a partition are independent. It multiplies the probabilities of individual blocks
+; (=(iprob $prtns $db) (
+;    if (== $prtns ()) ()  (let* ((($partition $tail) (decons-atom $prtns)) 
+;                                  ($temp (accumulator-x (p-blk-prob $partition $db)))
+;                                 ($dummy (iprob $tail $db))) 
+;                                 (cons-atom $temp $dummy))
+; ))
+
+
+;; This rule computes the probability (iprob) for a given set of patterns ($prtns) within a specified database ($db).
+;; 
+;; It defines iprob by evaluating an accumulator (accumulator-x), which is set by calling the probability block function (p-blk-prob).
+;; 
+;; The probability block function takes as its input a composite structure (a superposition of patterns, $parns) and the database ($db).
+;; 
+;; In summary, the rule aggregates probabilistic outcomes by superposing patterns and then applying a probability block function.
 (=(iprob $prtns $db) (
-   if (== $prtns ()) ()  (let* ((($partition $tail) (decons-atom $prtns)) 
-                                 ($temp (accumulator-x (p-blk-prob $partition $db)))
-                                ($dummy (iprob $tail $db))) (cons-atom $temp $dummy))
+    
+       accumulator-x (p-blk-prob (superpose $parns) $db)
+                                
 ))
 
 
