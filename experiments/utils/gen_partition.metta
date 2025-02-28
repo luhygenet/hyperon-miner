@@ -81,7 +81,7 @@
 
  ;;  for example
  ;;;;;;  input: ('A' 'B' 'C')
- ;;;;;;  output: (('A') ('B') ('C') ('A' 'B') ('A' 'C')  ('B' 'C') ('A' 'B' 'C'))
+ ;;;;;;  output: (('A') ('B') ('C')  ('A' 'B') ('A' 'C')  ('B' 'C') ('A' 'B' 'C'))
 
 (: powerset (-> Expression Expression))
 (= (powerset $lst)

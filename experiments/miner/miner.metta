@@ -17,9 +17,75 @@
 
 
 ;; Initializers
+;;initialize the necessary input parameters in the KB,
+(= (init-miner $db $kb $ms $surp $db-ratio)
+    (         let* (  
+                 (() (add-atom $kb (: msT (ms-threshold $ms))))
+                 (() (add-atom $kb (surp-mod $surp)))
+                 (() (add-atom $kb (db-ratio $db-ratio)))
+                 (() (add-reduct $kb (db-size (db_size $db))))
+                 (() (add-atom &self (kb-ref $kb)))
+                 (() (add-atom $kb (db-ref $db)))
+                )()))
 
 
-(: cog-mine (-> db         ;; Data base space 
+;;Returns frequent patters with their support from the kb
+(= (get-patterns $kb) (
+    match $kb (: $x (supportOf $pattern $value)) (($pattern) (sup $value))
+))
+
+
+;; extract the mode of the Surprisingness
+ ;; if the surprisingness mode is none return lis of mined patterns
+ ;; otherwise launches the backward chainer for surprising patterns mining
+(= (init-surp $kb $surp-mode) (               
+        if (== $surp-mode none) (get-patterns $kb)                                   
+               (syn $kb (fromNumber 5) (: $prf (surp $what_is_surprise $value)))            
+))
+
+
+
+;;;;; Dummies ;;;;;;
+;; mocking the frequent pattern miner results 
+(= (frequent-miner $db $kb) ( 
+     let*  ( (() (add-atom $kb (: FACT1 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)) 4))))
+         (() (add-atom $kb (: FACT2 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $D)) (LIST_LINK A G)) 8))))
+         (() (add-atom $kb (: FACT3 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $D)) 5))))
+         (() (add-atom $kb (: FACT4 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L G)) (LIST_LINK B k))  16))))
+         (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
+        ) ()
+))
+
+
+
+
+;; Action Functions
+(=(do-surp $pattern) (
+     let* (
+          ($kb (match &self (kb-ref $ref) $ref))
+          ($ms (match $kb (: msT (ms-threshold $ms)) $ms))
+          ($surp (match $kb (surp-mod $surp) $surp))
+          ($db    (match $kb (db-ref $ref) $ref))
+          ($db-ratio (match $kb (db-ratio $db-ratio) $db-ratio))
+          ($db-size (match $kb (db-size $db-size) $db-size))   
+          ($ptrn (flatten $pattern))        
+    )
+     (case $surp (
+        (isurp-old 0.4)
+      ;;  (isurp-old (isurp-old $ptrn $db False))
+        (nisurp-old (isurp-old $ptrn $db True))
+        (isurp (isurp $ptrn $db False $db-ratio))
+        (nisurp (isurp $ptrn $db True $db-ratio))
+        ($_ (isurp $ptrn $db False $db-ratio)))
+     )
+     )
+) 
+
+
+
+
+
+;;(: cog-mine (-> db         ;; Data base space 
                 ms         ;; Minimum support
                            ;; Minimum support. All patterns with count below
                            ;; ms are discarded.
@@ -47,7 +113,7 @@
                             ;;    'isurp-old:  Verbatim port of Shujing I-Surprisingness.
                             ;;    'nisurp-old: Verbatim port of Shujing normalized I-Surprisingness.
                             ;;    'isurp:      New implementation of I-Surprisingness that takes
-                            ;;            l    inkage into account.
+                            ;;            l    linkage into account.
                             ;;    'nisurp:     New implementation of normalized I-Surprisingness
                             ;;                 that takes linkage into account.
                             ;;    'jsdsurp:    Jensen-Shannon Distance based surprisingness.
@@ -67,121 +133,50 @@
                             ;; Range: (0, +∞), default = 1.0  
                             ;; Affects only surprisingness, not frequent mining.  
 
-))
+;;))
 
-(= (cog-mine $db $kb $ms $cnjexp $maxcnj $maxcevar $surp $db-ratio) (
+;; $cnjexp $maxcnj $maxcevar
+
+(= (cog-mine-old $db $kb $ms $surp $db-ratio) (
     let* (
-           (() (init-miner $db &kb $ms $surp $db-ratio)) ;; initialize parameters values
-           (() (frequent-miner))   ;; Run pattern miner in a forward way
-           (($su_results) (init-surp))  ;; 
+          ;; initializes the necessary input parameters in the KB
+          ;;configures and runs the frequent pattern miner with conjunction expansion
+          ;;proceeds to surprisingness pattern mining using the backward chainer 
+             (() (init-miner $db $kb $ms $surp $db-ratio)) 
+             (() (frequent-miner $db $kb))
+             ($su_results   (init-surp $kb $surp))  
     )
-      (if (== $surp none) $su_results (
-          let $list (tuple_to_list $su_results) (list_to_tuple (sort_surp_list $list))
-      ))
+    ;; finally returns sorted patterns with their surprisingness value.
+         $su_results
+       ; (let $list (tuple_to_list $su_results) $list) 
+      
 ))
 
-
-((init-surp $kb) (
-   let $surp_mode (match $kb (: surpM (surp-mod $surp)) $surp)                    ;; extract the mode of the Surprisingness
-        (if (== $surp_mode none) (get-patterns)                                   ;; if the surprisingness mode is none return lis of mined patterns 
-            ((syn &kb (fromNumber 5) (: $prf (surp $what_is_surprise $value)))))  ;; Launch the backward chainer for surprising patterns 
-))
-
-
-
-;; Action Functions
-(=(do-surp $pattern) (
-     let* (
-          ($ms (match &kb (: msT (ms-threshold $ms)) $ms))
-          ($surp (match &kb (surp-mod $surp) $surp))
-          ($db (db-ref (match &kb (db-ref $db))))
-          ($db-ratio (match &kb (db-ratio $db-ratio) $db-ratio))
-          ($db-size (match &kb (db-size $db-size) $db-size))   
-          ($ptrn (flatten $pattern))        
-    )
-     (case $surp (
-        (isurp-old (isurp-old $ptrn $db False))
-        (nisurp-old (isurp-old $ptrn $db True))
-        (isurp (isurp $ptrn $db False $db-ratio))
-        (nisurp (isurp $ptrn $db True $db-ratio))
-        ($_ (isurp $ptrn $db False $db-ratio)))
-     )
-     )
-) 
-
-
-
-
-(= (init-miner $db $kb $ms $surp $db-ratio)
-    (superpose ( (add-atom $kb (: msT (ms-threshold $ms))) 
-                 (add-atom $kb (surp-mod $surp))
-                 (add-atom $kb (db-ref $db))
-                 (add-atom $kb (db-ratio $db-ratio))
-                 (add-atom $kb (db-size (db_size $db)))
-                 )))
-
-
-
-;;;;;;;;;; functions related to Conjunction ;;;;;;;;;;;;
-
-;; Extracts conjuncts from a conjunctive expression,
-(= (get-conjuncts $cnj) (
-  unify (, $ncnj $ptrn) $cnj (let $result (get-conjuncts $ncnj) (cons-atom $ptrn $result) ) ($cnj)
-))
-
-;; Flattens a conjunctive expression by extracting its conjuncts using `get-conjuncts`,
-;; reversing the list to maintain order, and reassembling the conjuncts into a single expression.
-(= (flatten $cnj) (
-  let $flatten  (reverse-list (get-conjuncts $cnj))   (cons-atom , $flatten)
+(= (cog-mine $db $kb $ms $surp $db-ratio) (
+ 
+        superpose((init-miner $db $kb $ms $surp $db-ratio)
+                  (frequent-miner $db $kb) 
+                ;;  (collapse (init-surp $kb $surp))
+                  )
+    
+      
 ))
 
 
 
-;;;;;;;;;;;;; Sorting function for surprisingness ;;;;;;;;;;;;;
-
-;(: insert_N (-> $a (List $a) (List $a)))
-(= (insert_N $x Nil) (Cons $x Nil))
-(= (insert_N $x (Cons $head $tail))
-   (let ((: $prf ($lable $patrn $value)) (: $Tprf ($Tlable $Tpatrn $Tvalue))) ($x $head)
-    ( if (< $value $Tvalue)
-       (Cons $x (Cons $head $tail))
-       (Cons $head (insert_N $x $tail)))))
-
-;; Sorts a list of patterns by their surprisingness value using insertion sort.
-;(: sort_surp_list (-> (List $a) (List $a)))
-(= (sort_surp_list Nil) Nil)
-(= (sort_surp_list (Cons $head $tail)) (insert_N $head (sort_surp_list $tail)))
-
-
-;;;;;;;;;;; converters ;;;;;;;;; 
-;; Converts a list to a tuple
-(= (list_to_tuple Nil) ())
-(= (list_to_tuple (Cons $head $tail)) (
-  let $temp (list_to_tuple $tail) (cons-atom $head $temp)
-))
-
-;; Converts a tuple back to a list
-(=(tuple_to_list ()) Nil)
-(=(tuple_to_list $list)( 
-  let ($head $tail) (decons-atom $list) (Cons $head (tuple_to_list $tail))
-))
-
-
-;;;;; Dummies ;;;;;;
-;; mocking the frequent pattern miner results 
-((frequent-miner) (
-    superpose(
-        !(add-atom &kb (: FACT1 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)) 4)))
-        !(add-atom &kb (: FACT2 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $D)) (LIST_LINK A G)) 8)))
-        !(add-atom &kb (: FACT3 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $D)) 5)))
-        !(add-atom &kb (: FACT4 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k))  16)))
-    )
-))
 
 
 
+
+
+
+;; test if all atoms of the rb ported to kb
 (=(test $kb) (
-  let $ref (match $kb (syPrf-ref $rf) $rf) (get-atoms $ref)
+ superpose ((let $synRef (match $kb (rb-ref $ref) $ref) (
+                      let $synAtoms (get-atoms $synRef) (superpose((add-atom $kb $synAtoms)))
+                 ))
+                 (match $kb (=(minSup-rule) $x) $x)
+                 )
 ))
 
 

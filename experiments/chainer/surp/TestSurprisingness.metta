@@ -122,7 +122,10 @@
 
 
 
-
+;;dummy
+!(bind! &test (new-space))
+!(add-atom &test (superpose (G D S B)))
+;!(get-atoms &test)
 
 
 
@@ -138,6 +141,42 @@
 
 
 ;!(is-number 2)
+
+
+(Inheritance $x $y)
+;; Helper function to check if a variable is in a pattern
+(= (variable-in-pattern $variable $pattern)
+   (if (== $pattern ()) ; Base case: empty pattern
+       False
+       (let* (($head (car-atom $pattern)) ; Extract the first element
+              ($tail (cdr-atom $pattern))) ; Extract the rest of the elements
+         (or (== $variable $head) ; Check if the head is the variable
+             (variable-in-pattern $variable $tail) ; Recurse on the tail
+         )
+       )
+   )
+)
+
+(let ($link $x $Y) $pattern (or (== $variable $x ) (== $variable $y)))
+
+
+;; Function to get connected patterns
+(= (connected-patterns $variable $patterns)
+   (if (== $patterns ()) ; Base case: empty pattern list
+       ()
+       (let* (($head (car-atom $patterns)) ; Extract the first pattern
+              ($tail (cdr-atom $patterns))) ; Extract the rest of the patterns
+         (if (variable-in-pattern $variable $head) ; Check if the variable is in the head pattern
+             (Cons $head (connected-patterns $variable $tail)) ; Include it in the result
+             (connected-patterns $variable $tail) ; Skip it
+         )
+       )
+   )
+)
+
+;; Example usage
+! (connected-patterns $b ((Inheritance $b $c) (Relation $a $b) (Property $c $d)))
+
 
 
 

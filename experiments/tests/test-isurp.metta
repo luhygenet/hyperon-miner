@@ -37,7 +37,7 @@
 ;!(isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True 2)
 ;[0.6455555555555555]
 ;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y)))
-;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
 
 
 
@@ -58,4 +58,7 @@
 
 ;!(emp-prob-pbs (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 3)
 
-;;!(joint-variables-init (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Abe $x)) (remove-parenthesis(((Inheritance $x $y)) ((Inheritance Abe $y)) ( (Inheritance Abe $x)))))
+;;!(joint-variables-init (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Abe $x)) (remove-parenthesis(((Inheritance $x $y)) ((Inheritance Abe $y)) ( (Inheritance Abe $x)))))
+
+
+
