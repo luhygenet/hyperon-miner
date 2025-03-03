@@ -5,14 +5,21 @@
 ;;;;;;;;;;;;;;;;;;;;
 
 
-(=(add-subpatterns () $space) ())
-(=(add-subpatterns $partition $space)(
-    let* ((($head $tail) (decons-atom $partition))
-           ($subpattern (mk-body $head))
-           ($dummy (add-subpatterns $tail $space))
-            )
-            (cons-atom $subpattern $dummy)
-))
+; (=(add-subpatterns () $space) ())
+; (=(add-subpatterns $partition $space)(
+;     let* ((($head $tail) (decons-atom $partition))
+;            ($subpattern (mk-body $head))
+;            ($dummy (add-subpatterns $tail $space))
+;             )
+;             (cons-atom $subpattern $dummy)
+; ))
+
+
+(=(add-subpatterns $partition $space)
+    (mk-body (superpose $partition))
+      
+)
+
 
 
 (=(get-subpatterns $pattern $space) (

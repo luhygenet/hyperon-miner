@@ -41,16 +41,30 @@
 
 ;;Recursively calculates the support for each component of a 
 ;;conjunctive pattern by retrieving their support numbers (`sup-num`) from the database.
-(=(compute-component-support $cps $db)(
-  if (== $cps ()) () (
-    let* (  (($head $tail) (decons-atom $cps)) 
-            ($sup_num (sup-num $db $head) )
-            ($dummy (compute-component-support $tail $db))
-    )
-       (cons-atom $sup_num $dummy)
-    )
-  )
-) 
+
+; (=(compute-component-support $cps $db)(
+;   if (== $cps ()) () (
+;     let* (  (($head $tail) (decons-atom $cps)) 
+;             ($sup_num (sup-num $db $head) )
+;             ($dummy (compute-component-support $tail $db))
+;     )
+;        (cons-atom $sup_num $dummy)
+;     )
+;   )
+; ) 
+
+
+;;; compute-component-support:
+;;;   Calculates the support for components by first applying a superposition on the provided
+;;;   component support list (cps) and then computing the numeric support value using the database (db).
+;;;   The computation leverages the 'superpose' function to combine or aggregate component data,
+;;;   and subsequently, the 'sup-num' function extracts the resulting numerical support from the database.
+
+(=(compute-component-support $cps $db)
+(sup-num $db (superpose $cps)) 
+)
+
+
 
 ;; Calculate the support for each component of the conjunctive 
 ;; pattern and return the product of their results.
@@ -73,21 +87,49 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 (=(blk-prob $partition $db) (prob (add-pattern $partition $db) $db))
 
 
-;; Recursively computes the probabilities of all blocks in a partition. 
-(=(p-blk-prob $partition $db) (
-    if (== $partition ()) () (let* ((($blk $tail) (decons-atom $partition))
-                                    ( $res (blk-prob $blk $db) )
-                                    ($dummy (p-blk-prob $tail $db))) 
-                                    (cons-atom $res $dummy))))
+; ;; Recursively computes the probabilities of all blocks in a partition. 
+; (=(p-blk-prob $partition $db) (
+;     if (== $partition ()) () (let* ((($blk $tail) (decons-atom $partition))
+;                                     ( $res (blk-prob $blk $db) )
+;                                     ($dummy (p-blk-prob $tail $db))) 
+;                                     (cons-atom $res $dummy))))
 
+
+;; p-blk-prob computes the block probability for a given partition and database.
+;;
+;; It achieves this by applying the superpose function to the partition before
+;; calculating the block probability using the blk-prob predicate.
+;;
+;; In other words, the relation p-blk-prob is defined to be equivalent to blk-prob
+;; where the partition is first transformed by the superpose function.
+
+(=(p-blk-prob $partition $db) 
+   (blk-prob (superpose $partition) $db) 
+)
+                                
 
 
 ;;Estimates the probability of each partition under the assumption that blocks 
 ;;within a partition are independent. It multiplies the probabilities of individual blocks
+; (=(iprob $prtns $db) (
+;    if (== $prtns ()) ()  (let* ((($partition $tail) (decons-atom $prtns)) 
+;                                  ($temp (accumulator-x (p-blk-prob $partition $db)))
+;                                 ($dummy (iprob $tail $db))) 
+;                                 (cons-atom $temp $dummy))
+; ))
+
+
+;; This rule computes the probability (iprob) for a given set of patterns ($prtns) within a specified database ($db).
+;; 
+;; It defines iprob by evaluating an accumulator (accumulator-x), which is set by calling the probability block function (p-blk-prob).
+;; 
+;; The probability block function takes as its input a composite structure (a superposition of patterns, $parns) and the database ($db).
+;; 
+;; In summary, the rule aggregates probabilistic outcomes by superposing patterns and then applying a probability block function.
 (=(iprob $prtns $db) (
-   if (== $prtns ()) ()  (let* ((($partition $tail) (decons-atom $prtns)) 
-                                 ($temp (accumulator-x (p-blk-prob $partition $db)))
-                                ($dummy (iprob $tail $db))) (cons-atom $temp $dummy))
+    
+       accumulator-x (p-blk-prob (superpose $parns) $db)
+                                
 ))
 
 

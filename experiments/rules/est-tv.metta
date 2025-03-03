@@ -97,21 +97,56 @@
          ))
 )
 
+;:TODO: suspect for change to non-deterministic 
+; (= (ji-est-tv $db $db_size $pattern $partitions)
+; (   if (== $partitions ()) () (
+;         let* (
+;             (($head $tail) (decons-atom $partitions))
+;                ($prod_etv (pro_prob_without_joint $db $head))
+;                (($rp $rc) (decons-atom $prod_etv))
+;               ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $head) (joint-variables-init $pattern (remove-parenthesis $head)) 1))
+;               (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
+;                ($dummy (ji-est-tv $db $db_size $pattern $tail))
+;               ) 
 
-(= (ji-est-tv $db $db_size $pattern $partitions)
-(   if (== $partitions ()) () (
-        let* (
-            (($head $tail) (decons-atom $partitions))
-               ($prod_etv (pro_prob_without_joint $db $head))
-               (($rp $rc) (decons-atom $prod_etv))
-              ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $head) (joint-variables-init $pattern (remove-parenthesis $head)) 1))
-              (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
-               ($dummy (ji-est-tv $db $db_size $pattern $tail))
-              ) 
+;               (cons-atom (STV $strength $confidence)  $dummy) 
+;          ))
+; )
 
-              (cons-atom (STV $strength $confidence)  $dummy) 
-         ))
+
+;; This module implements a two-step estimation approach for computing TV estimates
+;; based on joint probability assessments.
+;;
+;; The primary helper function, ji-est-tv-hlper, performs the following:
+;; 1. Computes an initial production probability without considering joint dependencies
+;;    using the pro_prob_without_joint function.
+;; 2. Deconstructs the result into a primary probability component (rp) and additional details (rc).
+;; 3. Calculates an adjusted probability (rp_est) that incorporates joint effects via the
+;;    prob-with-joint function. This step modifies the partition and initializes joint variables
+;;    based on a provided pattern.
+;; 4. Combines the initial and adjusted probabilities to derive two metrics:
+;;    - Strength: obtained by multiplying the primary probabilities (rp and rp_est).
+;;    - Confidence: derived from scaling a component extracted from the additional details (rc),
+;;      specifically, multiplying the first element by a factor of 1e-1.
+;; 5. Packages these two metrics using the STV constructor.
+;;
+;; The wrapper function, ji-est-tv, aggregates multiple partitions using the superpose function
+;; and then delegates to ji-est-tv-hlper to perform the TV estimation on the combined partition.
+;;
+;; This approach ensures that both individual and joint probability effects are considered
+;; when estimating the TV values.
+(= (ji-est-tv-hlper $db $db_size $pattern $partition) (let* (
+        ($prod_etv (pro_prob_without_joint $db $partition))
+        (($rp $rc) (decons-atom $prod_etv))
+        ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $partition) (joint-variables-init $pattern (remove-parenthesis $partition)) 1))
+        (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
 )
+(STV $strength $confidence)
+))
+
+
+(= (ji-est-tv $db $db_size $pattern $partitions)  (ji-est-tv-hlper $db $db_size $pattern (superpose $partitions)))
+
 
 
 

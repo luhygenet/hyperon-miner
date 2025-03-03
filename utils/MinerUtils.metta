@@ -21,13 +21,6 @@
 (= (fromNat Z) 0)
 (= (fromNat (S $k)) (+ 1 (fromNat $k)))
 
-;; Define max
-(: max (-> $a $a $a))
-(= (max $x $y) (if (> $x $y) $x $y))
-
-;; Define min
-(: min (-> $a $a $a))
-(= (min $x $y) (if (< $x $y) $x $y))
 
 ;; Tuple count grounded python function
 ;;!(extend-py! ../utils/helper.py)
