@@ -145,7 +145,7 @@
 ))
 
 
-(= (ji-est-tv $db $db_size $pattern $partitions)  (ji-est-tv-hlper $db $db_size $pattern (superpose $partitions)))
+(= (ji-est-tv $db $db_size $pattern $partitions) (collapse (ji-est-tv-hlper $db $db_size $pattern (superpose $partitions))))
 
 
 

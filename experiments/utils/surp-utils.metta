@@ -16,7 +16,7 @@
 
 
 (=(add-subpatterns $partition $space)
-    (mk-body (superpose $partition))
+    (collapse (mk-body (superpose $partition)))
       
 )
 

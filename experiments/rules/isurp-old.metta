@@ -61,7 +61,7 @@
 ;;;   and subsequently, the 'sup-num' function extracts the resulting numerical support from the database.
 
 (=(compute-component-support $cps $db)
-(sup-num $db (superpose $cps)) 
+(collapse (sup-num $db (superpose $cps)) )
 )
 
 
@@ -104,7 +104,7 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ;; where the partition is first transformed by the superpose function.
 
 (=(p-blk-prob $partition $db) 
-   (blk-prob (superpose $partition) $db) 
+   (collapse (blk-prob (superpose $partition) $db) )
 )
                                 
 
@@ -128,7 +128,7 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ;; In summary, the rule aggregates probabilistic outcomes by superposing patterns and then applying a probability block function.
 (=(iprob $prtns $db) (
     
-       accumulator-x (p-blk-prob (superpose $parns) $db)
+      (collapse accumulator-x (p-blk-prob (superpose $parns) $db))
                                 
 ))
 
