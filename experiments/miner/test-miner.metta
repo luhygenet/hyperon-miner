@@ -23,7 +23,7 @@
 
 
 ;; config kb : load the chainer , rules , system-proofs ....
-!(import! &self  chaining:dtl:backward:curried)
+;;!(import! &self  chaining:dtl:backward:curried)
 !(import! &kb   experiments:miner:miner-rules)
 !(import! &self  experiments:miner:system-proofs)
 !(match &kb $x (if (== (get-type $x) hyperon::space::DynSpace) (remove-atom &kb $x) (Empty) )) 
@@ -35,13 +35,13 @@
 
 
 ;; define parameters 
-(=(min-sup) 10)
+(=(min-sup) 6)
 (=(surp-mode ) isurp-old)
 (=(db-ratio) 0.5)
 
 
 ;; test the cog-miner
-! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
+! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) $res)
 
 
 

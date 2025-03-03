@@ -15,3 +15,6 @@
     (: surprisingness 
       (-> (minsup $ptrn)
                      (surp $ptrn (do-surp $ptrn))))
+
+
+  

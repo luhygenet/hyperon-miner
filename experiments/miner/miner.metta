@@ -38,9 +38,20 @@
 ;; extract the mode of the Surprisingness
  ;; if the surprisingness mode is none return lis of mined patterns
  ;; otherwise launches the backward chainer for surprising patterns mining
-(= (init-surp $kb $surp-mode) (               
+(= (init-surp-old $kb $surp-mode) (               
         if (== $surp-mode none) (get-patterns $kb)                                   
                (syn $kb (fromNumber 5) (: $prf (surp $what_is_surprise $value)))            
+))
+
+(=(call-this) (
+ superpose((: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))
+               (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.8)))
+))
+
+(=(init-surp $kb $surp-mode) (
+      if (== $surp-mode none) (get-patterns $kb) 
+        (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value)))
+         ;; (call-this)
 ))
 
 
@@ -52,7 +63,7 @@
          (() (add-atom $kb (: FACT2 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $D)) (LIST_LINK A G)) 8))))
          (() (add-atom $kb (: FACT3 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $D)) 5))))
          (() (add-atom $kb (: FACT4 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L G)) (LIST_LINK B k))  16))))
-         (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
+        ;; (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
         ) ()
 ))
 
@@ -137,29 +148,25 @@
 
 ;; $cnjexp $maxcnj $maxcevar
 
-(= (cog-mine-old $db $kb $ms $surp $db-ratio) (
+(= (cog-mine $db $kb $ms $surp $db-ratio) (
     let* (
           ;; initializes the necessary input parameters in the KB
           ;;configures and runs the frequent pattern miner with conjunction expansion
           ;;proceeds to surprisingness pattern mining using the backward chainer 
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
              (() (frequent-miner $db $kb))
-             ($su_results   (init-surp $kb $surp))  
+            ($su_results      (collapse (init-surp $kb $surp))) 
     )
     ;; finally returns sorted patterns with their surprisingness value.
-         $su_results
+       $su_results
+       
        ; (let $list (tuple_to_list $su_results) $list) 
       
 ))
 
-(= (cog-mine $db $kb $ms $surp $db-ratio) (
- 
-        superpose((init-miner $db $kb $ms $surp $db-ratio)
-                  (frequent-miner $db $kb) 
-                ;;  (collapse (init-surp $kb $surp))
-                  )
-    
-      
+
+(= (do-mine $db $kb $ms $surp $db-ratio) (
+     collapse (do-mine $db $kb $ms $surp $db-ratio)
 ))
 
 
