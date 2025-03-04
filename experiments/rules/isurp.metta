@@ -22,7 +22,7 @@
 (=(pro-prob-wout-joint $subpatterns $db $db_ratio $p) (
   if (== $subpatterns ()) $p (
     let* ((($subpattern $tail) (decons-atom $subpatterns))
-           ($empr (emp-prob-pbs  $subpattern $db  $db_ratio))
+           ($empr (emp-prob-pbs  (remove-parenthesis $subpattern) $db  $db_ratio))
            ($new_prob (* $p $empr)))
        (pro-prob-wout-joint $tail $db $db_ratio $new_prob)
   )
@@ -91,8 +91,10 @@
            ($emp (emp-prob-pbs  $pattern $db $emax $db_ratio))
             ($dst (dst_from_interval $emin $emax $emp))
              ($maxprb (max ($emp $emax))))
-               (min ((if $normalize (/ $dst $maxprb) $dst) 1.0))
+               (min ((if $normalize (// $dst $maxprb) $dst) 1.0))
 ))
+
+
 
 
 

@@ -265,7 +265,7 @@
 (: counter (-> hyperon::space::DynSpace Atom Number))
 (= (counter $db $ptrn)
     (let $result (collapse (match $db $ptrn $ptrn))
-        (tuple-count $result)
+         (tuple-count $result)
     )
 )
 

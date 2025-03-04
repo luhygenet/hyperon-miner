@@ -30,11 +30,12 @@
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Inheritance Zac human))
 ! (add-atom (get-space) (Parent Abe Nil ))
+
 ! (add-atom (get-space)  (Inheritance Bob (And human (Or zac))) ) 
 
 
-!(ji_prob_est_interval (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2)
-;!(isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True 2)
+;!(ji_prob_est_interval (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2)
+!(isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True 2)
 ;[0.6455555555555555]
 ;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y)))
 ;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
@@ -56,5 +57,9 @@
 
 ;!(let $temp (collapse (is-present $y ((Or Bob $x))))  $temp)
 
-;!(emp-prob-pbs (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 3)
+;!(emp-prob-pbs (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2)
+
+;!(emp-prob-pbs  ((Inheritance D A)) (get-space) 1 2)
+
+;!(emp-prob ((Inheritance D A)) (get-space))
 
