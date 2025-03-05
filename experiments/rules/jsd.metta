@@ -1,8 +1,6 @@
 ! (register-module! ../../experiments)
 ! (import! &self experiments:utils:util-jsd)
 
-! (bind! logarithm (py-atom numpy.log10 (-> Number Number)))
-! (bind! squareroot (py-atom numpy.sqrt (-> Number Number)))
 
 (= (do-jsd $emp $est)
     (let* (
@@ -10,8 +8,9 @@
             ($est_extracted (strength $est))
             ($m (/ (+ $emp_extracted $est_extracted) 2))
         )
-    (sqrt (+ (/ (* $emp_extracted (log (/ $emp_extracted $m))) 2)
-                    (/ (* $est_extracted (log (/ $est_extracted $m))) 2)))
+    (sqrt-math (+ (/ (* $emp_extracted (log-math 10 (/ $emp_extracted $m))) 2)
+
+             (/ (* $est_extracted (log-math 10 (/ $est_extracted $m))) 2)))
 )
 )
 
@@ -40,20 +39,15 @@
 
 
 
-(= (log $a)
-    (logarithm $a)
-)
-(= (sqrt $a)
-    (squareroot $a)
-)
+
+
 
  ;  ;; Test 
+!(do-jsd (STV 0.5 1) (STV 0.65 1))
+; !(cog-set-tv (emp-eval (Parent abel henok)) (STV 15 10))
+; !(cog-set-tv (est-eval (Parent abel henok)) (STV 25 12))
 
-; !(do-jsd (STV 0.5 1) (STV 0.65 1))
-!(cog-set-tv (emp-eval (Parent abel henok)) (STV 15 10))
-!(cog-set-tv (est-eval (Parent abel henok)) (STV 25 12))
-
-! (jsd-rule (Parent abel henok) db1)
-!(cog-tv (jsd-eval (Parent abel henok)))
+; ! (jsd-rule (Parent abel henok) db1)
+; !(cog-tv (jsd-eval (Parent abel henok)))
 
 

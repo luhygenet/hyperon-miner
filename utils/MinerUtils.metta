@@ -21,13 +21,6 @@
 (= (fromNat Z) 0)
 (= (fromNat (S $k)) (+ 1 (fromNat $k)))
 
-;; Define max
-(: max (-> $a $a $a))
-(= (max $x $y) (if (> $x $y) $x $y))
-
-;; Define min
-(: min (-> $a $a $a))
-(= (min $x $y) (if (< $x $y) $x $y))
 
 ;; Tuple count grounded python function
 ;;!(extend-py! ../utils/helper.py)
@@ -139,7 +132,7 @@
 ;; iSurprisingness formula
 (= (iSurprisingness $pattern)
     (case $pattern (
-      ((candidate (, $p1 $p2) $cnt)
+      ((candidate (, $p1 $p2 ) $cnt)
       (let* (($pp1 (prob (count $p1)))
           ($pp2 (prob (count $p2)))
           ($p1p2 (* $pp1 $pp2)) ;; probability estimate 

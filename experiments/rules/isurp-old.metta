@@ -41,16 +41,17 @@
 
 ;;Recursively calculates the support for each component of a 
 ;;conjunctive pattern by retrieving their support numbers (`sup-num`) from the database.
-(=(compute-component-support $cps $db)(
-  if (== $cps ()) () (
-    let* (  (($head $tail) (decons-atom $cps)) 
-            ($sup_num (sup-num $db $head) )
-            ($dummy (compute-component-support $tail $db))
-    )
-       (cons-atom $sup_num $dummy)
-    )
-  )
-) 
+;;; compute-component-support:
+;;;   Calculates the support for components by first applying a superposition on the provided
+;;;   component support list (cps) and then computing the numeric support value using the database (db).
+;;;   The computation leverages the 'superpose' function to combine or aggregate component data,
+;;;   and subsequently, the 'sup-num' function extracts the resulting numerical support from the database.
+
+(=(compute-component-support $cps $db)
+(collapse (sup-num $db (superpose $cps)) )
+)
+
+
 
 ;; Calculate the support for each component of the conjunctive 
 ;; pattern and return the product of their results.
@@ -60,7 +61,8 @@
 ))
 
 ;; Function calculating the probability of a pattern
-(=(prob $pattern $db) (/ (ptrn-support  $pattern $db) (total_counts $pattern $db)))
+(=(prob $pattern $db) (// (sup-num $db $pattern) (total_counts $pattern $db)))
+
 
 ;;Converts a list of blocks into a conjunctive pattern
 (=(add-pattern $blks $db) (
@@ -70,41 +72,53 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 
 ;;Calculates the probability of a block within a partition by first converting 
 ;;it into a pattern and then computing its probability.
-(=(blk-prob $partition $db) (prob (add-pattern $partition $db) $db))
+(=(blk-prob $partition $db) (
+    unify ($link $x $y) $partition (prob (remove-parenthesis $partition) $db)
+       ( prob (add-pattern $partition $db) $db)
+  ))
 
 
-;; Recursively computes the probabilities of all blocks in a partition. 
-(=(p-blk-prob $partition $db) (
-    if (== $partition ()) () (let* ((($blk $tail) (decons-atom $partition))
-                                    ( $res (blk-prob $blk $db) )
-                                    ($dummy (p-blk-prob $tail $db))) 
-                                    (cons-atom $res $dummy))))
+; ;; Recursively computes the probabilities of all blocks in a partition. 
+; (=(p-blk-prob $partition $db) (
+;     if (== $partition ()) () (let* ((($blk $tail) (decons-atom $partition))
+;                                     ( $res (blk-prob $blk $db) )
+;                                     ($dummy (p-blk-prob $tail $db))) 
+;                                     (cons-atom $res $dummy))))
+
+
+;; p-blk-prob computes the block probability for a given partition and database.
+;; It achieves this by applying the superpose function to the partition before
+;; calculating the block probability using the blk-prob predicate.
+;; In other words, the relation p-blk-prob is defined to be equivalent to blk-prob
+;; where the partition is first transformed by the superpose function.
+
+(=(p-blk-prob $partition $db) 
+    (collapse (blk-prob (superpose $partition) $db) )
+)
+                                
 
 
 
 ;;Estimates the probability of each partition under the assumption that blocks 
 ;;within a partition are independent. It multiplies the probabilities of individual blocks
-(=(iprob $prtns $db) (
-   if (== $prtns ()) ()  (let* ((($partition $tail) (decons-atom $prtns)) 
-                                 ($temp (accumulator-x (p-blk-prob $partition $db)))
-                                ($dummy (iprob $tail $db))) (cons-atom $temp $dummy))
-))
-
+(=(iprob $prtns $db) 
+      (collapse (accumulator-x (p-blk-prob (superpose $prtns) $db)))                              
+)
 
 
 ;; Computes the I-surprisingness of a pattern based on its probability, the 
 ;; minimum and maximum probabilities derived from independent partitions, and the 
 ;; distance of the pattern probability from this interval. Optionally, the surprisingness 
 ;; value can be normalized.
-;(: isurp-old (-> Pattern db boolean Number))
+;(: isurp_old (-> Pattern db boolean Number))
 (=(isurp-old $pattern $db $normalize) (
     let* (
         ($pattern_prob (prob $pattern $db ))
          (($emin $emax) (min-max (iprob (generet-partition-without-pattern $pattern) $db)))
-         ($dst (dst_from_interval $emin $emax $pattern_prob))
+          ($dst (dst_from_interval $emin $emax $pattern_prob))
     ) 
-         (min ((if $normalize (/ $dst $pattern_prob) $dst) 1.0))
-        
+         (min ((if $normalize (// $dst $pattern_prob) $dst) 1.0))
+          
 ) )
 
 
