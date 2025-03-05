@@ -5,6 +5,8 @@
 (= (pow-py $base $power) (pow-math $base $power)) 
 
 
+(= (// $a $b) (/ (* 1.0 $a) $b))
+
 (= (concatTuple $xs $ys)
     (if (== $xs ())
         $ys
@@ -263,7 +265,7 @@
 (: counter (-> hyperon::space::DynSpace Atom Number))
 (= (counter $db $ptrn)
     (let $result (collapse (match $db $ptrn $ptrn))
-        (tuple-count $result)
+         (tuple-count $result)
     )
 )
 

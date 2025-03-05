@@ -79,39 +79,22 @@
 
 
 
-
-
-
-(= (ji-est-tv-old $db $db_size $pattern $partitions)
-(   if (== $partitions ()) () (
-        let* ((($head $tail) (decons-atom $partitions))
-               ($prod_etv (pro_prob_without_joint $db $head))
-               (($rp $rc) (decons-atom $prod_etv))
-              ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $head) (joint-variables-init $pattern (remove-parenthesis $head)) 1))
+;:TODO: suspect for change to non-deterministic 
+ (= (ji-est-tv $db $db_size $pattern $partitions)
+ (   if (== $partitions ()) () (
+         let* (
+             (($head $tail) (decons-atom $partitions))
+                ($prod_etv (pro_prob_without_joint $db $head))
+                (($rp $rc) (decons-atom $prod_etv))
+               ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $head) (joint-variables-init $pattern (remove-parenthesis $head)) 1))
               (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
                ($dummy (ji-est-tv $db $db_size $pattern $tail))
-              ) 
+               ) 
 
-     (cons-atom ((remove-parenthesis $head) (STV $strength $confidence))  $dummy)
-    
-         ))
-)
-
-;:TODO: suspect for change to non-deterministic 
-; (= (ji-est-tv $db $db_size $pattern $partitions)
-; (   if (== $partitions ()) () (
-;         let* (
-;             (($head $tail) (decons-atom $partitions))
-;                ($prod_etv (pro_prob_without_joint $db $head))
-;                (($rp $rc) (decons-atom $prod_etv))
-;               ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $head) (joint-variables-init $pattern (remove-parenthesis $head)) 1))
-;               (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
-;                ($dummy (ji-est-tv $db $db_size $pattern $tail))
-;               ) 
-
-;               (cons-atom (STV $strength $confidence)  $dummy) 
-;          ))
-; )
+              (cons-atom (STV $strength $confidence)  $dummy) 
+            
+          ))
+ )
 
 
 ;; This module implements a two-step estimation approach for computing TV estimates
@@ -145,7 +128,7 @@
 ))
 
 
-(= (ji-est-tv $db $db_size $pattern $partitions)  (ji-est-tv-hlper $db $db_size $pattern (superpose $partitions)))
+;;(= (ji-est-tv-new $db $db_size $pattern $partitions) (collapse (ji-est-tv-hlper $db $db_size $pattern (superpose $partitions))))
 
 
 
@@ -154,21 +137,13 @@
 ;; independent assumption of between each partition block, taking
 ;; into account the linkage probability.
 
-(=(do-ji-tv-est-old $db $pattern) (
+(=(do-ji-tv-est $db $pattern) (
     let $prtns (generet-partition-without-pattern $pattern)  
           ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
           ($pattern  (STV $strength $confidence)))            
 ))
 
-(=(do-ji-tv-est $db $pattern) (
-    let $prtns (generet-partition-without-pattern $pattern)  
-          ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
-                   ($pattern  (STV $strength $confidence)))   
-              
-           
-))
 
-(((((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (STV 0.0016129032258064516 0.010044027746982993)) ((((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x sodaDrinker))) (STV 0.0016129032258064516 0.010044027746982993)) ((((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))) (STV 0.0016129032258064516 0.010044027746982993)) ((((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (STV 0.0016129032258064516 0.010044027746982993)))
 
 
 
