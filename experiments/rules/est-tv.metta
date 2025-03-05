@@ -57,7 +57,7 @@
         ($compJ (car-atom $tail))
         ($most_spec  (let $result (inner_temp $db $original $compJ $i $var) (find_max $result -1) ))
        ($M_xj (if (<= $most_spec 0) $db_size $most_spec))
-        ($prob_j (* $prob (/ 1 $M_xj)))  ;; from general formula
+        ($prob_j (* $prob (// 1 $M_xj)))  ;; from general formula
         ($dummy (eq-prob $db $db_size $original $tail (+ $i 1) (- $count 1) $var $prob_j)))
          $dummy)
            $prob

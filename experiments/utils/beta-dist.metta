@@ -4,7 +4,7 @@
 
 
 (=(beta_mean $alpha $beta) (
-   let $result  (/ $alpha (+ $alpha $beta)) (mean $result)
+   let $result  (// $alpha (+ $alpha $beta)) (mean $result)
 ))
 
 (:min (-> Number Number Number))
@@ -29,7 +29,7 @@
         ($a (* $alpha $beta))
         ($b (* (+ $alpha $beta) (+ $alpha $beta)))
         ($c (+ $alpha (+ $beta 1) ))
-        ($var (/ $a (* $b $c)))
+        ($var (// $a (* $b $c)))
 
     )
         (variance $var)
@@ -85,11 +85,11 @@
 
 
 (= (find_alpha $mean $variance) (
-    * $mean (- (/ (* $mean (- 1 $mean) ) $variance) 1)
+    * $mean (- (// (* $mean (- 1 $mean) ) $variance) 1)
 ))
 
 (= (find_beta $mean $variance) (
-    * (- 1 $mean) (- ( / (* $mean (- 1 $mean)) $variance) 1)
+    * (- 1 $mean) (- ( // (* $mean (- 1 $mean)) $variance) 1)
 ))
 
 
@@ -104,10 +104,10 @@
      ($alpha (find_alpha $mean $variance))
      ($beta (find_beta $mean $variance))
      ($count (+ $alpha (- $beta (- (prior-alpha) (prior-beta)))))
-     ($confidence (/ $count (+ $count (default_k))))
+     ($confidence (// $count (+ $count (default_k))))
      ($mode  (
     if (and (> $alpha 1) (> $beta 1)) (
-                / (- $alpha 1) (+ $alpha (- $beta 2))   ;; a-1 / a + b -2
+                // (- $alpha 1) (+ $alpha (- $beta 2))   ;; a-1 / a + b -2
     ) (
         if (and (<= $alpha 1) (> $beta 1)) 0 (
 
