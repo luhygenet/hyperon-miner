@@ -132,7 +132,7 @@
 ;; iSurprisingness formula
 (= (iSurprisingness $pattern)
     (case $pattern (
-      ((candidate (, $p1 $p2) $cnt)
+      ((candidate (, $p1 $p2 ) $cnt)
       (let* (($pp1 (prob (count $p1)))
           ($pp2 (prob (count $p2)))
           ($p1p2 (* $pp1 $pp2)) ;; probability estimate 
