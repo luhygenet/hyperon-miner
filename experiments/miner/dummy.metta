@@ -19,11 +19,12 @@
 
 
 
-;; Base case
-(= (syn $kb $_ (: $prf $ccln)) (match $kb (: $prf $ccln) (: $prf $ccln)))
 
-;; Recursive step
-(= (syn $kb (S $k) (: ($prfabs $prfarg) $ccln))
-   (let* (((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))
-          ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms))))
-     (: ($prfabs $prfarg) $ccln)))
+
+
+
+;;(= (syn $kb  (S $k) (: $prf (surp $ptrn $value)))
+ ;;  (let ; Recurse on surp
+ ;;;       (: $prfminsup (sup $ptrn $value))
+    ;;      (syn $kb  Z (: $prfsup (sup $ptrn $value)))
+      ;;         (:$prfminsup (sup $ptrn $value))))

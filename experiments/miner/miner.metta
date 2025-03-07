@@ -1,4 +1,5 @@
 
+
 ;;;;;;;;;;;
 ;; To Do ;;
 ;;;;;;;;;;;
@@ -16,6 +17,8 @@
 (: -> (-> Atom Atom Type))
 
 
+
+
 ;; Initializers
 ;;initialize the necessary input parameters in the KB,
 (= (init-miner $db $kb $ms $surp $db-ratio)
@@ -26,6 +29,8 @@
                  (() (add-reduct $kb (db-size (db_size $db))))
                  (() (add-atom &self (kb-ref $kb)))
                  (() (add-atom $kb (db-ref $db)))
+                ;; (() (add-reduct $kb (minsup-rule)))
+                ;; (() (add-reduct $kb (surp-rule)))
                 )()))
 
 
@@ -36,23 +41,22 @@
 
 
 ;; extract the mode of the Surprisingness
- ;; if the surprisingness mode is none return lis of mined patterns
- ;; otherwise launches the backward chainer for surprising patterns mining
-(= (init-surp-old $kb $surp-mode) (               
+;; if the surprisingness mode is none return lis of mined patterns
+;; otherwise launches the backward chainer for surprising patterns mining
+(= (init-surp $kb $res $surp-mode)  
+  (           
         if (== $surp-mode none) (get-patterns $kb)                                   
-               (syn $kb (fromNumber 5) (: $prf (surp $what_is_surprise $value)))            
+              ;;(let $result  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value)))   (add-atom $res $result))    
+                 (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value)))         
 ))
+
+
 
 (=(call-this) (
  superpose((: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))
                (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.8)))
 ))
 
-(=(init-surp $kb $surp-mode) (
-      if (== $surp-mode none) (get-patterns $kb) 
-        (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value)))
-         ;; (call-this)
-))
 
 
 
@@ -63,7 +67,7 @@
          (() (add-atom $kb (: FACT2 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $D)) (LIST_LINK A G)) 8))))
          (() (add-atom $kb (: FACT3 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $D)) 5))))
          (() (add-atom $kb (: FACT4 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L G)) (LIST_LINK B k))  16))))
-        ;; (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
+         ;(() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
         ) ()
 ))
 
@@ -148,25 +152,27 @@
 
 ;; $cnjexp $maxcnj $maxcevar
 
+!(bind! &res (new-space))
+
 (= (cog-mine $db $kb $ms $surp $db-ratio) (
     let* (
           ;; initializes the necessary input parameters in the KB
           ;;configures and runs the frequent pattern miner with conjunction expansion
           ;;proceeds to surprisingness pattern mining using the backward chainer 
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
-             (() (frequent-miner $db $kb))
-            ($su_results      (collapse (init-surp $kb $surp))) 
+             (() (frequent-miner $db $kb)) 
+            ; (() (init-surp $kb &res $surp))
+
+            ;($res  (init-surp $kb &res $surp))
+             ($res (collapse (init-surp $kb &res $surp)))
+            ; ($res   (collapse (match &res (: $prf (surp $pattern $value)) (: $prf (surp $pattern $value)))))
     )
     ;; finally returns sorted patterns with their surprisingness value.
-       $su_results
-       
-       ; (let $list (tuple_to_list $su_results) $list) 
-      
-))
-
-
-(= (do-mine $db $kb $ms $surp $db-ratio) (
-     collapse (do-mine $db $kb $ms $surp $db-ratio)
+            $res
+         ; ( collapse (match &res (: $prf (surp $pattern $value)) (: $prf (surp $pattern $value))))
+            ;(let $surps (collapse (match $kb (: $prf (surp $pattern $value)) (: $prf (surp $pattern $value))))  $surps)
+          ;(collapse (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))))  
+          ;(match &res $x $x)   
 ))
 
 
@@ -174,17 +180,26 @@
 
 
 
-
-
-
-;; test if all atoms of the rb ported to kb
-(=(test $kb) (
- superpose ((let $synRef (match $kb (rb-ref $ref) $ref) (
-                      let $synAtoms (get-atoms $synRef) (superpose((add-atom $kb $synAtoms)))
-                 ))
-                 (match $kb (=(minSup-rule) $x) $x)
-                 )
+(=(cog-mine-old  $db $kb $ms $surp $db-ratio) 
+   (superpose (     
+             (init-miner $db $kb $ms $surp $db-ratio)
+             (frequent-miner $db $kb)
+             (init-surp $kb &res $surp)
+             (match &res $y $y)        
 ))
+)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
