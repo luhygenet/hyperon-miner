@@ -45,4 +45,4 @@
 (:jsd-tv 
        (-> (emp-val $ptrn $emp)
                 (-> (est-tv $ptrn $est))
-                      (jsd-surp $ptrn (cog-jsd $emp $est))))
+                      (jsd-surp $ptrn (do-jsd $emp $est))))

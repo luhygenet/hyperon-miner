@@ -18,8 +18,10 @@
 ! (import! &self experiments:rules:est-tv)
 ! (import! &self experiments:rules:emp-tv)
 ! (import! &self experiments:rules:emp-prob)
+! (import! &self experiments:rules:jsd)
 ! (import! &self experiments:utils:emp-tv-bs)
 ! (import! &self experiments:utils:bs-utils)
+! (import! &self experiments:utils:util-jsd)
 ! (import! &db experiments:data:ugly_man_sodaDrinker)
 
 

@@ -45,10 +45,12 @@
 ;; otherwise launches the backward chainer for surprising patterns mining
 (= (init-surp $kb $res $surp-mode)  
   (           
-        if (== $surp-mode none) (get-patterns $kb)                                   
-              ;;(let $result  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value)))   (add-atom $res $result))    
-                 (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value)))         
-))
+        if (== $surp-mode none) (get-patterns $kb)  
+                 (if  ( == $surp-mode jsdsurp)  (
+                       (let $result  (syn $kb (fromNumber 6) (: $prf (jsd-surp $what_is_surprise $value)))   (add-atom $res $result)) )                               
+                           ( ;;(let $result  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value)))   (add-atom $res $result))    
+                              (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value)))  )       
+)))
 
 
 

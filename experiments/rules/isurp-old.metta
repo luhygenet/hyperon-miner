@@ -68,7 +68,7 @@
 (=(add-pattern $blks $db) (
 let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ))
-`
+
 
 ;;Calculates the probability of a block within a partition by first converting 
 ;;it into a pattern and then computing its probability.

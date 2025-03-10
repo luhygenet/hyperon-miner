@@ -11,11 +11,16 @@
             (when ... ...)))
 
 
+
+
+
+
+
 ;; Recursive step
-(= (syn-old $kb (S $k) (: ($prfabs $prfarg) $ccln))
-   (let* (((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))
-          ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms))))
-     (: ($prfabs $prfarg) $ccln)))
+  (= (syn-old $kb (S $k) (: ($prfabs $prfarg) $ccln))
+    (let* (((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))
+            ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms))))
+      (: ($prfabs $prfarg) $ccln)))
 
 
 
