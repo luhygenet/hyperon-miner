@@ -90,8 +90,8 @@
     let* (
         ($tv_list (mk_distribution_list $tv))
         ($size (tuple-count $tv_list))
-        ($mean (let $sum (mean_accumulater $tv_list 0) (/ $sum $size)))
-        ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (/ $var_sum $size)))
+        ($mean (let $sum (mean_accumulater $tv_list 0) (// $sum $size)))
+        ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (// $var_sum $size)))
         ($mk_stv_val (mk_stv $mean $re_variance))
         (($mode $confidence)  (decons-atom $mk_stv_val))
     )

@@ -15,7 +15,7 @@
 ;;
 ;; confidence = count / (count + lookahead)
 (: count->confidence (-> Number Number))
-(= (count->confidence $cnt) (/ $cnt (+ $cnt (lookahead))))
+(= (count->confidence $cnt) (// $cnt (+ $cnt (lookahead))))
 
 ;; Convert confidence to count using the formula
 ;;
@@ -26,7 +26,7 @@
 (=(confidence->count $conf) (
     let* (
        ( $cf (min $conf 0.9999998))
-       ( $count (/ (* (default_k) $cf) (- 1.0 $cf)))
+       ( $count (// (* (default_k) $cf) (- 1.0 $cf)))
 
     )
       $count

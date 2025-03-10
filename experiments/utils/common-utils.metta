@@ -256,7 +256,7 @@
  ; The average is computed by dividing the sum of the tuple elements by the tuple-count of the tuple.
 
 (= (avrg-tuple $tuple)
-    (/ (sum $tuple) (tuple-count $tuple))
+    (// (sum $tuple) (tuple-count $tuple))
 )
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -414,7 +414,7 @@
     (case (classify_integer_position $b)
         (
             ("Equal to zero" 1)
-            ("Less than zero" (/ 1 (pow $a (abs $b))))
+            ("Less than zero" (// 1 (pow $a (abs $b))))
             ($_ (* $a (pow $a (- $b 1))))
         )
 )
