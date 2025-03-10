@@ -110,7 +110,7 @@
 
     (case (tuple-count $lst)
         ( (0 0)
-            ($_ (/ (sum $lst) (tuple-count $lst))))
+            ($_ (// (sum $lst) (tuple-count $lst))))
     )
 )
 
@@ -146,7 +146,7 @@
     (TS_ASSERT_DELTA $epr  $epr_bs 0.1)))
  ;categories subsize it categorizes into two categories
 (= (categorize_subsize $subsize $ts)
-    (if   (> $subsize (/ $ts 2))
+    (if   (> $subsize (// $ts 2))
         2
         1)
 

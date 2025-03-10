@@ -6,36 +6,36 @@
     (let* (
             ($emp_extracted (strength $emp))
             ($est_extracted (strength $est))
-            ($m (/ (+ $emp_extracted $est_extracted) 2))
+            ($m (// (+ $emp_extracted $est_extracted) 2))
         )
-    (sqrt-math (+ (/ (* $emp_extracted (log-math 10 (/ $emp_extracted $m))) 2)
+    (sqrt-math (+ (// (* $emp_extracted (log-math 10 (// $emp_extracted $m))) 2)
 
-             (/ (* $est_extracted (log-math 10 (/ $est_extracted $m))) 2)))
+             (// (* $est_extracted (log-math 10 (// $est_extracted $m))) 2)))
 )
 )
 
-(= (jsd-rule $pattern $db)
-    (let* (
-            ($emp (emp-eval $pattern))
-            ($est (est-eval $pattern))
-            ($emp-tv (cog-tv $emp))
-            ($est-tv (cog-tv $est))
-            ($conclusion (jsd-eval $pattern))
+; (= (jsd-rule $pattern $db)
+;     (let* (
+;             ($emp (emp-eval $pattern))
+;             ($est (est-eval $pattern))
+;             ($emp-tv (cog-tv $emp))
+;             ($est-tv (cog-tv $est))
+;             ($conclusion (jsd-eval $pattern))
 
-        )
-    (if (and (and (exist $emp) (exist $est))
-            (and
-                (gt_zero_confidence_eval $emp-tv)
-                (gt_zero_confidence_eval $est-tv)))
-        (let* (
-            ($jsd (do-jsd $emp-tv $est-tv))
-            ($jsd-tv (cog-new-stv $jsd 1))
-        )
-        (cog-set-tv $conclusion $jsd-tv)
-        )
-        (superpose ())
-    ))
-)
+;         )
+;     (if (and (and (exist $emp) (exist $est))
+;             (and
+;                 (gt_zero_confidence_eval $emp-tv)
+;                 (gt_zero_confidence_eval $est-tv)))
+;         (let* (
+;             ($jsd (do-jsd $emp-tv $est-tv))
+;             ($jsd-tv (cog-new-stv $jsd 1))
+;         )
+;         (cog-set-tv $conclusion $jsd-tv)
+;         )
+;         (superpose ())
+;     ))
+; )
 
 
 
