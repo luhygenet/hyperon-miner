@@ -120,4 +120,8 @@
 ; !(mk-stv 1.7689693569125715 1.0178393379503528 )
 ; !(ji_tv_est (Patern Ryo Ri) &self)
 
-; !(do_emp_tv (Inheritance Zac Eyob) (get-space) 0.8)
+!(This)
+ !(do_emp_tv (Inheritance Zac Eyob) (get-space) 0.8)
+
+
+;!(emp-tv (, (Inheritance $x $y) (Inheritance Zac $x)) (get-space))

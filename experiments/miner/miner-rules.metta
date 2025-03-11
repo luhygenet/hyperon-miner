@@ -24,25 +24,30 @@
 ;; Rule to calculate the probability (or truth value) estimate of a
 ;; pattern, given the empirical probabilities (truth values) of its
 ;; components.
-(:est-tv 
+(: est-rule 
    (-> (minsup $ptrn)
-         (-> (emp-tv $ptrn))
+         (-> (emp-val $ptrn $emp)
                (-> (db-ref $db)
-                     (est-tv $ptrn (do-ji-tv-est $db $ptrn)))
+                     (est-tv $ptrn (STV 0.5 0.4))))
    ))
 
-
+;;(do-ji-tv-est $db $ptrn)
 ;; Rule to calculate the empirical truth value of a pattern.
-(:emp-val 
+(: emp-val 
    (-> (minsup $ptrn) 
-          (-> (db-ratio $ratio) 
-                 (emp-val (do-emp)))))
+          (-> (db-ref $db) 
+                 (-> (db-ratio $ratio)
+                           (emp-val $ptrn (do_emp_tv $ptrn $db $ratio))))))
 
 
 ;; Rule to calculate the Jensen-Shannon Distance between the empirical
 ;; truth value and the truth value estimate of a pattern according to
 ;; some db.
-(:jsd-tv 
-       (-> (emp-val $ptrn $emp)
-                (-> (est-tv $ptrn $est))
-                      (jsd-surp $ptrn (do-jsd $emp $est))))
+(: jsd-tv 
+      (-> (emp-val $ptrn $emp)
+            (-> (est-tv $ptrn $est)
+                  (jsdsurp $ptrn (do-jsd $emp $est)))))
+
+
+                      
+                      

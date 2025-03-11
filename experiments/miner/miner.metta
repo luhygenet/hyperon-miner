@@ -24,6 +24,8 @@
 (= (init-miner $db $kb $ms $surp $db-ratio)
     (         let* (  
                  (() (add-atom $kb (: msT (ms-threshold $ms))))
+                 (() (add-atom $kb (: dbref (db-ref $db))))
+                 (() (add-atom $kb (: dbr (db-ratio $db-ratio))))
                  (() (add-atom $kb (surp-mod $surp)))
                  (() (add-atom $kb (db-ratio $db-ratio)))
                  (() (add-reduct $kb (db-size (db_size $db))))
@@ -36,26 +38,39 @@
 
 ;;Returns frequent patters with their support from the kb
 (= (get-patterns $kb) (
-    match $kb (: $x (supportOf $pattern $value)) (($pattern) (sup $value))
+  chain (match $kb (: msT (ms-threshold $ms)) $ms) $msT
+          ( match $kb (: $x (supportOf $pattern $value))
+                (let True (>= $value $msT) (($pattern) (sup $value))))           
 ))
 
 
 ;; extract the mode of the Surprisingness
 ;; if the surprisingness mode is none return lis of mined patterns
 ;; otherwise launches the backward chainer for surprising patterns mining
+(= (init-surp-old $kb $res $surp-mode)  
+  (           
+        if (== $surp-mode none) 
+              (chain (get-patterns $kb) $result (add-atom $res $result))  
+                 (if  ( == $surp-mode jsdsurp)  
+                       (chain  (syn $kb (fromNumber 6) (: $prf (jsd-surp $what_is_surprise $value))) $result   (add-atom $res $result))                              
+                               (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result))         
+)))
+
+
 (= (init-surp $kb $res $surp-mode)  
   (           
-        if (== $surp-mode none) (get-patterns $kb)  
-                 (if  ( == $surp-mode jsdsurp)  (
-                       (let $result  (syn $kb (fromNumber 6) (: $prf (jsd-surp $what_is_surprise $value)))   (add-atom $res $result)) )                               
-                           ( ;;(let $result  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value)))   (add-atom $res $result))    
-                              (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value)))  )       
+        if (== $surp-mode none) 
+              (chain (get-patterns $kb) $result (add-atom $res $result))  
+                 (if  ( == $surp-mode jsdsurp)  
+                      ;(chain  (syn $kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-atom $res $result)) 
+                            (syn $kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value)))         
+                               (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result))         
 )))
 
 
 
 (=(call-this) (
- superpose((: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))
+      superpose((: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))
                (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.8)))
 ))
 
@@ -69,7 +84,7 @@
          (() (add-atom $kb (: FACT2 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $D)) (LIST_LINK A G)) 8))))
          (() (add-atom $kb (: FACT3 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $D)) 5))))
          (() (add-atom $kb (: FACT4 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L G)) (LIST_LINK B k))  16))))
-         ;(() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
+        ;; (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (jsdsurp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
         ) ()
 ))
 
@@ -154,42 +169,42 @@
 
 ;; $cnjexp $maxcnj $maxcevar
 
+;; new space to store the init-surp results
 !(bind! &res (new-space))
+
+(= (cog-mine-old $db $kb $ms $surp $db-ratio) (
+    let* (
+          ;; initializes the necessary input parameters in the KB
+          ;;configures and runs the frequent pattern miner with conjunction expansion
+          ;;proceeds to surprisingness pattern mining using the backward chainer 
+          ;;Store the chainer result in to the &res (new space)
+             (() (init-miner $db $kb $ms $surp $db-ratio)) 
+             (() (frequent-miner $db $kb))
+             (() (init-surp $kb &res $surp))       
+    )
+    ;; return all atoms in &res
+    (match &res $x $x)
+))
 
 (= (cog-mine $db $kb $ms $surp $db-ratio) (
     let* (
           ;; initializes the necessary input parameters in the KB
           ;;configures and runs the frequent pattern miner with conjunction expansion
           ;;proceeds to surprisingness pattern mining using the backward chainer 
+          ;;Store the chainer result in to the &res (new space)
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
-             (() (frequent-miner $db $kb)) 
-            ; (() (init-surp $kb &res $surp))
-
-            ;($res  (init-surp $kb &res $surp))
-             ($res (collapse (init-surp $kb &res $surp)))
-            ; ($res   (collapse (match &res (: $prf (surp $pattern $value)) (: $prf (surp $pattern $value)))))
+             (() (frequent-miner $db $kb))
+             ($res (init-surp $kb &res $surp))       
     )
-    ;; finally returns sorted patterns with their surprisingness value.
-            $res
-         ; ( collapse (match &res (: $prf (surp $pattern $value)) (: $prf (surp $pattern $value))))
-            ;(let $surps (collapse (match $kb (: $prf (surp $pattern $value)) (: $prf (surp $pattern $value))))  $surps)
-          ;(collapse (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))))  
-          ;(match &res $x $x)   
+    ;; return all atoms in &res
+   ;; (match &res $x $x)
+   $res
 ))
 
 
 
 
 
-
-(=(cog-mine-old  $db $kb $ms $surp $db-ratio) 
-   (superpose (     
-             (init-miner $db $kb $ms $surp $db-ratio)
-             (frequent-miner $db $kb)
-             (init-surp $kb &res $surp)
-             (match &res $y $y)        
-))
-)
 
 
 

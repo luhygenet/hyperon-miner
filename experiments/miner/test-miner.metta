@@ -38,8 +38,8 @@
 ;!(chain (get-atoms &temp) $atoms (add-atom &kb $atoms))
 
 ;; define parameters 
-(=(min-sup) 6)
-(=(surp-mode ) isurp-old)
+(=(min-sup) 10)
+(=(surp-mode ) jsdsurp)
 (=(db-ratio) 0.5)
 
 
