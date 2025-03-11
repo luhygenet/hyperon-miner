@@ -131,7 +131,7 @@
 (= (ji_tv_est $pattern $db) 
     (let* 
     (
-        ($out_est (do-ji-tv-est-dummy $db $pattern)) 
+        ($out_est (do-ji-tv-est $db $pattern)) 
         (($pat $tv) $out_est)
     )
     $tv
