@@ -233,7 +233,8 @@
 ;; This is very slow, use the grounded python function instead
 
    (: tuple-count (-> %Undefined% Number))
-   (= (tuple-count $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
+;    (= (tuple-count $atom) (if (== $atom ()) 0 (+ 1 (tuple-count (cdr-atom $atom)))))
+   (= (tuple-count $atom) (size-atom $atom))
 
 ;; Tuple count grounded python function
 ; (import! &self  helper)
@@ -278,12 +279,13 @@
 
  ;; Evaluate if the pattern has enough support
  ;; Evaluate if the pattern has enough support
-(: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
+; (: sup-eval (-> hyperon::space::DynSpace Atom Number Boolean))
 
 (= (sup-eval $db $pattern $ms)
     (let $sup (counter $db $pattern)
         (if (>= $sup $ms) True False)
     )
+)
 
 ;; returns the number of support of a pattern
 
@@ -588,6 +590,20 @@
     )
 )
 
+;;;;;;;;;;; converters ;;;;;;;;; 
+;; Converts a list to a tuple
+(= (list_to_tuple ()) ())
+(= (list_to_tuple (Cons $head $tail)) (
+  let $temp (list_to_tuple $tail) (cons-atom $head $temp)
+))
+
+;; Converts a tuple back to a list
+(=(tuple_to_list ()) Nil)
+(=(tuple_to_list $list)( 
+  let ($head $tail) (decons-atom $list) (Cons $head (tuple_to_list $tail))
+))
+
+
  ; Test: Remove redundant clauses
  ; ! (remove_redundant_clauses
  ;     ( (Inheritance $X $Y)
@@ -599,15 +615,15 @@
  ; ))
 
  ;helper function to concat two tuples
-(= (concatTuple $xs $ys)
-    (if (== $xs ())
-        $ys
-        (let* ( ($head (car-atom $xs))
-                ($tail (cdr-atom $xs))
-                ($tailNew (concatTuple $tail $ys)))
-            (cons-atom $head $tailNew))
-    )
-)
+; (= (concatTuple $xs $ys)
+;     (if (== $xs ())
+;         $ys
+;         (let* ( ($head (car-atom $xs))
+;                 ($tail (cdr-atom $xs))
+;                 ($tailNew (concatTuple $tail $ys)))
+;             (cons-atom $head $tailNew))
+;     )
+; )
 
  ;! (concatTuple (A B C) (D E F))
 
