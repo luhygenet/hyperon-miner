@@ -5,14 +5,21 @@
 ;;;;;;;;;;;;;;;;;;;;
 
 
-(=(add-subpatterns () $space) ())
-(=(add-subpatterns $partition $space)(
-    let* ((($head $tail) (decons-atom $partition))
-           ($subpattern (mk-body $head))
-           ($dummy (add-subpatterns $tail $space))
-            )
-            (cons-atom $subpattern $dummy)
-))
+; (=(add-subpatterns () $space) ())
+; (=(add-subpatterns $partition $space)(
+;     let* ((($head $tail) (decons-atom $partition))
+;            ($subpattern (mk-body $head))
+;            ($dummy (add-subpatterns $tail $space))
+;             )
+;             (cons-atom $subpattern $dummy)
+; ))
+
+
+(=(add-subpatterns $partition $space)
+    (collapse (mk-body (superpose $partition)))
+      
+)
+
 
 
 (=(get-subpatterns $pattern $space) (
@@ -83,8 +90,8 @@
     let* (
         ($tv_list (mk_distribution_list $tv))
         ($size (tuple-count $tv_list))
-        ($mean (let $sum (mean_accumulater $tv_list 0) (/ $sum $size)))
-        ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (/ $var_sum $size)))
+        ($mean (let $sum (mean_accumulater $tv_list 0) (// $sum $size)))
+        ($re_variance (let $var_sum  (var_accumulater $tv_list 0 $mean) (// $var_sum $size)))
         ($mk_stv_val (mk_stv $mean $re_variance))
         (($mode $confidence)  (decons-atom $mk_stv_val))
     )

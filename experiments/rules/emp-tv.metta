@@ -19,7 +19,7 @@
 
  ;The count_to_confidence function calculates the confidence value based on a given count ($x).
  ;The confidence value is determined using a formula that incorporates a default constant (Default_k).
-(= (count_to_confidence $x) (/ $x (+ $x (Default_k))))
+(= (count_to_confidence $x) (// $x (+ $x (Default_k))))
 
  ;; calculate the empirical truth value of a pattern.
 (= (emp-tv $pattern $db)
@@ -29,7 +29,7 @@
             ( ($sup) ( (sup-num $pattern $db)))
 
             ( ($conf) ( (count_to_confidence $ucount)) )
-            ($mean (/ $sup $ucount))
+            ($mean (// $sup $ucount))
             ($confidence   (* 1e-1 $conf))
         )
     (EMPTV $mean  $confidence)))
@@ -108,7 +108,7 @@
         (collapse 
             (match $db $x (let $pattern $x $pattern))))
 )
-((A) ( B C))
+
  ;;ji_tv_est_mem this function is used to estimate the joint probability of a pattern.
  ;;ji_tv_est_mem is going to implemented in est-tv rule.
 
@@ -131,7 +131,7 @@
 (= (ji_tv_est $pattern $db) 
     (let* 
     (
-        ($out_est (do-ji-tv-est-dummy $db $pattern)) 
+        ($out_est (do-ji-tv-est $db $pattern)) 
         (($pat $tv) $out_est)
     )
     $tv
@@ -147,7 +147,7 @@
  ;Returns 2 if $subsize is greater than half of $ts.
  ;Returns 1 otherwise.
 (= (categorize_subsize $subsize $ts)
-    (if   (> $subsize (/ $ts 2))
+    (if   (> $subsize (// $ts 2))
         2
         1)
 
@@ -256,11 +256,13 @@
 )
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;TODO: suspeceted for change 
 
 (= (gen-random $max-value)  (
         (py-dot np-rnd randint) $max-value)
 )
 
+;TODO: suspeceted for change 
 (= (get-element $index $list)
     (if (== $index 0)
         (car-atom $list) ; Return the first element if index is 0
@@ -320,10 +322,10 @@
 (= (subsmp-size $pattern $db-size $support-estimate)
     (let* ( ($nc (n_conjuncts $pattern))    
             (($min-size) (10))   
-            ($alpha (/ $support-estimate (pow-py $db-size $nc)))
-            ($base (/ $db-size (* 10 $alpha)))
-            ($power (/ 1 $nc))
-            ($res (pow-py $base $power))
+            ($alpha (// $support-estimate (pow-math $db-size $nc)))
+            ($base (// $db-size (* 10 $alpha)))
+            ($power (// 1 $nc))
+            ($res (pow-math $base $power)) 
     )
         (max $res (min $min-size $db-size))
     )
@@ -357,15 +359,15 @@
 
 (= (mk-stv $mean $variance)
     (let* (
-            ($alpha (* $mean (/ (* $mean (- 1 $mean)) $variance)))
-            ($beta (* (- 1 $mean) (/ (* $mean (- 1 $mean)) $variance)))
+            ($alpha (* $mean (// (* $mean (- 1 $mean)) $variance)))
+            ($beta (* (- 1 $mean) (// (* $mean (- 1 $mean)) $variance)))
             ($p_alpha 1.0)
             ($p_beta 1.0)
             ($count (max 0.1 (- (- (+ $alpha $beta ) $p_alpha) $p_beta)))
-            ($confidence (/ $count (+ $count (DEFAULT_K))))
+            ($confidence (// $count (+ $count (DEFAULT_K))))
             ($mode  (
                     if (and (> $alpha 1) (> $beta 1))
-                    (/ (- $alpha 1) (- (+ $alpha $beta) 2))
+                    (// (- $alpha 1) (- (+ $alpha $beta) 2))
                     (if (and (<= 1 $alpha) (<= 1 $beta))
                         1
                         (if (and (< $alpha 1) (<= 1 $beta))

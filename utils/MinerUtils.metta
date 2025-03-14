@@ -21,13 +21,6 @@
 (= (fromNat Z) 0)
 (= (fromNat (S $k)) (+ 1 (fromNat $k)))
 
-;; Define max
-(: max (-> $a $a $a))
-(= (max $x $y) (if (> $x $y) $x $y))
-
-;; Define min
-(: min (-> $a $a $a))
-(= (min $x $y) (if (< $x $y) $x $y))
 
 ;; Tuple count grounded python function
 ;;!(extend-py! ../utils/helper.py)
@@ -133,7 +126,7 @@
       (= (universe-size) (let $u (collapse (match $dbspace $x 1)) (tuple-count $u)))))
 
 ;; Probability formula
-(= (prob $count) (/ $count (universe-size)))
+(= (prob $count) (// $count (universe-size)))
 
 
 ;; iSurprisingness formula
@@ -144,7 +137,7 @@
           ($pp2 (prob (count $p2)))
           ($p1p2 (* $pp1 $pp2)) ;; probability estimate 
           ($p (prob $cnt))) ;; empirical
-          (/ (max (- $p $p1p2) (- $p1p2 $p)) $p)))
+          (// (max (- $p $p1p2) (- $p1p2 $p)) $p)))
       ((candidate (, $p1 $p2 $p3) $cnt)
       (let* (($pp1 (prob (count $p1)))
           ($pp2 (prob (count $p2)))
@@ -156,7 +149,7 @@
           ($maxP (max (* $pp1p2 $pp3) (max (* $pp1p3 $pp2) (max (* $pp2p3 $pp1) (* $pp1 (* $pp2 $pp3))))))
           ($minP (min (* $pp1p2 $pp3) (min (* $pp1p3 $pp2) (min (* $pp2p3 $pp1) (* $pp1 (* $pp2 $pp3))))))
           ($p (prob $cnt))) ;; empirical
-          (/ (max (- $p $maxP) (- $minP $p)) $p)))
+          (// (max (- $p $maxP) (- $minP $p)) $p)))
       ($_ 0))))
 
 (= (isurp? ($ptrn $cnt)) (if (> (iSurprisingness (candidate $ptrn $cnt)) (highsurp)) true false))

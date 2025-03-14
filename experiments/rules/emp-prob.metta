@@ -38,14 +38,15 @@
 ;         Return Value:
 ;             - The ratio of the support of the pattern over the universe count, representing the empirical probability.
 
-
+;; sup-num takes $db as first argument 
 (= (emp-prob $pattern $db)
     (let*
-        ( ( ($ucount ) ( (universe-count $pattern $db)))
-            ( ($ms) ($ucount))
-            ( ($sup) ( (sup-num $pattern $db)))
+        ( ( $ucount   (universe-count $pattern $db))
+           ;; ( ($ms) ($ucount))
+            ( $sup  (sup-num  $db $pattern))
 
-        ) (/ $sup  $ucount)
+        ) 
+        (// $sup  $ucount)      
 ))
 
 

@@ -52,5 +52,24 @@
 
 ;!(add-pattern ((Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
 
-!(isurp_old (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True)
+!(isurp-old (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) False)
 
+;!(generet-partition-without-pattern (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+
+;!(p-blk-prob (((Inheritance $x $y)) ((Inheritance Abe $y) (Inheritance Zac $y))) (get-space))
+
+;!(prob (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
+
+;!(prob (Inheritance $x $y) (get-space))
+
+;!(iprob (generet-partition-without-pattern (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y))) (get-space))
+;(sup-num (get) $pattern)
+;!(// 54 100 )
+
+;!(min-max (0.007872867764980317 0.007872867764980316 0.006998104679982505 0.006998104679982504))
+
+[
+ ((((Inheritance $x $y)) ((Inheritance Abe $y) (Inheritance Zac $y)))
+ (((Inheritance $x $y)) ((Inheritance Abe $y)) ((Inheritance Zac $y)))
+  (((Inheritance $x $y) (Inheritance Zac $y)) ((Inheritance Abe $y))) 
+  (((Inheritance $x $y) (Inheritance Abe $y)) ((Inheritance Zac $y))))]
