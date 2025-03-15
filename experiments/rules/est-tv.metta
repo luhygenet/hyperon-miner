@@ -16,7 +16,7 @@
         ($tv (emp_tv_mem $subpatterns $db))  
        ($prod_etv (avrg_tv $tv))
     )
-      $prod_etv     
+     $prod_etv    
 ))
 
 
@@ -39,11 +39,11 @@
     if (== $i 0) () (
         let* (
              ( ($head $tail) (decons-atom $original))
-             ($bool_value  (or (is_equivalent $head $compJ $var)(is_more_abstract_init $head $compJ))) 
+             ($bool_value  (is_more_abstract_init $head $compJ)) ;; removed the is_equivalent function , it is not clear how it works
              ($v_xi  (if $bool_value (estimate_v_xi $db $head) -1))
              ($dummy (inner_temp $db $tail $compJ (- $i 1) $var))
         ) (
-            cons-atom $v_xi $dummy
+            cons-atom  $v_xi $dummy
         )
     )
 ))
@@ -65,13 +65,15 @@
 
 
 
+
+
 (=(prob-with-joint $db $db_size $partion $joint_vars $p)(
     if (== $joint_vars ()) $p
  (let* ((($head $tail) (decons-atom $joint_vars))
        ($patterns (connected-subpatterns-with-var $partion $head))
        ($prob (eq-prob $db $db_size $patterns $patterns 1 (tuple-count $patterns)  $head $p))
         )
-   (prob-with-joint $db $db_size $partion  $tail $prob)
+       (prob-with-joint $db $db_size $partion  $tail $prob)
         )   
 ))
 
@@ -95,6 +97,8 @@
             
           ))
  )
+
+
 
 
 ;; This module implements a two-step estimation approach for computing TV estimates
@@ -137,12 +141,19 @@
 ;; independent assumption of between each partition block, taking
 ;; into account the linkage probability.
 
-(=(do-ji-tv-est $db $pattern) (
+(=(do-ji-tv-est-dd $db $pattern) (
     let $prtns (generet-partition-without-pattern $pattern)  
           ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
           ($pattern  (STV $strength $confidence)))            
 ))
 
+(=(do-ji-tv-est $db $pattern) (
+    let $prtns (generet-partition-without-pattern $pattern)  
+          (;; let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
+          ;($pattern  (STV $strength $confidence))
+          (ji-est-tv $db (db_size $db) $pattern $prtns)
+          )            
+))
 
 
 

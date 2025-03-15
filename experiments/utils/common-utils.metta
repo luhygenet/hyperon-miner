@@ -2,6 +2,26 @@
 ;; Common Utils ;;
 ;;;;;;;;;;;;;;;;;;
 
+
+;;;;;;;;;; functions related to Conjunction ;;;;;;;;;;;;
+
+;; Extracts conjuncts from a conjunctive expression,
+(= (get-conjuncts $cnj) (
+  unify (, $ncnj $ptrn) $cnj (let $result (get-conjuncts $ncnj) (cons-atom $ptrn $result) ) ($cnj)
+))
+
+;; Flattens a conjunctive expression by extracting its conjuncts using `get-conjuncts`,
+;; reversing the list to maintain order, and reassembling the conjuncts into a single expression.
+(= (flatten $cnj) (
+  let $flatten  (reverse-list (get-conjuncts $cnj))   (cons-atom , $flatten)
+))
+
+
+;;Converts a list of blocks into a conjunctive pattern
+(=(conjunct-pattern $blks $db) (
+let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
+))
+
 (= (pow-py $base $power) (pow-math $base $power)) 
 
 

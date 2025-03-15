@@ -33,3 +33,22 @@
  ;;;       (: $prfminsup (sup $ptrn $value))
     ;;      (syn $kb  Z (: $prfsup (sup $ptrn $value)))
       ;;         (:$prfminsup (sup $ptrn $value))))
+
+
+
+
+
+
+(supportOf (, (, (Inheritance Z human) (Inheritance Z sodaDrinker)) (Inheritance Z woman)) 5), 
+(supportOf (, (, (Inheritance Z human) (Inheritance Z ugly)) (Inheritance Z woman)) 5), 
+(supportOf (, (, (Inheritance Z sodaDrinker) (Inheritance Z human)) (Inheritance Z woman)) 5), 
+(supportOf (, (, (Inheritance Z human) (Inheritance Z sodaDrinker)) (Inheritance Z man)) 5), 
+(supportOf (, (, (Inheritance Z sodaDrinker) (Inheritance Z man)) (Inheritance Z human)) 5), 
+(supportOf (, (, (Inheritance Z human) (Inheritance Z woman)) (Inheritance Z ugly)) 5), 
+(supportOf (, (, (Inheritance Z ugly) (Inheritance Z sodaDrinker)) (Inheritance Z human)) 5), 
+(supportOf (, (, (Inheritance Z man) (Inheritance Z human)) (Inheritance Z ugly)) 5), 
+(supportOf (, (, (Inheritance Z human) (Inheritance Z ugly)) (Inheritance Z man)) 5), 
+(supportOf (, (, (Inheritance Z sodaDrinker) (Inheritance Z human)) (Inheritance Z ugly)) 5), 
+(supportOf (, (, (Inheritance Z sodaDrinker) (Inheritance Z human)) (Inheritance Z man)) 5), 
+(supportOf (, (, (Inheritance Z ugly) (Inheritance Z man)) (Inheritance Z sodaDrinker)) 5), 
+(supportOf (, (, (Inheritance Z sodaDrinker) (Inheritance Z woman)) (Inheritance Z human)) 5)

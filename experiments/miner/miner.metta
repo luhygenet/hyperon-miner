@@ -80,10 +80,10 @@
 ;;;;; Dummies ;;;;;;
 ;; mocking the frequent pattern miner results 
 (= (frequent-miner $db $kb) ( 
-     let*  ( (() (add-atom $kb (: FACT1 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)) 4))))
-         (() (add-atom $kb (: FACT2 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK $F $D)) (LIST_LINK A G)) 8))))
-         (() (add-atom $kb (: FACT3 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $D)) 5))))
-         (() (add-atom $kb (: FACT4 (supportOf (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L G)) (LIST_LINK B k))  16))))
+     let*  ( (() (add-atom $kb (: FACT1  (supportOf (, (, (Inheritance $x human) (Inheritance $x ugly)) (Inheritance $x woman)) 5))))
+         (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 8))))
+         (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 5))))
+         (() (add-atom $kb (: FACT4 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
         ;; (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (jsdsurp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
         ) ()
 ))
@@ -103,8 +103,8 @@
           ($ptrn (flatten $pattern))        
     )
      (case $surp (
-        (isurp-old 0.4)
-      ;;  (isurp-old (isurp-old $ptrn $db False))
+        ;;(isurp-old 0.4)
+        (isurp-old (isurp-old $ptrn $db False))
         (nisurp-old (isurp-old $ptrn $db True))
         (isurp (isurp $ptrn $db False $db-ratio))
         (nisurp (isurp $ptrn $db True $db-ratio))
@@ -197,8 +197,8 @@
              ($res (init-surp $kb &res $surp))       
     )
     ;; return all atoms in &res
-   ;; (match &res $x $x)
-   $res
+    (match &res $x $x)
+  ; $res
 ))
 
 

@@ -10,6 +10,8 @@
 ! (import! &self experiments:rules:emp-tv)
 ! (import! &self experiments:rules:isurp)
 ! (import! &self experiments:rules:emp-prob)
+! (import! &kb experiments:data:ugly_man_sodaDrinker)
+
 
 
 
@@ -35,31 +37,14 @@
 
 
 ;!(ji_prob_est_interval (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2)
-!(isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True 2)
+;!(isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True 2)
+!(isurp (,(Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) &kb True 0.5)
+
+;!(match &kb (,(Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) $x)
+
+
 ;[0.6455555555555555]
 ;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y)))
-!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
 
-
-
-;!(get-variables (Inheritance $x $y))
-;!(concatTuple ((A) (B)) ((C) (D)))
-
-;!(joint-variables-init  (Inheritance Abe (Human $x (Or Bob $x)))  (remove-parenthesis (((Or Bob $x)) ((Human $x (Or Bob $x))))) )
-;!(get-unique-vars (,(Inheritance $x $y)  (Inheritance Abe (And $z $w))))
-;!(get-unique-vars (,(Inheritance $x $y)  (Inheritance Abe (And $z $w))))
-
- ;!(emp_tv_mem ((Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Abe $x))  (get-space)) 
-
- ;!(var-appers $x (((Or Bob $x)) ((Human $x (Or Bob $x)))))
-
- ;!(is-present $z (Inheritance $x $y))
-
-;!(let $temp (collapse (is-present $y ((Or Bob $x))))  $temp)
-
-;!(emp-prob-pbs (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2)
-
-;!(emp-prob-pbs  ((Inheritance D A)) (get-space) 1 2)
-
-;!(emp-prob ((Inheritance D A)) (get-space))
 
