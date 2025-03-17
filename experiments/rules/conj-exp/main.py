@@ -144,8 +144,6 @@ def unique_combinations(combinations, list1, list2):
         combo_set = set(sorted_combo)
         if (
             sorted_combo not in seen
-            and combo_set != list1_set
-            and combo_set != list2_set
         ):
             has_element_from_list1 = any(str(item) in list1_set for item in combo)
             has_element_from_list2 = any(str(item) in list2_set for item in combo)
@@ -172,6 +170,7 @@ def generate_random_var():
     new_var = V(base_name)
 
     return [new_var]
+    
 
 
 @register_atoms(pass_metta=True)
@@ -188,4 +187,3 @@ def cnj_exp(metta):
     return {r"combine_lists": combineLists, r"generateRandomVar": generateRandomVar}
 
 
-print(combine_lists_op(MeTTa(), "($X $Y $X $B)", "($R-D1737102179 $A)"))
