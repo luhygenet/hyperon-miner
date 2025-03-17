@@ -8,6 +8,7 @@
 (Inheritance Bob human)
 (Inheritance Mike human)
 (Inheritance Zac human)
+(Inheritance Zac human)
 (Inheritance Lily human)
 (Inheritance Emily human)
 (Inheritance Lucy human)
