@@ -142,14 +142,27 @@ def replace_with_variable(metta: MeTTa, pattern):
         return "$" + "".join(random.choices(string.ascii_lowercase, k=1)) + "".join(random.choices(string.digits, k=2))
 
     # Find all De Bruijn indices
-    de_bruijn_indices = re.findall(r"(Z|\(S(.*?)\))", str_pattern)
-
+    de_bruijn_indices = re.findall(r"(\(S(.*?)\)|\bZ\b)", str_pattern)
     for index in de_bruijn_indices:
         if index[0] not in de_bruijn_map:
             de_bruijn_map[index[0]] = generate_random_var()
-        str_pattern = str_pattern.replace(match_parentheses(index[0]), de_bruijn_map[index[0]], 1)
+        if index[0] == "Z":
+            # Use regex to replace only standalone Z
+            str_pattern = re.sub(r"\bZ\b", de_bruijn_map[index[0]], str_pattern, count=1)
+        else:
+            # Replace S-expressions directly
+            str_pattern = str_pattern.replace(match_parentheses(index[0]), de_bruijn_map[index[0]], 1)
+
+
 
     return [metta.parse_single(str_pattern)]
+
+def sort_conjunction(metta: MeTTa, conjunction):
+    nested_str = str(conjunction)
+    atoms = re.findall(r'\([^()]+\)', nested_str)  # Match only atomic elements
+    sorted_elements =  sorted(atoms)
+    flattend_str = f"({" ".join(sorted_elements)})"
+    return [metta.parse_single(flattend_str)]
 
 
 @register_atoms(pass_metta=True)
@@ -164,4 +177,9 @@ def redundancy(metta):
     replacev = OperationAtom(
         "replacev", lambda pattern: replace_with_variable(metta, pattern), unwrap=False
     )
-    return {r"redunpat": redundancyFreeAtom, r"replace": replace, r"replacev": replacev}
+    sort_conj = OperationAtom(
+        "sort_conj", lambda conjunction: sort_conjunction(metta, conjunction), unwrap=False
+    )
+    return {r"redunpat": redundancyFreeAtom, r"replace": replace, r"replacev": replacev, r"sort_conj": sort_conj}
+
+

@@ -1,59 +1,93 @@
 ! (register-module! ../../../hyperon-miner)
-! (import! &dbspace hyperon-miner:experiments:data:ugly_man_sodaDrinker) ;; db changed for testing
+; ! (import! &dbspace hyperon-miner:experiments:data:sample-data)
+! (import! &db hyperon-miner:experiments:data:ugly_man_sodaDrinker)
 ! (import! &self hyperon-miner:experiments:rules:build-specialization)
 ! (import! &self hyperon-miner:experiments:rules:candidate-patterns)
+! (import! &self hyperon-miner:experiments:rules:conjunction-expansion)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
+! (bind! &kb (new-space))
+! (bind! &dbspace (new-space))
 ! (bind! &specspace (new-space))
 ! (bind! &cndpspace (new-space))
 ! (bind! &aptrnspace (new-space))
+! (bind! &conjspace (new-space))
 ! (import! &self freq-pat)
+! (import! &self conj-exp)
 
+!(let ($link $x $y) (get-atoms &db) (add-atom &dbspace ($link $x $y)))
 ;steps 
 ; 1. get abstract patterns that have minimum support
 ; 2. specializa abstract patterns
 ; 3. get candidate patterns
 ; 4. store candidate patterns
-
-
-; apriori propertie to prevent patterns that dont have a support from being speciallized
 (= (apriori $dbspace $minsup $aptrnspace)
-    (match $dbspace $atom
-        (if (not (== (get-type $atom) hyperon::space::DynSpace))
             (let* (
-                    ( ($link $x $y) $atom)
-                    ($result (sup-eval $dbspace ($link $z $t) $minsup))
+                    ($linkunique (unique (match $dbspace ($link $x $y) $link)))
+                    ($result (sup-eval $dbspace ($linkunique $z $t) $minsup))
                 )
             (if (== $result True)
                 (superpose (
-                        (remove-atom $aptrnspace (AbstractPattern ($link Z (S Z))))
-                        (add-atom $aptrnspace (AbstractPattern ($link Z (S Z))))
+                        (remove-atom $aptrnspace (AbstractPattern ($linkunique Z (S Z))))
+                        (add-atom $aptrnspace (AbstractPattern ($linkunique Z (S Z))))
                     ))
             empty
         )
 )
-empty
-)
-)
+
 )
 
+
+
+(= (do-conjunct $db $cndb $conjunct $ms Z)
+    (let* (
+        ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
+        ($listconj (expand_conjunction $conjunct $matches $db $ms 2 False))
+        ($debconj (replace $listconj))
+        ($fitlered (remove_conjuncts_with_redundant_clauses $debconj))
+    )
+    $fitlered
+    )
+)
+
+(= (do-conjunct $db $cndb $conjunct $ms (S $K))
+    (let* (
+        ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
+        ($listconj (expand_conjunction $conjunct $matches $db $ms 2 False))
+        ($debconj (replace $listconj))
+        ($fitlered (remove_conjuncts_with_redundant_clauses $debconj))
+        ($varconj (replacev $fitlered))
+        ($conj (do-conjunct $db $cndb $varconj $ms $K))
+    )
+    $conj
+    )
+)
+
+(= (formatter $kb $conjspace $dbspace) 
+    (let* (
+        ($sorted (unique (match $conjspace $pattern (sort_conj $pattern))))
+        ($res (cons-atom , $sorted))
+        
+    )
+    (add-atom $kb (supportOf $res (sup-num $dbspace (replacev $res))))
+)
+)
 ; miner
-(= (frequency-pattern-miner $dbspace $specspace $cndpspace $aptrnspace $minsup )
+(= (frequency-pattern-miner $kb $dbspace $specspace $cndpspace $aptrnspace $conjspace $minsup $depth)
     (superpose (
             (apriori $dbspace $minsup $aptrnspace) ; prevent patterns that dont have a support from being speciallized
             (match $aptrnspace (AbstractPattern $pattern) (build-specialization $pattern $dbspace $specspace)) ; specializa abstract patterns
             (candidatePattern $dbspace $specspace $minsup $cndpspace); get candidate patterns
+            (match $cndpspace (CandidatePattern $pattern) (let $conj (do-conjunct $dbspace $cndpspace (replacev $pattern) $minsup (fromNumber $depth)) (if (== $conj ()) () (add-atom $conjspace $conj)))) ; store candidate patterns
+            ; (match &conjspace $pattern (superpose ((add-atom &conjspace (supportOf $pattern (sup-num $dbspace (replacev $pattern)))) (remove-atom &conjspace $pattern))))
+            (formatter $kb $conjspace $dbspace)
         ))
 )
 
- ; ! (apriori &dbspace 2 &aptrnspace)
- ; ! (match &aptrnspace (AbstractPattern $pattern) $pattern)
-
-! (frequency-pattern-miner &dbspace &specspace &cndpspace &aptrnspace 10)
-;! (match &specspace $x $x)
-! (match &cndpspace $x $x)
- ; ! (match &dbspace (: $p ($link $x $y)) $p)
- ; ! (match &dbspace $x (if (not (== (get-type $x) hyperon::space::DynSpace)) $x ()))
 
 
- 
-(CandidatePattern (Inheritance Z man)), (CandidatePattern (Inheritance Z human)), (CandidatePattern (Inheritance Rio Z)), (CandidatePattern (Inheritance Hessley Z)), (CandidatePattern (Inheritance Z sodaDrinker)), (CandidatePattern (Inheritance Davion Z)), (CandidatePattern (Inheritance Jadrian Z)), (CandidatePattern (Inheritance Sophia Z)), (CandidatePattern (Inheritance Cason Z)), (CandidatePattern (Inheritance Alaura Z)), (CandidatePattern (Inheritance Allen Z)), (CandidatePattern (Inheritance Abe Z)), (CandidatePattern (Inheritance Jassy Z)), (CandidatePattern (Inheritance Breonna Z)), (CandidatePattern (Inheritance Zac Z)), (CandidatePattern (Inheritance Bob Z)), (CandidatePattern (Inheritance Z ugly)), (CandidatePattern (Inheritance Mike Z)), (CandidatePattern (Inheritance Jaleesa Z)), (CandidatePattern (Inheritance Emily Z)), (CandidatePattern (Inheritance Kecia Z)), (CandidatePattern (Inheritance Jenica Z)), (CandidatePattern (Inheritance Lucy Z)), (CandidatePattern (Inheritance Z woman)), (CandidatePattern (Inheritance Lily Z))
+;  ! (apriori &dbspace 2 &aptrnspace)
+;  ! (match &aptrnspace (AbstractPattern $pattern) $pattern)
+
+
+! (frequency-pattern-miner &kb &dbspace &specspace &cndpspace &aptrnspace &conjspace 5 1)
+! (match &kb $pattern $pattern)
