@@ -39,12 +39,14 @@
 
 ;; define parameters 
 (=(min-sup) 6)
-(=(surp-mode ) nisurp)
+(=(surp-mode ) isurp-old)
 (=(db-ratio) 0.5)
 
 
 ;; test the cog-miner
-! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
+! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
+;;! (cog-mine-sorting &db &kb (min-sup) (surp-mode) (db-ratio))
+
 
 
 

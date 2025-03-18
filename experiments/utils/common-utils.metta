@@ -608,8 +608,9 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 )
 
 ;;;;;;;;;;; converters ;;;;;;;;; 
+;;;;;;;;;;; converters ;;;;;;;;; 
 ;; Converts a list to a tuple
-(= (list_to_tuple ()) ())
+(= (list_to_tuple Nil) ())
 (= (list_to_tuple (Cons $head $tail)) (
   let $temp (list_to_tuple $tail) (cons-atom $head $temp)
 ))
@@ -617,7 +618,9 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ;; Converts a tuple back to a list
 (=(tuple_to_list ()) Nil)
 (=(tuple_to_list $list)( 
-  let ($head $tail) (decons-atom $list) (Cons $head (tuple_to_list $tail))
+  let ($head $tail) (decons-atom $list) (
+    if (== $head ,) (tuple_to_list $tail)
+    (Cons $head (tuple_to_list $tail)))
 ))
 
 

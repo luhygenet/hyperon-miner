@@ -5,7 +5,7 @@
 (= (insert_N $x Nil) (Cons $x Nil))
 (= (insert_N $x (Cons $head $tail))
    (let ((: $prf ($lable $patrn $value)) (: $Tprf ($Tlable $Tpatrn $Tvalue))) ($x $head)
-    ( if (< $value $Tvalue)
+    ( if (> $value $Tvalue)
        (Cons $x (Cons $head $tail))
        (Cons $head (insert_N $x $tail)))))
 
@@ -15,20 +15,21 @@
 (= (sort_surp_list (Cons $head $tail)) (insert_N $head (sort_surp_list $tail)))
 
 
-;;;;;;;;;;; converters ;;;;;;;;; 
-;; Converts a list to a tuple
-(= (list_to_tuple Nil) ())
-(= (list_to_tuple (Cons $head $tail)) (
-  let $temp (list_to_tuple $tail) (cons-atom $head $temp)
+
+
+;;;;;;; sort surprising patterns ;;;;;;;;;;
+;;convert the collapsed (tuples) pattern to list
+;;sort the list
+;;convert to tuple and return sorted surprising patterns in decreasing order
+
+;;patterns must be collapsed before passed to the surp-sorting
+(=(surp-sorting $patterns) (
+   chain (tuple_to_list $patterns) $ptrn (
+        chain (sort_surp_list $ptrn) $res (list_to_tuple $res))
 ))
 
-;; Converts a tuple back to a list
-(=(tuple_to_list ()) Nil)
-(=(tuple_to_list $list)( 
-  let ($head $tail) (decons-atom $list) (
-    if (== $head ,) (tuple_to_list $tail)
-    (Cons $head (tuple_to_list $tail)))
-))
+
+
 
 
 (=(is-number $x) (
