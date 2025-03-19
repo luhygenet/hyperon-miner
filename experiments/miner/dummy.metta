@@ -52,3 +52,11 @@
 (supportOf (, (, (Inheritance Z sodaDrinker) (Inheritance Z human)) (Inheritance Z man)) 5), 
 (supportOf (, (, (Inheritance Z ugly) (Inheritance Z man)) (Inheritance Z sodaDrinker)) 5), 
 (supportOf (, (, (Inheritance Z sodaDrinker) (Inheritance Z woman)) (Inheritance Z human)) 5)
+
+
+
+
+[(
+(: (surprisingness (((minsupport FACT2) msT) CPU)) (surp (, (, (Inheritance $x#12522 sodaDrinker) (Inheritance $x#12522 human)) (Inheritance $x#12522 woman)) 0.00026951691400994854)) 
+(: (surprisingness (((minsupport FACT3) msT) CPU)) (surp (, (, (Inheritance $x#12521 human) (Inheritance $x#12521 sodaDrinker)) (Inheritance $x#12521 man)) 0.0001882464522392705)) 
+(: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (Inheritance $x#12520 human) (Inheritance $x#12520 sodaDrinker)) (Inheritance $x#12520 man)) 0.00013659998646536493)))]

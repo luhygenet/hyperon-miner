@@ -284,9 +284,7 @@
 )
 
 
-(= (get-conjuncts $cnj) (
-  unify (, $ncnj $ptrn) $cnj (let $result (get-conjuncts $ncnj) (cons-atom $ptrn $result) ) ($cnj)
-))
+
 
 
 (= (remove_conjuncts_with_redundant_clauses $conjunction) 

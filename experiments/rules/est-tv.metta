@@ -58,7 +58,7 @@
         ($most_spec  (let $result (inner_temp $db $original $compJ $i $var) (find_max $result -1) ))
        ($M_xj (if (<= $most_spec 0) $db_size $most_spec))
         ($prob_j (* $prob (// 1 $M_xj)))  ;; from general formula
-        ($dummy (eq-prob $db $db_size $original $tail (+ $i 1) (- $count 1) $var $prob_j)))
+        ($dummy (eq-prob $db $db_size $original $tail (+ $i 1) (- $count 1) $var $prob_j))) 
          $dummy)
            $prob
            ))
@@ -141,13 +141,13 @@
 ;; independent assumption of between each partition block, taking
 ;; into account the linkage probability.
 
-(=(do-ji-tv-est-dd $db $pattern) (
+(=(do-ji-tv-est $db $pattern) (
     let $prtns (generet-partition-without-pattern $pattern)  
           ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
           ($pattern  (STV $strength $confidence)))            
 ))
 
-(=(do-ji-tv-est $db $pattern) (
+(=(do-ji-tv-est-dd $db $pattern) (
     let $prtns (generet-partition-without-pattern $pattern)  
           (;; let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
           ;($pattern  (STV $strength $confidence))

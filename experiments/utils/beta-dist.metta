@@ -99,7 +99,7 @@
  ; The mode is determined based on the values of alpha and beta, following specific conditions.
  ; Finally, it returns an STV (mode, confidence) pair.
 ;;(: mk_stv (-> ))
-(=(mk_stv $mean $variance) (
+(=(mk_stv _old$mean $variance) (
    let* (
      ($alpha (find_alpha $mean $variance))
      ($beta (find_beta $mean $variance))
@@ -112,6 +112,30 @@
         if (and (<= $alpha 1) (> $beta 1)) 0 (
 
             if (and (< $alpha 1) (== $beta 1)) 1 
+            (
+                if (and (< $alpha 1) (< $beta 1)) $mean 1
+            )
+        )
+    ))))
+
+    ($mode $confidence)
+   
+))
+;; formula from chatgpt
+(=(mk_stv $mean $variance) (
+   let* (
+     ($alpha (find_alpha $mean $variance))
+     ($beta (find_beta $mean $variance))
+     (() (println! (al $alpha $beta)))
+     ($count (+ $alpha (- $beta (- (prior-alpha) (prior-beta)))))
+     ($confidence (// $count (+ $count (default_k))))
+     ($mode  (
+    if (and (> $alpha 1) (> $beta 1)) (
+                // (- $alpha 1) (+ $alpha (- $beta 2))   ;; a-1 / a + b -2
+    ) (
+        if (and (<= $alpha 1) (> $beta 1)) 0 (
+
+            if (and (> $alpha 1) (< $beta 1)) 1 
             (
                 if (and (< $alpha 1) (< $beta 1)) $mean 1
             )
@@ -212,3 +236,6 @@
     let (Beta (mean $mean) (variance $variance )) $beta (
         if (== $key mean) $mean $variance
       )))
+
+
+
