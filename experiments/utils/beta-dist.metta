@@ -99,7 +99,7 @@
  ; The mode is determined based on the values of alpha and beta, following specific conditions.
  ; Finally, it returns an STV (mode, confidence) pair.
 ;;(: mk_stv (-> ))
-(=(mk_stv _old$mean $variance) (
+(=(mk_stv $mean $variance) (
    let* (
      ($alpha (find_alpha $mean $variance))
      ($beta (find_beta $mean $variance))
@@ -121,30 +121,9 @@
     ($mode $confidence)
    
 ))
-;; formula from chatgpt
-(=(mk_stv $mean $variance) (
-   let* (
-     ($alpha (find_alpha $mean $variance))
-     ($beta (find_beta $mean $variance))
-     (() (println! (al $alpha $beta)))
-     ($count (+ $alpha (- $beta (- (prior-alpha) (prior-beta)))))
-     ($confidence (// $count (+ $count (default_k))))
-     ($mode  (
-    if (and (> $alpha 1) (> $beta 1)) (
-                // (- $alpha 1) (+ $alpha (- $beta 2))   ;; a-1 / a + b -2
-    ) (
-        if (and (<= $alpha 1) (> $beta 1)) 0 (
 
-            if (and (> $alpha 1) (< $beta 1)) 1 
-            (
-                if (and (< $alpha 1) (< $beta 1)) $mean 1
-            )
-        )
-    ))))
 
-    ($mode $confidence)
-   
-))
+
 
 
  ; This function calculates the parameters of a Beta distribution based on the given empirical TV (emptv) data.
@@ -152,21 +131,6 @@
  ; and uses prior alpha and beta values (both set to 1.0) to calculate the final alpha and beta parameters
  ; for the Beta distribution. The final alpha is the sum of the prior alpha and the positive count, while the
  ; final beta is the sum of the prior beta and the difference between the count and the positive count.
-(=(mk_distribution_old $Etv)(
-    let* (
-        ($tail (cdr-atom $Etv))
-        ($tv (car-atom $tail))
-        ($tv_mean (get_tv_mean $tv))
-        ($tv_conf (get_tv_conf $tv))
-        ($count (confidence->count $tv_conf))
-        ($pos_count (* $tv_mean $count))
-        ($alpha (+ (prior-alpha) $pos_count) )
-        ($beta (+ (prior-beta) (- $count $pos_count ))) 
-        ($_beta_dist (_beta_distribution $alpha $beta))
-
-    )
-        $_beta_dist
-))
 
 (=(mk_distribution $tv) (
     let* (
@@ -191,18 +155,6 @@
 ))
 
 
-;;!(_beta_distribution 2 5)
-;TODO: suspect for change 
-; (=(mk_distribution_list $patten_list)(
-;     if (== $patten_list ()) () (
-;         let*(
-;             ( ($head $tail)(decons-atom $patten_list))
-;             ($beta_dist (mk_distribution $head))
-;             ($dummy (mk_distribution_list $tail))
-;         )
-;               (cons-atom $beta_dist $dummy))
-; ))
-
 ;; 
 (=(mk_distribution_list $patten_list)
      (collapse (mk_distribution (superpose $patten_list)))
@@ -210,28 +162,7 @@
 )
 
 
-
-
-
 ;; $beta --> (Beta (mean 54) (variance 57))
-(=(get_beta_mean_var_old $beta $key)(
-    let* (
-           ($temp (cdr-atom $beta));;((mean 54) (variance 57))
-           ($mean_tuple (car-atom $temp));; (mean 54)
-           ($mean_temp (cdr-atom $mean_tuple)) ;; (54)
-           ($mean_value (car-atom $mean_temp)) ;; 54
-           ($temp2  (cdr-atom $temp));;((variance 57))
-           ($var_tuple (car-atom $temp2 ));; (variance 57)
-           ($var_temp (cdr-atom $var_tuple));; (57)
-           ($variance (car-atom $var_temp)) ;; 57    
-    )
-      (
-        if (== $key mean) $mean_value $variance
-      )
-      
-))
-
-
 (=(get_beta_mean_var $beta $key)(
     let (Beta (mean $mean) (variance $variance )) $beta (
         if (== $key mean) $mean $variance

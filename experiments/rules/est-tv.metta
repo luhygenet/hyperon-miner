@@ -1,13 +1,3 @@
-;;! (register-module! ../../../hyperon-miner)
-;;! (import! &self hyperon-miner:experiments:utils:common-utils)
-;;! (import! &self hyperon-miner:experiments:utils:TruthValue)
-
-
-
-
-
-
-
 
 ;;Calculate the product of the probability over subpatterns
 ;;without considering joint variables
@@ -22,14 +12,9 @@
 
 ;;A function that calculates the set of values that Xi can take when its corresponding component is matched against the database alone,
 ;; without any interaction with the other components. The formula used to calculate this is the approximation formula: |V(Xi)| ~= Nth-root(S)
-
 (=(estimate_v_xi $db $pattern_i) (
     let $result (sup-num $db $pattern_i) ((py-atom pow) $result 0.5)
 ))
-
-
-;function to check if component A is more abstract to component B.
-;;A function that determines if there is syntactic specialization between two components
 
 
 
@@ -81,7 +66,6 @@
 
 
 
-;:TODO: suspect for change to non-deterministic 
  (= (ji-est-tv $db $db_size $pattern $partitions)
  (   if (== $partitions ()) () (
          let* (
@@ -101,40 +85,6 @@
 
 
 
-;; This module implements a two-step estimation approach for computing TV estimates
-;; based on joint probability assessments.
-;;
-;; The primary helper function, ji-est-tv-hlper, performs the following:
-;; 1. Computes an initial production probability without considering joint dependencies
-;;    using the pro_prob_without_joint function.
-;; 2. Deconstructs the result into a primary probability component (rp) and additional details (rc).
-;; 3. Calculates an adjusted probability (rp_est) that incorporates joint effects via the
-;;    prob-with-joint function. This step modifies the partition and initializes joint variables
-;;    based on a provided pattern.
-;; 4. Combines the initial and adjusted probabilities to derive two metrics:
-;;    - Strength: obtained by multiplying the primary probabilities (rp and rp_est).
-;;    - Confidence: derived from scaling a component extracted from the additional details (rc),
-;;      specifically, multiplying the first element by a factor of 1e-1.
-;; 5. Packages these two metrics using the STV constructor.
-;;
-;; The wrapper function, ji-est-tv, aggregates multiple partitions using the superpose function
-;; and then delegates to ji-est-tv-hlper to perform the TV estimation on the combined partition.
-;;
-;; This approach ensures that both individual and joint probability effects are considered
-;; when estimating the TV values.
-(= (ji-est-tv-hlper $db $db_size $pattern $partition) (let* (
-        ($prod_etv (pro_prob_without_joint $db $partition))
-        (($rp $rc) (decons-atom $prod_etv))
-        ($rp_est (prob-with-joint $db $db_size (remove-parenthesis $partition) (joint-variables-init $pattern (remove-parenthesis $partition)) 1))
-        (($strength $confidence) ((* $rp $rp_est) (* 1e-1 (car-atom $rc))))
-)
-(STV $strength $confidence)
-))
-
-
-;;(= (ji-est-tv-new $db $db_size $pattern $partitions) (collapse (ji-est-tv-hlper $db $db_size $pattern (superpose $partitions))))
-
-
 
 
 ;; Calculate the truth value estimate of each partition based on
@@ -147,13 +97,6 @@
           ($pattern  (STV $strength $confidence)))            
 ))
 
-(=(do-ji-tv-est-dd $db $pattern) (
-    let $prtns (generet-partition-without-pattern $pattern)  
-          (;; let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
-          ;($pattern  (STV $strength $confidence))
-          (ji-est-tv $db (db_size $db) $pattern $prtns)
-          )            
-))
 
 
 

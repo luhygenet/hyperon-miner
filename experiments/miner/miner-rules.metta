@@ -30,7 +30,9 @@
    (-> (minsup $ptrn)
          (-> (emp-val $ptrn $emp)
                (-> (db-ref $db)
-                     (est-tv $ptrn (STV 0.5 0.4))))))
+                     (est-tv $ptrn (do-ji-tv-est $db $ptrn))))))
+
+
 
 ;;(do-ji-tv-est $db $ptrn)
 ;; Rule to calculate the empirical truth value of a pattern.
@@ -38,10 +40,13 @@
    (-> (minsup $ptrn) 
           (-> (db-ref $db) 
                  (-> (db-ratio $ratio)
-                           (emp-val $ptrn (STV 0.5 0.4))))))
+                           (emp-val $ptrn (do_emp_tv $ptrn $db $ratio))))))
+
 
 ;;(do_emp_tv $ptrn $db $ratio)
 ;;(do_emp_tv (flatten $ptrn) $db $ratio)
+
+
 ;; Rule to calculate the Jensen-Shannon Distance between the empirical
 ;; truth value and the truth value estimate of a pattern according to
 ;; some db.

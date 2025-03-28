@@ -6,6 +6,7 @@
 ! (import! &self experiments:utils:surp-utils)
 ! (import! &self experiments:utils:miner-utils)
 ! (import! &self experiments:utils:gen_partition)
+
 ! (import! &self experiments:rules:est-tv)
 ! (import! &self experiments:rules:emp-tv)
 ! (import! &self experiments:rules:isurp)
@@ -38,13 +39,17 @@
 
 ;!(ji_prob_est_interval (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2)
 ;!(isurp (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) True 2)
-!(isurp (,(Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) &kb True 0.5)
+;!(isurp (,(Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) &kb True 0.5)
 
 ;!(match &kb (,(Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) $x)
 
 
 ;[0.6455555555555555]
 ;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y)))
-;!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+!(generet-partition-without-pattern (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
 
+[((((Inheritance $x $y) (Inheritance Abe $y)) ((Inheritance Zac $y)))
 
+  (((Inheritance $x $y)) ((Inheritance Abe $y)) ((Inheritance Zac $y))) 
+  (((Inheritance $x $y)) ((Inheritance Abe $y) (Inheritance Zac $y))) 
+  (((Inheritance $x $y) (Inheritance Zac $y)) ((Inheritance Abe $y))))]

@@ -35,7 +35,14 @@
 ! (add-atom (get-space)  (Inheritance Bob (And human (Or zac))) ) 
 
 
-!(do-ji-tv-est  &kb (,(Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)))
+;!(do-ji-tv-est  &kb (,(Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)))
+!(do-ji-tv-est  &kb (, (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x man)))
+
+
+
+
+
+
 
 
 ;;dummy

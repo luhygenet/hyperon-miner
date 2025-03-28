@@ -16,6 +16,8 @@
 
 
 
+
+
 ;; Recursive step
   (= (syn-old $kb (S $k) (: ($prfabs $prfarg) $ccln))
     (let* (((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))
@@ -23,8 +25,23 @@
       (: ($prfabs $prfarg) $ccln)))
 
 
+ (: minsupport 
+    (-> (supportOf $ptrn $cnt)
+          (-> (ms-threshold $ms)
+                 (-> (⍃ $ms $cnt)
+                     (minsup $ptrn)))))
 
+(: minsupport (-> (⍃ $ms $cnt) (minsup $ptrn)))
+(: minsupport (minsup $ptrn))
 
+;; Base case
+(= (syn $kb $_ (: $prf $ccln)) (match $kb (: $prf $ccln) (: $prf $ccln)))
+
+;; Recursive step
+(= (syn $kb (S $k) (: ($prfabs $prfarg) $ccln))
+   (let* (((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))   ;; (: minsupport (-> (⍃ $ms $cnt) (minsup $ptrn)))
+          ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms))))                         ;;  ((-> $prms (-> (⍃ $ms $cnt) (minsup $ptrn))))
+     (: ($prfabs $prfarg) $ccln)))
 
 
 

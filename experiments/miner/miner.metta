@@ -62,8 +62,8 @@
         if (== $surp-mode none) 
               (chain (get-patterns $kb) $result (add-atom $res $result))  
                  (if  ( == $surp-mode jsdsurp)  
-                      ;(chain  (syn $kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-atom $res $result)) 
-                            (syn $kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value)))         
+                      (chain  (syn $kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-atom $res $result)) 
+                            ;(syn $kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value)))         
                                (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result))         
 )))
 
@@ -103,7 +103,6 @@
           ($ptrn (flatten $pattern))        
     )
      (case $surp (
-        ;;(isurp-old 0.4)
         (isurp-old (isurp-old $ptrn $db False))
         (nisurp-old (isurp-old $ptrn $db True))
         (isurp (isurp $ptrn $db False $db-ratio))
@@ -172,7 +171,7 @@
 ;; new space to store the init-surp results
 !(bind! &res (new-space))
 
-(= (cog-mine-old $db $kb $ms $surp $db-ratio) (
+(= (cog-mine $db $kb $ms $surp $db-ratio) (
     let* (
           ;; initializes the necessary input parameters in the KB
           ;;configures and runs the frequent pattern miner with conjunction expansion
@@ -186,20 +185,7 @@
     (match &res $x $x)
 ))
 
-(= (cog-mine $db $kb $ms $surp $db-ratio) (
-    let* (
-          ;; initializes the necessary input parameters in the KB
-          ;;configures and runs the frequent pattern miner with conjunction expansion
-          ;;proceeds to surprisingness pattern mining using the backward chainer 
-          ;;Store the chainer result in to the &res (new space)
-             (() (init-miner $db $kb $ms $surp $db-ratio)) 
-             (() (frequent-miner $db $kb))
-             ($res (init-surp $kb &res $surp))       
-    )
-    ;; return all atoms in &res
-    (match &res $x $x)
-  ; $res
-))
+
 
 
 
