@@ -51,7 +51,7 @@
 
 
 
-
+;;Calculate the probability that all joint variables take the same	value
 (=(prob-with-joint $db $db_size $partion $joint_vars $p)(
     if (== $joint_vars ()) $p
  (let* ((($head $tail) (decons-atom $joint_vars))
@@ -65,7 +65,10 @@
 
 
 
-
+;; Calculate truth value estimate of a pattern given a partition,
+;; assuming all blocks are independent, but takes into account the
+;; joint variables (ji_tv_est stands for joint independent truth
+;; value estimate).
  (= (ji-est-tv $db $db_size $pattern $partitions)
  (   if (== $partitions ()) () (
          let* (
