@@ -83,14 +83,9 @@
  )
 
 
-
-
-
-
 ;; Calculate the truth value estimate of each partition based on
 ;; independent assumption of between each partition block, taking
 ;; into account the linkage probability.
-
 (=(do-ji-tv-est $db $pattern) (
     let $prtns (generet-partition-without-pattern $pattern)  
           ( let ($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )
