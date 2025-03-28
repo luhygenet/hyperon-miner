@@ -49,7 +49,6 @@
     )
 )
 
-
 (= (do-conjunct $db $cndb $conjunct $ms (S $K))
     (let* (
         ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
