@@ -16,3 +16,9 @@
  ; (kebede)
  ; (chala)
  ; (abebe)
+
+((Inheritance A B)
+(Inheritance A B)
+(Inheritance A C)
+(Inheritance D D)
+ )
