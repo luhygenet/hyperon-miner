@@ -39,7 +39,7 @@
     if (== $i 0) () (
         let* (
              ( ($head $tail) (decons-atom $original))
-             ($bool_value  (or (is_equivalent $head $compJ $var)(is_more_abstract_init $head $compJ))) 
+             ($bool_value  (or (is_equivalent $head $compJ $var) (is_more_abstract_init $head $compJ))) 
              ($v_xi  (if $bool_value (estimate_v_xi $db $head) -1))
              ($dummy (inner_temp $db $tail $compJ (- $i 1) $var))
         ) (

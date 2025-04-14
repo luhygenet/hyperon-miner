@@ -36,8 +36,10 @@
 
 
 ;!(do-ji-tv-est  &kb (, (Inheritance $x man)  (Inheritance $x ugly) (Inheritance $x sodaDrinker)))
-!(do-ji-tv-est (get-space) (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+; !(do-ji-tv-est (get-space) (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
 ;(((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))
 ;[((((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))) ((EMPTV 0.16129032258064516 0.09841269841269841) (EMPTV 0.0 0.09841269841269841)))]
 
 ;!(emp-tv  (remove-parenthesis (, (Inheritance $x sodaDrinker) (Inheritance $x ugly))) &kb)
+!(size-atom (collapse (match &kb (, (Inheritance $x $y) (Inheritance $x $z)) ($x $y $z)) ))
+; !(match &kb (, (Inheritance $x $y) (Inheritance $x $z)) ($x $y))  

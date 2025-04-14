@@ -36,17 +36,18 @@
 )
 )
 
+
 ; build specialization
 (= (build-specialization ($link $x $y) $dbspace $specspace) (superpose (
             (let*
                 (
-                    ( ($link $x1 $y1) (replacev ($link $x $y)))                            ; replacev is a function that replaces index with variables
+                    ( ($link $x1 $y1) (replacev ($link $x $y)))                            ; replacev is a function that replaces index with variables ;TODO: why we need to convert from indec to variable and varable to index
                     ( ($subx $suby) (match $dbspace ($link $x1 $y1) ($x1 $y1)))            ; getting the substitution /valuation of the pattern
                     ($shabx (abstract-recursive $subx))                                    ;handle depth in the x node
                     ($shaby (abstract-recursive $suby))                                    ; handle depth in the y node
                     ($spec1 (replace (SpecializationOf ($link $shabx $y1) ($link $x $y)))) ;build the specialization and change the variables to indexs 
                     ($spec2 (replace (SpecializationOf ($link $x1 $shaby) ($link $x $y)))) ;build the specialization and change the variables to indexs
-                     ; ($spec3 (replace (SpecializationOf ($link $shabx $shaby) ($link $x $y)))) ;optional
+                    ;  ($spec3 (replace (SpecializationOf ($link $shabx $shaby) ($link $x $y)))) ;optional
                 )
             (
                 superpose (
@@ -73,3 +74,5 @@
  ; ! (match &specredspace $h $h)
 
  ; ! (let $res (redunpat)  $res)
+
+ !(abstract-recursive (Inheritance (And (And C D) (Or P G)) (Or (And T S) (And N M))))

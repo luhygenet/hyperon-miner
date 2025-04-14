@@ -1,5 +1,5 @@
- ; (Inheritance (And (And C D) (Or P G)) (Or (And T S) (And N M)))
- ; (Inheritance (And (And C D) (Or P G)) (Or (And T S) (And N M)))
+ (Inheritance (And (And C D) (Or P G)) (Or (And T S) (And N M)))
+ (Inheritance (And (And C D) (Or P G)) (Or (And T S) (And N M)))
 (Inheritance (And (And C D) E) L)
 (Inheritance (And (And C D) E) L)
 (Implication P Q)
