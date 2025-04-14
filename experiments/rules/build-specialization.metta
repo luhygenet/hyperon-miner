@@ -37,7 +37,7 @@
 )
 
 ; build specialization
-(= (build-specialization ($link $x $y) $dbspace $specspace) (superpose (
+(= (build-specialization-old ($link $x $y) $dbspace $specspace) (superpose (
             (let*
                 (
                     ( ($link $x1 $y1) (replacev ($link $x $y)))                            ; replacev is a function that replaces index with variables
@@ -56,6 +56,30 @@
                     (add-atom $specspace $spec2)
                     ; (remove-atom $specspace $spec3)
                     ; (add-atom $specspace $spec3)
+
+                )
+
+        )
+)
+ ; (let ($name $aptrn $spec) (redunpat) (add-atom $specspace (SpecializationOf $spec $aptrn)))
+))
+)
+(= (build-specialization ($link $x $y) $dbspace) (superpose (
+            (let*
+                (
+                    ( ($link $x1 $y1) (replacev ($link $x $y)))                            ; replacev is a function that replaces index with variables
+                    ( ($subx $suby) (match $dbspace ($link $x1 $y1) ($x1 $y1)))            ; getting the substitution /valuation of the pattern
+                    ($shabx (abstract-recursive $subx))                                    ;handle depth in the x node
+                    ($shaby (abstract-recursive $suby))                                    ; handle depth in the y node
+                    ($spec1 (replace (SpecializationOf ($link $shabx $y1) ($link $x $y)))) ;build the specialization and change the variables to indexs 
+                    ($spec2 (replace (SpecializationOf ($link $x1 $shaby) ($link $x $y)))) ;build the specialization and change the variables to indexs
+                     ; ($spec3 (replace (SpecializationOf ($link $shabx $shaby) ($link $x $y)))) ;optional
+                )
+            (
+                superpose (
+                    $spec1
+                    $spec2
+                    ; $spec3
 
                 )
 
