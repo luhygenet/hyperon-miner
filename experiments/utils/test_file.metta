@@ -1,10 +1,10 @@
-! (import! &self  eq_prop)
+! (import! &self eq_prop)
 
 
 !(eq-prob (
-    ((Ineretence $z $x) (Ineretence $x $y ))
-    ((Ineretence $x Human))
+    ((Inheritance $X $y) (Inheritance $x $y ))
+    ((Inheritance $x Human))
  ) 
-    ((Ineretence Abeb $x) (Ineretence $z $y ) (Ineretence $x Human))
+    ((Inheritance Abeb $x) (Inheritance $z $y ) (Inheritance $x Human))
     
 )

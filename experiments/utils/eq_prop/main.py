@@ -14,9 +14,21 @@ from hyperon.base import Tokenizer, SExprParser
 from hyperon.ext import register_atoms, register_tokens
 import hyperonpy as hp
 from collections import defaultdict
+import re
+from functools import cmp_to_key
 
 
-def parseFromExpresstion(metta, expresion, dimention):
+
+
+metta = MeTTa()
+
+with open('../data/ugly_man_sodaDrinker.metta') as file:
+   metta.run(file.read())
+
+
+
+
+def parseFromExpresstion(expresion, dimention):
     if dimention == 1:
         return [str(child).replace("#", "") for child in expresion.get_children()]
     elif dimention == 2:
@@ -27,7 +39,7 @@ def parseFromExpresstion(metta, expresion, dimention):
         return out
 
 
-def parseToExpression(metta, strings):
+def parseToExpression(strings):
     strings = strings.replace("[", "(").replace("]", ")").replace(
         ",", "").replace("\"", "").replace("'", "").replace("#", "")
 
@@ -59,7 +71,7 @@ def find_common_variables(partitions, variables):
     # Return variables that appear in more than one bulk
     return [var for var, count in variable_count.items() if count > 1]
 
-def connected_subpatterns_with_var(metta,partitions, variable):
+def connected_subpatterns_with_var(partitions, variable):
     filtered_partitions = []
     
     for bulk in partitions:
@@ -83,9 +95,7 @@ Sort by:
 
 3. Fewer patterns in the conjunction → More abstract
 '''
-import re
-from functools import cmp_to_key
-from hyperon import MeTTa
+
 
 def count_variables_and_concretes(block):
     variables = set()
@@ -100,8 +110,9 @@ def count_variables_and_concretes(block):
                 concretes.add(token)
     
     return len(variables), len(concretes), len(block)
-
-def is_more_abstract(metta, b1, b2, var):
+def to_conjunction(patterns):
+    return f"( {' '.join(patterns)} )" if patterns else '()'
+def is_more_abstract(b1, b2, var):
     def get_vars(block):
         return {token for pattern in block for token in re.findall(r'\$\w+', pattern)}
 
@@ -115,8 +126,7 @@ def is_more_abstract(metta, b1, b2, var):
     replaced_b1 = [pattern.replace(var, concrete_var) for pattern in b1]
     replaced_b2 = [pattern.replace(var, concrete_var) for pattern in b2]
 
-    def to_conjunction(patterns):
-        return f"( {' '.join(patterns)} )" if patterns else '()'
+
 
     body1 = to_conjunction(replaced_b1)
     body2 = to_conjunction(replaced_b2)
@@ -150,11 +160,11 @@ def is_more_abstract(metta, b1, b2, var):
     return False
 
 
-def sort_partitions_by_abstractness(metta,partitions, variable):
+def sort_partitions_by_abstractness(partitions, variable):
     def compare_blocks(a, b):
-        if is_more_abstract(metta, a, b, variable):
+        if is_more_abstract(a, b, variable):
             return -1
-        if is_more_abstract(metta, b, a, variable):
+        if is_more_abstract(b, a, variable):
             return 1
         a_vars, a_concretes, a_len = count_variables_and_concretes(a)
         b_vars, b_concretes, b_len = count_variables_and_concretes(b)
@@ -173,20 +183,36 @@ def is_blk_more_abstract(l_blk, r_blk, var):
 
     return (l_vars >= r_vars) and (l_concs <= r_concs)
 
-
-
-def eq_prob (metta , partition, pattern):
+def value_count(pattern,var):
+    var = f"({' '.join(list(var))})"
+    print(f"! (match &self {pattern} ($x))")
+    result = metta.run(f"! (collapse (match &self {pattern} {var}))")
+    print("the match is: ", result)
+    
+    return (
+    len(result[0][0].get_children())
+    if result and isinstance(result, list)
+    and len(result) > 0 and isinstance(result[0], list)
+    and len(result[0]) > 0 and hasattr(result[0][0], 'get_children')
+    and callable(result[0][0].get_children)
+    else 1
+)
+def to_conjunction_with_comma(patterns):
+    return f"(, {' '.join(patterns)} )" if patterns else '()'
+def eq_prob (partition, pattern):
     # Parse the input string to get the list of elements
     # get the variables from the pattern
     # the count the variables inside partition
     # keep only the variables that are apeared more thatn once
+
+   
     p=1.0
-    parssed_pattern = parseFromExpresstion(metta, pattern, 1)
+    parssed_pattern = parseFromExpresstion(pattern, 1)
     variables = get_variables(parssed_pattern)
     print("variables", variables)
 
     # parsse the partition and count the variables and keep only the ones that are apeared more than once
-    parssed_partition = parseFromExpresstion(metta, partition, 2)
+    parssed_partition = parseFromExpresstion(partition, 2)
     print("partition", parssed_partition)
 
     common_variables = find_common_variables(parssed_partition, variables)
@@ -195,15 +221,15 @@ def eq_prob (metta , partition, pattern):
 
     for var in common_variables:
         # Filter partitions to keep only those containing the variable
-        var_partitions = connected_subpatterns_with_var(metta,parssed_partition, var)
+        var_partitions = connected_subpatterns_with_var(parssed_partition, var)
         print("filtered_partitions", var_partitions)
 
         # rank_by_abstraction(var_partition, var);
             #  sort the partition such that if block A is strictly more
             #  abstract than block B relative var, then A occurs before B.
-        sorted_partition= sort_partitions_by_abstractness(metta,var_partitions, var)
+        sorted_partition= sort_partitions_by_abstractness(var_partitions, var)
         print("sorted_partition", sorted_partition)
-
+        c = 63
         for j in range(1, len(sorted_partition)):
             i = j - 1
             while i >= 0:
@@ -214,19 +240,20 @@ def eq_prob (metta , partition, pattern):
             # c = len(db)
             if i >= 0:
                 print("the selected",sorted_partition[i])
-                # c = value_count(sorted_partition[i], var, db)
-            # p /= c
+                var = get_variables(sorted_partition[i])
+                
+                print("the selected variables", var)
+                coverted_selected = to_conjunction_with_comma(sorted_partition[i])
+                print("to conjunction",  coverted_selected)
+                result = value_count( coverted_selected,var)
+                print("result is", result)
+                c = result
+            p /= c
+
+    return metta.parse_all(f"{p}")
 
 
         
-
-    
-    # MinerUtils::connected_subpatterns_with_var(partition, var)
-    
-
-
-
-    return  [partition]
 
 
 
@@ -234,8 +261,10 @@ def eq_prob (metta , partition, pattern):
 @register_atoms(pass_metta=True)
 def eq_prob_reg(metta: MeTTa):
 
+
+
     # Define the operation atom with its parameters and function
-    generateVariable = OperationAtom('eq-prob', lambda partition, pattern:  eq_prob(metta,partition, pattern),
+    generateVariable = OperationAtom('eq-prob', lambda partition, pattern:  eq_prob(partition, pattern),
                                    ['Expression', 'Expression','Expression'], unwrap=False)
     return {
         r"eq-prob": generateVariable
