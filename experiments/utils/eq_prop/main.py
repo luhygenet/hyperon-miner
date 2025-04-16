@@ -27,7 +27,6 @@ with open('../data/ugly_man_sodaDrinker.metta') as file:
 
 
 
-
 def parseFromExpresstion(expresion, dimention):
     if dimention == 1:
         return [str(child).replace("#", "") for child in expresion.get_children()]
@@ -183,7 +182,7 @@ def is_blk_more_abstract(l_blk, r_blk, var):
 
     return (l_vars >= r_vars) and (l_concs <= r_concs)
 
-def value_count(pattern,var):
+def value_count(pattern,var,db_size):
     var = f"({' '.join(list(var))})"
     print(f"! (match &self {pattern} ($x))")
     result = metta.run(f"! (collapse (match &self {pattern} {var}))")
@@ -195,17 +194,20 @@ def value_count(pattern,var):
     and len(result) > 0 and isinstance(result[0], list)
     and len(result[0]) > 0 and hasattr(result[0][0], 'get_children')
     and callable(result[0][0].get_children)
-    else 1
+    else db_size
 )
 def to_conjunction_with_comma(patterns):
-    return f"(, {' '.join(patterns)} )" if patterns else '()'
-def eq_prob (partition, pattern):
+    if len(patterns)>1:
+        return f"(, {' '.join(patterns)} )" if patterns else '()'
+    else:
+        return f"{' '.join(patterns)}" if patterns else '()'
+def eq_prob (partition, pattern,db_size):
     # Parse the input string to get the list of elements
     # get the variables from the pattern
     # the count the variables inside partition
     # keep only the variables that are apeared more thatn once
 
-   
+    db_size =  int(f"{db_size}")
     p=1.0
     parssed_pattern = parseFromExpresstion(pattern, 1)
     variables = get_variables(parssed_pattern)
@@ -237,7 +239,7 @@ def eq_prob (partition, pattern):
                     break
                 i -= 1
 
-            # c = len(db)
+            c = db_size
             if i >= 0:
                 print("the selected",sorted_partition[i])
                 var = get_variables(sorted_partition[i])
@@ -245,7 +247,7 @@ def eq_prob (partition, pattern):
                 print("the selected variables", var)
                 coverted_selected = to_conjunction_with_comma(sorted_partition[i])
                 print("to conjunction",  coverted_selected)
-                result = value_count( coverted_selected,var)
+                result = value_count( coverted_selected,var,db_size)
                 print("result is", result)
                 c = result
             p /= c
@@ -264,10 +266,10 @@ def eq_prob_reg(metta: MeTTa):
 
 
     # Define the operation atom with its parameters and function
-    generateVariable = OperationAtom('eq-prob', lambda partition, pattern:  eq_prob(partition, pattern),
-                                   ['Expression', 'Expression','Expression'], unwrap=False)
+    generateVariable = OperationAtom('eq-prob-py', lambda partition, pattern,db_size:  eq_prob(partition, pattern,db_size),
+                                   ['Expression', 'Expression',"Atom",'Expression'], unwrap=False)
     return {
-        r"eq-prob": generateVariable
+        r"eq-prob-py": generateVariable
     }
 
 

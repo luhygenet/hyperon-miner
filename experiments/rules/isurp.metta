@@ -35,7 +35,8 @@
 ;; probability estimate).
 (=(ji-prob-est $partition $pattern $db $db_ratio) (
      let $p (pro-prob-wout-joint $partition $db $db_ratio 1)
-             (let $eq_prob (prob-with-joint $db (db_size $db) (remove-parenthesis $partition) (joint-variables-init $pattern (remove-parenthesis $partition)) 1)  
+            ; (let $eq_prob (prob-with-joint $db (db_size $db) (remove-parenthesis $partition) (joint-variables-init $pattern (remove-parenthesis $partition)) 1)
+             (let $eq_prob (eq-prob-py $partition $pattern (db-size $db))  
              (* $p $eq_prob)))
              )
 

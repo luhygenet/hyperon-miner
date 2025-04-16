@@ -1,10 +1,11 @@
 ! (import! &self eq_prop)
 
 
-!(eq-prob (
-    ((Inheritance $X $y) (Inheritance $x $y ))
+!(eq-prob-py (
+    ((Inheritance $X $y) (Inheritance $x ugly))
     ((Inheritance $x Human))
  ) 
-    ((Inheritance Abeb $x) (Inheritance $z $y ) (Inheritance $x Human))
+    ((Inheritance $x Human) (Inheritance $x ugly) (Inheritance $x $y))
     
+    65
 )
