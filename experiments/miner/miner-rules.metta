@@ -9,45 +9,56 @@
 
 
 
+
  ;; (: surprisingness 
  ;;   (-> (minsup $ptrn)
  ;;          (-> (surpabsent $ptrn)
  ;;                  (surp $ptrn (do-surp $ptrn)))))
 
-
+; ///????
 (: abstract-pattern
   (-> (db-ref $db)
     (-> (uniqueLink $db)
       (-> (Abstract $ptrn)
         (-> (minsup $ptrn)
           (AbstractPattern $ptrn))))))
+; ????
 
 (: specialization
     (-> (AbstractPattern $aptrn) 
-        (-> (specializationOf $aptrn (build-specialization $aptrn $dbspace)))))
+      (-> (db-ref $db)
+        (specializationOf $aptrn (build-specialization $aptrn $db)))))
 
 (: candidatePattern  
-      (-> (specializationOf $aptrn $sptrn)
-                (candidatePattern $sptrn)))
-
-(: supportOf 
       (-> (minsup $ptrn)
+         (candidatePattern $ptrn)))
+
+
+(: hasSupport 
+      (-> (specializationOf $aptrn $sptrn)
             (-> (db-ref $db)
-                  (-> (db-ratio $ratio)
-                        (supportOf $ptrn (do-sup $ptrn $db $ratio))))))
+                (supportOf $sptrn (counter $db $sptrn)))))
 
 
-(: conjunction-expansion
+(: conjunction
       (-> (candidatePattern $ptrn1)
             (-> (candidatePattern $ptrn2)
                (-> (ms-threshold $ms)
-                        (supportOf (do-conjunct) (count ))))))
+                  (-> (db-ref $db)
+                        (conjunction (expand_conjunction $ptrn1 $ptrn2 $db $ms 2 False)))))))
+
+(: remove-conjuncts-with-redundant-clause
+      (-> (conjunction $ptrn1 $ptrn2)
+            (remove_conjuncts_with_redundant_clauses $ptrn1 $ptrn2)))
+
 
 
 ;; iSurprisingness rule
 (: surprisingness 
       (-> (minsup $ptrn)
             (surp $ptrn (do-surp $ptrn))))
+
+
 
 
 
