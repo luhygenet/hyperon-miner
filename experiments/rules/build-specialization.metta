@@ -71,8 +71,8 @@
                     ( ($subx $suby) (match $dbspace ($link $x1 $y1) ($x1 $y1)))            ; getting the substitution /valuation of the pattern
                     ($shabx (abstract-recursive $subx))                                    ;handle depth in the x node
                     ($shaby (abstract-recursive $suby))                                    ; handle depth in the y node
-                    ($spec1 (replace (SpecializationOf ($link $shabx $y1) ($link $x $y)))) ;build the specialization and change the variables to indexs 
-                    ($spec2 (replace (SpecializationOf ($link $x1 $shaby) ($link $x $y)))) ;build the specialization and change the variables to indexs
+                    ($spec1 (replace ($link $shabx $y1))) ;build the specialization and change the variables to indexs 
+                    ($spec2 (replace ($link $x1 $shaby))) ;build the specialization and change the variables to indexs
                      ; ($spec3 (replace (SpecializationOf ($link $shabx $shaby) ($link $x $y)))) ;optional
                 )
             (
