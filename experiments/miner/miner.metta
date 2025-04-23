@@ -21,7 +21,7 @@
 
 ;; Initializers
 ;;initialize the necessary input parameters in the KB,
-(= (init-miner $db $kb $ms $surp $db-ratio)
+(= (init-miner-old $db $kb $ms $surp $db-ratio)
     (         let* (  
                  (() (add-atom $kb (: msT (ms-threshold $ms))))
                  (() (add-atom $kb (: dbref (db-ref $db))))
@@ -29,6 +29,15 @@
                  (() (add-atom $kb (surp-mod $surp)))
                  (() (add-atom $kb (db-ratio $db-ratio)))
                  (() (add-reduct $kb (db-size (db_size $db))))
+                 (() (add-atom &self (kb-ref $kb)))
+                 (() (add-atom $kb (db-ref $db)))
+                ;; (() (add-reduct $kb (minsup-rule)))
+                ;; (() (add-reduct $kb (surp-rule)))
+                )()))
+(= (init-miner $db $kb $ms)
+    (         let* (  
+                 (() (add-atom $kb (: msT (ms-threshold $ms))))
+                 (() (add-atom $kb (: dbref (db-ref $db))))
                  (() (add-atom &self (kb-ref $kb)))
                  (() (add-atom $kb (db-ref $db)))
                 ;; (() (add-reduct $kb (minsup-rule)))
@@ -67,6 +76,7 @@
                                (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result))         
 )))
 
+; !(fcc &kb (: dbref (db-ref $db)))
 
 
 (=(call-this) (
