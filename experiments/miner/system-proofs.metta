@@ -7,25 +7,27 @@
     (if (and (and (is-number $X) (is-number $Y)) (< $X $Y))
           (: CPU (⍃ $X $Y))
              (empty)))
+(= (fcc $kb $_ (: minsupport (⍃ $X $Y))) 
+    (if (and (and (is-number $X) (is-number $Y)) (< $X $Y))
+          (: CPU (⍃ $X $Y))
+             (empty)))
 
-(= (syn $kb $_ (: $prf (uniqueLink $db))) 
-    (let $uniquelink (unique (match $db ($link $x $y) $link)) 
+(= (fcc $kb $_ (: CPUUnique (uniqueLink $db))) 
+    (let* (
+        ($uniquelink (collapse (unique (match $db ($link $x $y) $link)) ) )
+        ($sup (superpose $uniquelink))
+        )
     (if (== (size-atom $uniquelink) 0)
           (empty)
-             (: CPUUnique (Abstract ($uniquelink $x $y)))
-             ))
-    )
+        ;   (superpose(
+        ;     (add-reduct $kb (: CPUUnique (Abstract ($sup $x $y))))
+        ;      (: CPUUnique (Abstract ($sup $x $y)))
+        ;   ))
+             (: CPUUnique (Abstract ($sup $x $y)))
+        )    
+    ))
 
- (let* (
-        ($conjuncts (get-conjuncts $conjunction))
-        ($unique_conjuncts (unique-atom $conjuncts))
-        )
-    (if (== (size-atom $conjuncts) (size-atom $unique_conjuncts))
-        $conjunction
-        ; (remove_conjuncts_with (unique $conjunction))
-        ()
-    )
-    )
+
 ;; System proof for Surpabsent
 ;; check if surprisingness value already calculated 
 ;; if count > 0 then no proof for the absent of the surprisingness value 
