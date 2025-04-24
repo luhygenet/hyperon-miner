@@ -36,7 +36,7 @@
 ;; Tests ;;
 ;;;;;;;;;;;
 
-;!(total_counts  (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
+!(total_counts  (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
 
 ;!(n_conjuncts_new (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
 ;!(sup-num (get-space) (Inheritance Abe $y) )
@@ -52,7 +52,7 @@
 
 ;!(add-pattern ((Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
 
-!(isurp-old (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) False)
+;!(isurp-old (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) False)
 
 ;!(generet-partition-without-pattern (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
 
