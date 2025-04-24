@@ -7,23 +7,35 @@
     (if (and (and (is-number $X) (is-number $Y)) (< $X $Y))
           (: CPU (⍃ $X $Y))
              (empty)))
-(= (fcc $kb $_ (: minsupport (⍃ $X $Y))) 
+
+             
+
+
+(= (bcc $kb $_ (: $prf (⍃ $X $Y))) 
     (if (and (and (is-number $X) (is-number $Y)) (< $X $Y))
           (: CPU (⍃ $X $Y))
              (empty)))
 
-(= (fcc $kb $_ (: CPUUnique (uniqueLink $db))) 
+
+(= (bcc $kb $_ (: $prf (supportOf $ptrn $cnt))) 
+    (let* (
+            ;($link (match $kb (unqLink $sup) $sup))
+           ; ($num (sup-num $kb $ptrn))
+            (println! $num))
+          (: CPUSUP (supportOf $ptrn 2))))
+
+
+
+
+(= (bc $kb $_ (: $prf (uniqueLink $db $pattern))) 
     (let* (
         ($uniquelink (collapse (unique (match $db ($link $x $y) $link)) ) )
         ($sup (superpose $uniquelink))
+        (add-atom $kb (unqLink $sup))
         )
     (if (== (size-atom $uniquelink) 0)
           (empty)
-        ;   (superpose(
-        ;     (add-reduct $kb (: CPUUnique (Abstract ($sup $x $y))))
-        ;      (: CPUUnique (Abstract ($sup $x $y)))
-        ;   ))
-             (: CPUUnique (Abstract ($sup $x $y)))
+             (: CPUUnique (uniqueLink $db ($sup $x $y)))
         )    
     ))
 

@@ -1,5 +1,5 @@
 !(register-module! ../../experiments)
-!(register-module! ../../../../chaining)
+!(register-module! ../../../chaining)
 
 !(import! &self experiments:miner:miner)
 !(import! &self experiments:miner:miner-utils)
@@ -27,7 +27,9 @@
 ; ! (import! &self experiments:utils:emp-tv-bs)
 ; ! (import! &self experiments:utils:bs-utils)
 ; ! (import! &self experiments:utils:util-jsd)
-! (import! &dbspace experiments:data:ugly_man_sodaDrinker)
+;! (import! &dbspace experiments:data:ugly_man_sodaDrinker)
+! (import! &dbspace experiments:data:small-ugly)
+
 
 
 ;; config kb : load the chainer , rules , system-proofs ....
@@ -69,10 +71,14 @@
         (() (add-atom $kb (: candidateP  (candidatePattern (Inheritance $y sodaDrinker) ))))
         ) ()
 ))
+
+
 ;; define parameters 
 (=(min-sup) 2)
 (=(surp-mode ) isurp-old) 
 (=(db-ratio) 0.5)
+!(add-atom &kb (: msT (ms-threshold 2)))
+!(add-atom &kb (: SUP (supportOf $ptrn 5)))
 
 !(init-miner &db &kb (min-sup))
 !(candidate &kb)
@@ -82,10 +88,10 @@
 
 ;; test the cog-miner
 ; ! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
-; !(fcc &kb (S (S (S Z))) (: dbref (db-ref &db)))
+ !(fcc &kb (fromNumber 4) (: dbref (db-ref &db)))
 ; !(fcc &kb (fromNumber 13) (: AbstractPattern (AbstractPattern (Inheritance $x $y))))
 ; !(expand_conjunction (Inheritance $x human) (Inheritance $y sodaDrinker) &db 2 2 False)
-!(fcc &kb (fromNumber 6) (: candidateP (candidatePattern (Inheritance $x human))))
+;!(fcc &kb (fromNumber 6) (: candidateP (candidatePattern (Inheritance $x human))))
 ; !(fcc &kb (fromNumber 2) (: msT (ms-threshold $ms)))
 
 

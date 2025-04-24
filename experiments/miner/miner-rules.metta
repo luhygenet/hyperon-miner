@@ -5,7 +5,7 @@
     (-> (supportOf $ptrn $cnt)
           (-> (ms-threshold $ms)
                  (-> (⍃ $ms $cnt)
-                     (minsup $ptrn)))))
+                       (minsup $ptrn)))))
 
 
 
@@ -16,13 +16,22 @@
  ;;                  (surp $ptrn (do-surp $ptrn)))))
 
 ; ///????
-(: abstract-pattern
-  (-> (db-ref $db)
-    (-> (uniqueLink $db)
-      (-> (Abstract $ptrn)
-        (-> (minsup $ptrn)
-          (AbstractPattern $ptrn))))))
+;(: abstract-pattern
+;  (-> (db-ref $db)
+;    (-> (uniqueLink $db $ptrn)
+ ;     (-> (Abstract $ptrn)
+  ;      (-> (minsup $ptrn)
+  ;        (AbstractPattern $ptrn))))))
 ; ????
+
+(: abstract
+   (-> (db-ref $db)
+     (-> (uniqueLink $db $ptrn)
+            (Abstract $ptrn))))
+
+(: abstract-pattern (-> (Abstract $ptrn)  
+                          (-> (minsup $ptrn)
+                                 (AbstractPattern $ptrn $cnt))))
 
 (: specialization
     (-> (AbstractPattern $aptrn) 
