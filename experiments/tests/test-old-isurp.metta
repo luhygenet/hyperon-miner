@@ -1,5 +1,6 @@
 ! (register-module! ../../../hyperon-miner/experiments)
 ! (import! &self experiments:utils:common-utils)
+! (import! &self experiments:utils:binomialMetta)
 ! (import! &self experiments:utils:beta-dist)
 ! (import! &self experiments:utils:constants)
 ! (import! &self experiments:utils:TruthValue)
@@ -20,4 +21,8 @@
 ;; Tests ;;
 ;;;;;;;;;;;
 ;; Test old normalized I-Surprisingess for the ugly male soda drinker
-!(isurp-old (,(Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) &db  )
+!(isurp-old (,(Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) &db  True)
+!(isurp-old (,(Inheritance $x man) (Inheritance $x ugly)) &db  True)
+
+
+

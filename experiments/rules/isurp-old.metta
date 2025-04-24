@@ -24,7 +24,11 @@
 
 ;;Calculates the total possible counts for a pattern based on database size 
 ;;and the number of conjunctive clauses in the pattern.
-(=(total_counts $pattern $db) (pow (db_size $db) (n_conjuncts_new $pattern)))
+;(=(total_counts $pattern $db) (pow (db_size $db) (n_conjuncts_new $pattern)))
+
+;; total counts with binomial coefficient
+(=(total_counts $pattern $db) (cal_binomial (db_size $db) (n_conjuncts_new $pattern)))
+
 
 ;; Computes the product of a list of numbers recursively
 (=(accumulator-x $num_list) (accumulator-x $num_list 1))
@@ -62,6 +66,7 @@
 
 ;; Function calculating the probability of a pattern
 (=(prob $pattern $db) (// (sup-num $db $pattern) (total_counts $pattern $db)))
+
 
 
 ;;Converts a list of blocks into a conjunctive pattern
@@ -117,7 +122,8 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
          (($emin $emax) (min-max (iprob (generet-partition-without-pattern $pattern) $db)))
           ($dst (dst_from_interval $emin $emax $pattern_prob))
     ) 
-         (min ((if $normalize (// $dst $pattern_prob) $dst) 1.0))
+        ; (min ((if $normalize (// $dst $pattern_prob) $dst) 1.0))
+        ($pattern_prob ($emin $emax) $dst (// $dst $pattern_prob))
           
 ) )
 

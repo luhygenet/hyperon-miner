@@ -117,3 +117,7 @@ ugly_man_pattern (LambdaLink
     ) ; [fcf0a6b2cedd2ac8][1]
   ) ; [d37451a9f223477a][1]
 )
+
+
+
+(,(Inheritance $x man) (Inheritance $x ugly))
