@@ -266,10 +266,10 @@ def eq_prob_reg(metta: MeTTa):
 
 
     # Define the operation atom with its parameters and function
-    generateVariable = OperationAtom('eq-prob-py', lambda partition, pattern,db_size:  eq_prob(partition, pattern,db_size),
+    generateVariable = OperationAtom('eq-prob-func', lambda partition, pattern, db_size:  eq_prob(partition, pattern,db_size),
                                    ['Expression', 'Expression',"Atom",'Expression'], unwrap=False)
     return {
-        r"eq-prob-py": generateVariable
+        r"eq-prob-func": generateVariable
     }
 
 

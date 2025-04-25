@@ -7,6 +7,7 @@
 ! (import! &self experiments:rules:emp-prob)
 ! (import! &self experiments:rules:emp-tv)
 ! (import! &self experiments:rules:est-tv)
+; ! (import! &self experiments:utils:eq_prob)
 ! (import! &self experiments:rules:isurp)
 ! (import! &self experiments:utils:beta-dist)
 ! (import! &self experiments:utils:bs-utils)
@@ -17,7 +18,7 @@
 ! (import! &self experiments:utils:surp-utils)
 ! (import! &self experiments:utils:TruthValue)
 ! (import! &self experiments:utils:miner-utils)
-! (import! &self experiments:utils:eq_prop)
+! (import! &self experiments:utils:eq_prob_adaptor)
 
 
 
@@ -49,10 +50,10 @@
 
 ; !(do-ji-prob ((((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x sodaDrinker))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly)))) (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) &Kb 0.5)
 
-; !(ji-prob-est (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker))  &kb 0.5)
+!(ji-prob-est (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker))  &kb 0.5)
 ; !(pro-prob-wout-joint (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) &kb 0.5 1)
 ; !(prob-with-joint &kb (db_size &kb) (remove-parenthesis (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))) (joint-variables-init  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) (remove-parenthesis (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))))) 1)
-!(let $database_size (db_size &kb) (eq-prob-py (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) $database_size))
+; !(let $database_size (db_size &kb) (eq-prob-func (((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x $y))) (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) $database_size))
 ; !(remove-parenthesis (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))))
 ; !(joint-variables-init  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) (remove-parenthesis (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))))
 ; !(get-unique-vars  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) )
@@ -72,3 +73,6 @@
 ; ((((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x sodaDrinker))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))))
 ; ((((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))))
 ; ((((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))))
+
+
+
