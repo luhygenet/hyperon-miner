@@ -293,6 +293,12 @@
     )
 )
 
+(= (sup-num-special $db $pattern)
+    (let $sup (tuple-count (collapse (match $db $x (let $pattern $x $pattern)) )) 
+        $sup
+    )
+)
+
  ;Check if expression is truth value or not
 (: cog-tv? (-> Atom Boolean))
 (= (cog-tv? $EXP)
