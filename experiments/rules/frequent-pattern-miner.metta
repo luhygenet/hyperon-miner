@@ -89,5 +89,5 @@
 ;  ! (match &aptrnspace (AbstractPattern $pattern) $pattern)
 
 
-! (frequency-pattern-miner &kb &dbspace &specspace &cndpspace &aptrnspace &conjspace 5 1)
+! (frequency-pattern-miner &kb &dbspace &specspace &cndpspace &aptrnspace &conjspace 5 0)
 ! (match &kb $pattern $pattern)

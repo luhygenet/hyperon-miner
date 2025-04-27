@@ -15,7 +15,7 @@
 
 ;; Lookahead
 (: lookahead (-> Number))
-(= (lookahead) 1.0)
+(= (lookahead) 1.0) 
 
 
 ;; Maximum supported count (till +inf is supported, possibly).

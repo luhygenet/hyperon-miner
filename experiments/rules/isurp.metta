@@ -13,7 +13,7 @@
 
 ;; Calculate the empirical probability of pattern, using
 ;; boostrapping if necessary
-(=(emp_prob_pbs_mem $subpattern $db  $db_ratio) )
+(=(emp_prob_pbs_mem $subpattern $db  $db_ratio) 0.4)
 
 
 ;; ==============================================================
@@ -245,6 +245,8 @@
              ($maxprb (max ($emp $emax))))
                (min ((if $normalize (// $dst $maxprb) $dst) 1.0))
 ))
+
+
 
 
 

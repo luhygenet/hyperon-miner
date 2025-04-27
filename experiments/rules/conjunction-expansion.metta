@@ -48,6 +48,7 @@
      ; )
      ; )
 )
+
 (= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
 
 (= (get_variables_for_tree $pattern)
@@ -283,9 +284,7 @@
 )
 
 
-(= (get-conjuncts $cnj) (
-  unify (, $ncnj $ptrn) $cnj (let $result (get-conjuncts $ncnj) (cons-atom $ptrn $result) ) ($cnj)
-))
+
 
 
 (= (remove_conjuncts_with_redundant_clauses $conjunction) 

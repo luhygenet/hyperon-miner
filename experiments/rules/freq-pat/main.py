@@ -161,7 +161,7 @@ def sort_conjunction(metta: MeTTa, conjunction):
     nested_str = str(conjunction)
     atoms = re.findall(r'\([^()]+\)', nested_str)  # Match only atomic elements
     sorted_elements =  sorted(atoms)
-    flattend_str = f"({" ".join(sorted_elements)})"
+    flattend_str = f"({' '.join(sorted_elements)})"
     return [metta.parse_single(flattend_str)]
 
 

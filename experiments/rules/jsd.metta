@@ -1,5 +1,5 @@
-! (register-module! ../../experiments)
-! (import! &self experiments:utils:util-jsd)
+;! (register-module! ../../experiments)
+;! (import! &self experiments:utils:util-jsd)
 
 
 (= (do-jsd $emp $est)
@@ -43,7 +43,7 @@
 
 
  ;  ;; Test 
-!(do-jsd (STV 0.5 1) (STV 0.65 1))
+;!(do-jsd (STV 0.5 1) (STV 0.65 1))
 ; !(cog-set-tv (emp-eval (Parent abel henok)) (STV 15 10))
 ; !(cog-set-tv (est-eval (Parent abel henok)) (STV 25 12))
 

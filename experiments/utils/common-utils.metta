@@ -2,6 +2,26 @@
 ;; Common Utils ;;
 ;;;;;;;;;;;;;;;;;;
 
+
+;;;;;;;;;; functions related to Conjunction ;;;;;;;;;;;;
+
+;; Extracts conjuncts from a conjunctive expression,
+(= (get-conjuncts $cnj) (
+  unify (, $ncnj $ptrn) $cnj (let $result (get-conjuncts $ncnj) (cons-atom $ptrn $result) ) ($cnj)
+))
+
+;; Flattens a conjunctive expression by extracting its conjuncts using `get-conjuncts`,
+;; reversing the list to maintain order, and reassembling the conjuncts into a single expression.
+(= (flatten $cnj) (
+  let $flatten  (reverse-list (get-conjuncts $cnj))   (cons-atom , $flatten)
+))
+
+
+;;Converts a list of blocks into a conjunctive pattern
+(=(conjunct-pattern $blks $db) (
+let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
+))
+
 (= (pow-py $base $power) (pow-math $base $power)) 
 
 
@@ -262,7 +282,7 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
  ;; Count the number of instances of a given pattern
-(: counter (-> hyperon::space::DynSpace Atom Number))
+;;(: counter (-> hyperon::space::DynSpace Atom Number))
 (= (counter $db $ptrn)
     (let $result (collapse (match $db $ptrn $ptrn))
          (tuple-count $result)
@@ -594,8 +614,9 @@
 )
 
 ;;;;;;;;;;; converters ;;;;;;;;; 
+;;;;;;;;;;; converters ;;;;;;;;; 
 ;; Converts a list to a tuple
-(= (list_to_tuple ()) ())
+(= (list_to_tuple Nil) ())
 (= (list_to_tuple (Cons $head $tail)) (
   let $temp (list_to_tuple $tail) (cons-atom $head $temp)
 ))
@@ -603,7 +624,9 @@
 ;; Converts a tuple back to a list
 (=(tuple_to_list ()) Nil)
 (=(tuple_to_list $list)( 
-  let ($head $tail) (decons-atom $list) (Cons $head (tuple_to_list $tail))
+  let ($head $tail) (decons-atom $list) (
+    if (== $head ,) (tuple_to_list $tail)
+    (Cons $head (tuple_to_list $tail)))
 ))
 
 

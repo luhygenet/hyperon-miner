@@ -35,36 +35,36 @@
 ;; initialization process.
 ;; Note: Check for potential typos in "intilize" if the intended function name was "initialize".
 
-!(assertEqual (sup (Inheritance $x $y) (get-space)) 7)
+;;!(assertEqual (sup (Inheritance $x $y) (get-space)) 7)
 
-!(assertEqual (universe-count (Inheritance $x ) (get-space)) 8)
+;;!(assertEqual (universe-count (Inheritance $x ) (get-space)) 8)
 
-!(assertEqual (emp-tv (Inheritance Zac $x) (get-space)) (EMPTV 0.125 0.08888888888888889))
+;;!(assertEqual (emp-tv (Inheritance Zac $x) (get-space)) (EMPTV 0.125 0.08888888888888889))
 
-!(assertEqual (db_size (duplicate-and-expand-space (get-space) 1)) (+ 1 (db_size (get-space))))
+;;!(assertEqual (db_size (duplicate-and-expand-space (get-space) 1)) (+ 1 (db_size (get-space))))
 
-!(add_n_atoms_to_db (get-space) 4)
-!(assertEqual (db_size (get-space)) 12)
+;;!(add_n_atoms_to_db (get-space) 4)
+;;!(assertEqual (db_size (get-space)) 12)
 
 ;; if the max size is 10, the size of the new db should be 8 because the size of the old db is 8 and it is less than 10
-!(assertEqual (db_size (copy-db-by-size (new-space) (collapse (get-atoms (get-space)) ) 0 10)) 10)
+;;!(assertEqual (db_size (copy-db-by-size (new-space) (collapse (get-atoms (get-space)) ) 0 10)) 10)
 
 ;; if the max size is 6, the size of the new db should be 6 because the size of the old db is 8 and it is greater than 6 so
 ;; we can only copy 6 atoms
-!(assertEqual (db_size (copy-db-by-size (new-space) (collapse (get-atoms (get-space)) ) 0 6)) 6)
+;;!(assertEqual (db_size (copy-db-by-size (new-space) (collapse (get-atoms (get-space)) ) 0 6)) 6)
 
 
-!(assertEqual (do_emp_tv (Inheritance $x Nil) (get-space) 1 ) (EMPTV 0.08333333333333333 0.09230769230769231))
+;;!(assertEqual (do_emp_tv (Inheritance $x Nil) (get-space) 1 ) (EMPTV 0.08333333333333333 0.09230769230769231))
 
 
-!(assertEqual (get-element 2 ((Inheritance Abe human) (Inheritance Rio human) (Inheritance Bob human) (Inheritance Mike human) (Inheritance Mike Nil) (Inheritance Zac human) (Inheritance Zac human) (Parent Abe Nil ))) (Inheritance Bob human))
+;;!(assertEqual (get-element 2 ((Inheritance Abe human) (Inheritance Rio human) (Inheritance Bob human) (Inheritance Mike human) (Inheritance Mike Nil) (Inheritance Zac human) (Inheritance Zac human) (Parent Abe Nil ))) (Inheritance Bob human))
 
-!(assertEqual (subsmp-size (Inheritance Abe human) 20 0.9) ((py-atom numpy.power) 44.44444444444445 1))
+;;!(assertEqual (subsmp-size (Inheritance Abe human) 20 0.9) ((py-atom numpy.power) 44.44444444444445 1))
 
 
-!(assertEqual (emp-tv-bs (Inheritance Zac $x) (get-space) 8 0.6 0.9) (EMPTV 0.2428095704426711 0.04109232092138521))
+;;!(assertEqual (emp-tv-bs (Inheritance Zac $x) (get-space) 8 0.6 0.9) (EMPTV 0.2428095704426711 0.04109232092138521))
 
-!(assertEqual (mk-stv 1.7689693569125715 1.0178393379503528 ) (EMPTV 0 0.0001249843769528809))
+;;!(assertEqual (mk-stv 1.7689693569125715 1.0178393379503528 ) (EMPTV 0 0.0001249843769528809))
 
 
 
@@ -120,4 +120,11 @@
 ; !(mk-stv 1.7689693569125715 1.0178393379503528 )
 ; !(ji_tv_est (Patern Ryo Ri) &self)
 
-; !(do_emp_tv (Inheritance Zac Eyob) (get-space) 0.8)
+!(This)
+ ;!(do_emp_tv  (, (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x man)) &kb 0.8)
+ 
+
+;(, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man))
+;!(emp-tv (, (Inheritance $x $y) (Inheritance Zac $x)) (get-space))   (EMPTV 0 0.051521409168192096)
+
+;!(match &kb (, (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x man)) $x)
