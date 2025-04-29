@@ -184,8 +184,10 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 
 (=(min $list) (find_min $list (car-atom $list)))
 
+;; returns the components of the cnj , if head is not " , " then treats the pattern 
+;; as single pattern ($link $x $y)
 (=(get-cnj-clouses $pattern) (
-  let ($head $tail) (decons-atom $pattern)  (if (== $head ,) $tail ())
+  let ($head $tail) (decons-atom $pattern)  (if (== $head ,) $tail $pattern)
 ))
 
 

@@ -36,12 +36,14 @@
 
 ;!(emp-prob-pbs (, (Inheritance $x $z) (Inheritance $x human)) (get-space) 0.5)
 
-; !(emp-prob-pbs (Inheritance $x human) (get-space) 0.9 0.5)
+ !(emp-prob-pbs (Inheritance $x human) (get-space) 0.9 0.5)
+ ;!(subsample-py (get-space) (new-space) 4)
+; !(sup-num (get-space) (Inheritance $x human) )
 
  ;!(emp-prob-pbs (Inheritance $x human) (get-space) 3)
 
 ;  !(emp-prob-pbs (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb 0.5 0.2)
- !(ji_prob_est_interval (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb  0.2)
+; !(ji_prob_est_interval (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb  0.2)
 ; !(emp_prob_bs (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb 5 5)
 
 ; !(subsmp-size (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) 64 0.5)
