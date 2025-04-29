@@ -84,7 +84,6 @@
 ;   - $db: The database in which the pattern is evaluated.
 ; Returns:
 ;   - The probability value as a ratio of the pattern's support to its total possible count.
-;(=(prob $pattern $db) (// (sup-num $db $pattern) (total_counts $pattern $db)))
 (=(prob $pattern $db) (// (ptrn-support  $pattern $db) (total_counts $pattern $db)))
 
 
@@ -141,7 +140,7 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 
 
 
-!(isurp-old (,(Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) &db  True)
+;!(isurp-old (,(Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) &db  True)
 ;!(isurp-old (,(Inheritance $x woman) (Inheritance $x ugly)) &db  False)
 
 
