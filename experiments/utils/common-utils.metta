@@ -39,24 +39,41 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ))
 
 
-(= (get-variables $pattern)
+; Function: get-variables
+; Description: Recursively extracts all variables from a given conjunct pattern.
+;  - If the pattern is empty, it returns the accumulated variables ($acc).
+;  - For each element in the pattern:
+;    1. If the element is an Expression, it recursively extracts variables from it.
+;   2. If the element is a Variable and not already in the accumulator ($acc), it adds it.
+;    3. Otherwise, it skips the element.
+; The function ensures no duplicate variables are added to the result.
+
+;The overloaded version of the function serves as a way to call the function with only the conjunct without an 
+;initial accumulator
+
+
+(=(checkInter $x $acc) ((intersection-atom ($x) $acc)))
+
+
+(= (get-variables $pattern $acc)
     (if (== $pattern ())
-        ()
+        $acc 
         (let* (
-                ($head (car-atom $pattern))
-                ($tail (cdr-atom $pattern)))
+                ($head (car-atom $pattern)) 
+                ($tail (cdr-atom $pattern))) 
 
             (if (== (get-metatype $head) Expression)
-                (concatTuple (get-variables $head)
-                    (get-variables $tail))
-                (if (== (get-metatype $head) Variable)
-                    (concatTuple
-                        ($head)
-                        (get-variables $tail))
+                (get-variables $tail
+                    (get-variables $head $acc)) 
+                (if (and (== (get-metatype $head) Variable)
+                         (== (checkInter $head $acc) (()))) 
+                    (get-variables $tail
+                        (cons-atom $head $acc)) 
+                    (get-variables $tail $acc)))))) 
 
-                    (get-variables $tail))))
-    )
-)
+
+(= (get-variables $pattern) (get-variables $pattern ()))
+
 
 
 (=(is-symbol $var) 
