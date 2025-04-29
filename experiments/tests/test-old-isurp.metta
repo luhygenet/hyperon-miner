@@ -1,5 +1,6 @@
 ! (register-module! ../../../hyperon-miner/experiments)
 ! (import! &self experiments:utils:common-utils)
+! (import! &self experiments:utils:binomialMetta)
 ! (import! &self experiments:utils:beta-dist)
 ! (import! &self experiments:utils:constants)
 ! (import! &self experiments:utils:TruthValue)
@@ -8,68 +9,49 @@
 ! (import! &self experiments:utils:gen_partition)
 ! (import! &self experiments:rules:est-tv)
 ! (import! &self experiments:rules:isurp-old)
+! (import! &db experiments:data:ugly_man_sodaDrinker)
 
 
 
 
-! (bind! square (py-atom numpy.square (-> Number Number)))
-
-
-
-
-! (add-reduct &self (= (get-space) (new-space)))
-! (add-atom (get-space) (Inheritance Abe human))
-! (add-atom (get-space) (Inheritance Abe human))
-! (add-atom (get-space) (Inheritance Abe human))
-
-! (add-atom (get-space) (Inheritance Rio human))
-! (add-atom (get-space) (Inheritance Bob human))
-! (add-atom (get-space) (Inheritance Mike human))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Parent Abe Nil ))
-! (add-atom (get-space)  (Inheritance Bob (And human (Or zac))) ) 
 
 
 
 ;;;;;;;;;;;
 ;; Tests ;;
 ;;;;;;;;;;;
+;; Test old normalized I-Surprisingess for the ugly male soda drinker
+;!(isurp-old (,(Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) &db  True)
+;!(isurp-old (,(Inheritance $x man) (Inheritance $x ugly)) &db  True)
 
-;!(total_counts  (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
 
-;!(n_conjuncts_new (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
-;!(sup-num (get-space) (Inheritance Abe $y) )
+;; test component frequecy product
+;!(get-cnj-clouses (Inheritance $x man) )
 
-;!(prob (Inheritance Abe $y) (get-space))
-;!(ptrn-support  (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y) (Human Abe Kebe)) (get-space))
+;!(ptrn-support (, (Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) &db)
+;!(ptrn-support (Inheritance $x man) &db)
+;!(prob (, (Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) &db)
+;!(iprob (generet-partition-without-pattern (, (Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly))) &db)
 
-;!(prob  (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
+;!(generet-partition-without-pattern (, (Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)))
+[(
+    (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) 
+(((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) 
+(((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly)))
+ (((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x sodaDrinker))))]
 
-;!(sup-num  (get-space) (Inheritance Zac $y))
+ !(iprob (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) &db)
 
-;!(accumulator-x (1 2 3 4))
+ (let $res (collapse (blk-prob 
+ (superpose (((Inheritance $x man) (Inheritance $x sodaDrinker)) 
+ ((Inheritance $x ugly)))) &db))(foldl-atom $res 1 $a $b (* $a $b)))
 
-;!(add-pattern ((Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
+ ;!(prob (, (Inheritance $x man) (Inheritance $x sodaDrinker)) &db)
+ ;!(remove-parenthesis (superpose (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) ))
 
-!(isurp-old (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) False)
+ ;!(ptrn-support (Inheritance $x ugly) &db)
 
-;!(generet-partition-without-pattern (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
+;!(get-cnj-clouses (, (Inheritance $x ugly))) 
 
-;!(p-blk-prob (((Inheritance $x $y)) ((Inheritance Abe $y) (Inheritance Zac $y))) (get-space))
-
-;!(prob (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space))
-
-;!(prob (Inheritance $x $y) (get-space))
-
-;!(iprob (generet-partition-without-pattern (, (Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y))) (get-space))
-;(sup-num (get) $pattern)
-;!(// 54 100 )
-
-;!(min-max (0.007872867764980317 0.007872867764980316 0.006998104679982505 0.006998104679982504))
-
-[
- ((((Inheritance $x $y)) ((Inheritance Abe $y) (Inheritance Zac $y)))
- (((Inheritance $x $y)) ((Inheritance Abe $y)) ((Inheritance Zac $y)))
-  (((Inheritance $x $y) (Inheritance Zac $y)) ((Inheritance Abe $y))) 
-  (((Inheritance $x $y) (Inheritance Abe $y)) ((Inheritance Zac $y))))]
+ (* (sup-num ModuleSpace(GroundingSpace-top:experiments:data:ugly_man_sodaDrinker) get-cnj-clouses) 
+ (* (sup-num ModuleSpace(GroundingSpace-top:experiments:data:ugly_man_sodaDrinker) (Inheritance $x ugly)) 1))

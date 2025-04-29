@@ -36,29 +36,41 @@
 ;
 
 
+;!(emp-prob-pbs (, (Inheritance $x $z) (Inheritance $x human)) (get-space) 0.5)
 
+ !(emp-prob-pbs (Inheritance $x human) (get-space) 0.9 0.5)
+ ;!(subsample-py (get-space) (new-space) 4)
+; !(sup-num (get-space) (Inheritance $x human) )
 
+ ;!(emp-prob-pbs (Inheritance $x human) (get-space) 3)
 
-!(assertEqual (n_conjuncts (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) )) 3)
+;  !(emp-prob-pbs (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb 0.5 0.2)
+; !(ji_prob_est_interval (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb  0.2)
+; !(emp_prob_bs (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb 5 5)
 
-!(assertEqual (subsmp-size (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) 64 0.5) 149.7097081964987)
+; !(subsmp-size (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) 64 0.5)
 
+; !(do-ji-prob ((((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x sodaDrinker))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly)))) (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) &Kb 0.5)
 
-!(assertEqual (pro-prob-wout-joint (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) &kb 0.5 1)0.09135566413047788)
+; !(ji-prob-est (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker))  &kb 0.5)
+; !(pro-prob-wout-joint (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) &kb 0.5 1)
+; !(prob-with-joint &kb (db_size &kb) (remove-parenthesis (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))) (joint-variables-init  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) (remove-parenthesis (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))))) 1)
+; !(remove-parenthesis (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))))
+; !(joint-variables-init  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) (remove-parenthesis (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))))
+; !(get-unique-vars  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) )
+; !(get-variables (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) )
+; !(concatTuple (A B) (C D))
 
+'(
+(((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) 
+(((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x sodaDrinker))) 
+(((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) 
+(((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly)))
 
+)
+'
 
-!(assertEqual (eq-prob-py (((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x $y))) (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) 61) 0.01639344262295082)
-
-
-!(assertEqual (remove-parenthesis (((Inheritance $x man)))) (Inheritance $x man))
-
-
-!(assertEqual (get-unique-vars  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker))) ($x))
-
-
-!(assertEqual (joint-variables-init  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker)) (remove-parenthesis (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))))) ($x))
-
-
-
-!(assertEqual (ji-prob-est (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker))  &kb 0.5) 0.009135566413047788)
+((((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x sodaDrinker))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))))
+((((Inheritance $x man) (Inheritance $x ugly)) ((Inheritance $x sodaDrinker))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))))
+((((Inheritance $x man)) ((Inheritance $x sodaDrinker)) ((Inheritance $x ugly))) (((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))))
+((((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))))

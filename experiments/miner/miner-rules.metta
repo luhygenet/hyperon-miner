@@ -15,10 +15,41 @@
  ;;                  (surp $ptrn (do-surp $ptrn)))))
 
 
-;; iSurprisingness rule
-    (: surprisingness 
+
+
+(: abstract-pattern
+  (-> (db-ref $db)
+    (-> (uniqueLink $db)
+      (-> (Abstract $ptrn)
+        (-> (minsup $ptrn)
+          (AbstractPattern $ptrn))))))
+
+(: specialization
+    (-> (AbstractPattern $aptrn) 
+        (-> (specializationOf $aptrn (build-specialization $aptrn $dbspace)))))
+
+(: candidatePattern  
+      (-> (specializationOf $aptrn $sptrn)
+                (candidatePattern $sptrn)))
+
+(: supportOf 
       (-> (minsup $ptrn)
-                     (surp $ptrn (do-surp $ptrn))))
+            (-> (db-ref $db)
+                  (-> (db-ratio $ratio)
+                        (supportOf $ptrn (do-sup $ptrn $db $ratio))))))
+
+
+(: conjunction-expansion
+      (-> (candidatePattern $ptrn1)
+            (-> (candidatePattern $ptrn2)
+               (-> (ms-threshold $ms)
+                        (supportOf (do-conjunct) (count ))))))
+
+
+;; iSurprisingness rule
+(: surprisingness 
+      (-> (minsup $ptrn)
+            (surp $ptrn (do-surp $ptrn))))
 
 
 
