@@ -98,5 +98,7 @@ partitions
 
 ;;!(emp-tv  (remove-parenthesis (, (Inheritance $x sodaDrinker) (Inheritance $x ugly))) &kb)
 
+!(size-atom (collapse (match &kb (, (Inheritance $x $y) (Inheritance $x $z)) ($x $y $z)) ))
+; !(match &kb (, (Inheritance $x $y) (Inheritance $x $z)) ($x $y))  
 
 ;!(flatten (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)))
