@@ -6,6 +6,8 @@
 ! (import! &self experiments:utils:surp-utils)
 ! (import! &self experiments:utils:miner-utils)
 ! (import! &self experiments:utils:gen_partition)
+! (import! &self experiments:utils:eq_prob_adaptor)
+
 
 ! (import! &self experiments:rules:est-tv)
 ! (import! &self experiments:rules:emp-tv)
