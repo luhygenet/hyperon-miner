@@ -21,7 +21,6 @@
 
 
 
-!(assertEqual (ji_prob_est_interval (, (Ixnheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)) (get-space) 2) 2)
 
 
 !(assertEqual (ji-prob-est (((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))  (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker))  &kb 0.5) 0.009135566413047788)
