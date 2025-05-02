@@ -116,15 +116,52 @@
 )
 
 
-; (=(do-ji-prob $partitions $pattern $db $db_ratio) (
-;   if (== $partitions ()) () (
-;      let* ((($partition $tail) (decons-atom $partitions))
-;             ($jip (ji-prob-est $partition $pattern $db $db_ratio))
-;              ($dummy (do-ji-prob $tail $pattern $db $db_ratio)))
-;              (cons-atom $jip $dummy) ))
-; )
 
+;; =============================================================================
+;; Function: do-ji-prob
+;; -----------------------------------------------------------------------------
+;; Purpose:
+;;   Recursively computes joint inclusion probabilities (JI-Probs) for a pattern
+;;   across multiple partitions in a database, returning a list of probability estimates.
+;;
+;; Inputs:
+;;   - `$partitions`: List of data partitions to analyze (e.g., `(P1 P2 P3)`)
+;;   - `$pattern`: The target pattern to evaluate (e.g., `(P A B)`)
+;;   - `$db`: Reference database for probability estimation
+;;   - `$db_ratio`: Database ratio parameter for probability calculation
+;;
+;; Output:
+;;   - List of JI-Prob estimates for each partition (e.g., `(0.8 0.6 0.9)`)
+;;   - Empty list if no partitions provided
+;;
+;; How it works:
+;;   1. Base Case: Returns empty list when partitions are exhausted
+;;   2. Recursive Case:
+;;      a. Extracts current partition and remaining partitions
+;;      b. Computes JI-Prob using `ji-prob-est` helper
+;;      c. Recursively processes remaining partitions
+;;      d. Combines results while preserving order
+;;
+;; Notes:
+;;   - Requires `ji-prob-est` helper function
+;;   - Preserves partition order in results
+;;   - Time Complexity: O(n) where n = partition count
+;;   - Space Complexity: O(n) for result storage
+;;
+;; Examples:
+;;   (do-ji-prob '(P1 P2) '(P A B) DB 0.5) → (0.7 0.6)
+;;   (do-ji-prob '() '(P X) DB 0.1) → ()
+;; =============================================================================
+(=(do-ji-prob $partitions $pattern $db $db_ratio) (
+  if (== $partitions ()) () (
+     let* ((($partition $tail) (decons-atom $partitions))
+            ($jip (ji-prob-est $partition $pattern $db $db_ratio))
+             ($dummy (do-ji-prob $tail $pattern $db $db_ratio)))
+             (cons-atom $jip $dummy) ))
+)
 
+; TODO:  check why the superpose is not working
+;; ==============================================================
 ;; Previous Implementation: ^
 ;; - Utilizes explicit recursion to operate over the list of partitions.
 ;; - Decomposes the partitions list using a deconstructing approach (decons-atom).
@@ -144,9 +181,9 @@
 ;;   the partitions via superposition and collapse.
 ;; - The new implementation simplifies the code and leverages metta's capabilities to avoid deep recursion.
 
-(=(do-ji-prob $partitions $pattern $db $db_ratio) (
-   collapse (ji-prob-est (superpose $partitions) $pattern $db $db_ratio)
-))
+; (=(do-ji-prob $partitions $pattern $db $db_ratio) (
+;    collapse (ji-prob-est (superpose $partitions) $pattern $db $db_ratio)
+; ))
 
 
 
