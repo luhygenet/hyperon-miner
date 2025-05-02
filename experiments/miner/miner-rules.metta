@@ -23,6 +23,7 @@
       (-> (Abstract $ptrn)
         (-> (minsup $ptrn)
           (AbstractPattern $ptrn))))))
+          
 
 (: specialization
     (-> (AbstractPattern $aptrn) 

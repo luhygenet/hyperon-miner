@@ -44,7 +44,11 @@
 
 
 ;; test the cog-miner
-! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
+;; without sorting 
+! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
+
+;; with sorting 
+;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
 
 
 
