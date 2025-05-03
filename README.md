@@ -10,16 +10,16 @@ For this current phase, we are directly porting from the classic implementation,
 This pattern miner is to mine frequent and interesting patterns from Hypergraph AtomSpace. In order to do that, it will first mine frequent patterns and store them in a new space, which will be passed to the surprisingness components to score each pattern's surprisingness value.
 
 **To Mine Frequent Patterns:**
-- Mine Abstract Patterns
+- Mine Abstract Patterns:
 Query link nodes, form abstract patterns with variables, and filter by minimum support.
 
-- Specialize Patterns
+- Specialize Patterns:
 Break abstract patterns into triplets, apply valuations (including nested expressions), and build specializations.
 
-- Select Candidate Patterns
+- Select Candidate Patterns:
 Evaluate support for specialized patterns and keep those meeting the support threshold.
 
-- Expand via Conjunction
+- Expand via Conjunction:
 Combine candidate patterns through variable mapping, remove redundancy, and normalize structure.
 
 
