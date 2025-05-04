@@ -43,7 +43,7 @@
     (let*
         ( ( $ucount   (universe-count $pattern $db))
 
-            ( $sup  (sup-num-special $db $pattern))
+            ( $sup  (sup-num $db $pattern))
 
 
         ) 
