@@ -158,7 +158,7 @@
  ;;copy-db function is designed to create a copy of the given database and return the new database.
 (= (copy-db $db $old-db-content)
     (if (== $old-db-content ()) $db
-        (let* ( ($_ (add-atom $db (car-atom $old-db-content)))
+        (let* ( ($_ (add-reduct $db (car-atom $old-db-content)))
 
             )
         (copy-db $db (cdr-atom $old-db-content))
