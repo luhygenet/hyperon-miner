@@ -21,9 +21,9 @@ from functools import cmp_to_key
 
 
 metta = MeTTa()
-
-with open('../data/ugly_man_sodaDrinker.metta') as file:
+with open('../data/ugly_man_sodaDrinker.metta', 'r') as file:
    metta.run(file.read())
+
 
 
 
@@ -263,8 +263,6 @@ def eq_prob (partition, pattern,db_size):
 @register_atoms(pass_metta=True)
 def eq_prob_reg(metta: MeTTa):
 
-
-
     # Define the operation atom with its parameters and function
     generateVariable = OperationAtom('eq-prob-func', lambda partition, pattern, db_size:  eq_prob(partition, pattern,db_size),
                                    ['Expression', 'Expression',"Atom",'Expression'], unwrap=False)
@@ -272,4 +270,26 @@ def eq_prob_reg(metta: MeTTa):
         r"eq-prob-func": generateVariable
     }
 
+
+
+def custom_add(metta, a, b):
+    # Convert to numbers and add
+    try:
+        a_val = int(str(a))
+        b_val = int(str(b))
+        result = a_val / b_val
+        return metta.parse_all(str(result))[0]
+    except (ValueError, TypeError):
+        # Return a default value if conversion fails
+        return metta.parse_all("0")[0]
+
+@register_atoms(pass_metta=True)
+def math_operations_reg(metta: MeTTa):
+    add_atom = OperationAtom('my-add', 
+                           lambda a, b: custom_add(metta, a, b),
+                           ['Number', 'Number', 'Atom'])
+    
+    return {
+        r"my-add": add_atom
+    }
 

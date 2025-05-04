@@ -1,18 +1,4 @@
 
-! (register-module! ../../experiments)
-! (import! &self experiments:utils:common-utils)
-! (import! &self experiments:utils:binomialMetta)
-! (import! &self experiments:utils:beta-dist)
-! (import! &self experiments:utils:constants)
-! (import! &self experiments:utils:TruthValue)
-! (import! &self experiments:utils:surp-utils)
-! (import! &self experiments:utils:miner-utils)
-! (import! &self experiments:utils:gen_partition)
-! (import! &self experiments:rules:est-tv)
-
-! (import! &db experiments:data:ugly_man_sodaDrinker)
-
-
 ;;;;;;;;;;;;;;;;;;;;
 ;;High-Level Steps;;
 ;;;;;;;;;;;;;;;;;;;;
@@ -108,10 +94,40 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ;   - $db: The database used to evaluate block probabilities.
 ; Returns:
 ;   - The estimated joint probability of the partition, computed by multiplying individual block probabilities.
-(=(iprob $partition $db) 
+(=(iprob-old $partition $db) 
     (accumulator-x (collapse  (blk-prob  (superpose $partition) $db)))                              
 )
 
+;;Recursive steps for iprob
+(=(iprob_ $partition $db)(
+    if (== $partition ()) () (
+        let* (
+           ( ($head $tail) (decons-atom $partition))
+           ($prob (blk-prob $head $db))
+           ($dummy (iprob_ $tail $db))
+        ) 
+             (cons-atom $prob $dummy)
+    )
+))
+
+
+;;This is the recursive version of iprob-old. While the non-deterministic (or above) 
+;;implementation works within this file, it causes issues when used from other files.
+(=(iprob $partition $db) (
+    let $products (iprob_ $partition $db) (accumulator-x $products)
+))
+
+
+;;Recursive steps for isurp
+(= (isurp-old_ $partitions $db) (
+    if (== $partitions ()) () (
+        let* (
+            (($head $tail) (decons-atom $partitions))
+             ($res (iprob $head $db))
+             ($dummy (isurp-old_ $tail $db)))
+        (cons-atom $res $dummy)
+    )
+))
 
 ;; Function: isurp-old
 ;; Description: Computes the I-surprisingness of a conjunctive pattern based on its probability 
@@ -130,18 +146,13 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
     let* (
         ($pattern_prob (prob $pattern $db ))
         ($partitions (generet-partition-without-pattern $pattern))
-        ($results (collapse (iprob (superpose $partitions) $db)))
+        ($results  (isurp-old_  $partitions $db))
         (($emin $emax) (min-max $results))
         ($dst (dst_from_interval $emin $emax $pattern_prob))
     ) 
-         (min ((if $normalize (// $dst $pattern_prob) $dst) 1.0))        
+         (min ((if $normalize (// $dst $pattern_prob) $dst) 1.0))       
 ) )
 
-
-
-
-;!(isurp-old (,(Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) &db  True)
-;!(isurp-old (,(Inheritance $x woman) (Inheritance $x ugly)) &db  False)
 
 
 

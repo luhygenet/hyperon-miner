@@ -16,16 +16,7 @@
              ))
     )
 
- (let* (
-        ($conjuncts (get-conjuncts $conjunction))
-        ($unique_conjuncts (unique-atom $conjuncts))
-        )
-    (if (== (size-atom $conjuncts) (size-atom $unique_conjuncts))
-        $conjunction
-        ; (remove_conjuncts_with (unique $conjunction))
-        ()
-    )
-    )
+
 ;; System proof for Surpabsent
 ;; check if surprisingness value already calculated 
 ;; if count > 0 then no proof for the absent of the surprisingness value 
