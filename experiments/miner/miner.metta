@@ -57,15 +57,7 @@
 )))
 
 
-(= (init-surp-old $kb $res $surp-mode)  
-  (           
-        if (== $surp-mode none) 
-              (chain (get-patterns $kb) $result (add-atom $res $result))  
-                 (if  ( == $surp-mode jsdsurp)  
-                      (chain  (syn $kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-atom $res $result)) 
-                            ;(syn $kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value)))         
-                               (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result))         
-)))
+
 
 
 
