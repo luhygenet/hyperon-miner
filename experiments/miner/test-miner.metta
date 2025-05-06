@@ -22,6 +22,7 @@
 ! (import! &self experiments:utils:emp-tv-bs)
 ! (import! &self experiments:utils:bs-utils)
 ! (import! &self experiments:utils:util-jsd)
+! (import! &self experiments:utils:binomialMetta)
 ! (import! &db experiments:data:ugly_man_sodaDrinker)
 
 
@@ -39,7 +40,7 @@
 
 ;; define parameters 
 (=(min-sup) 6)
-(=(surp-mode ) isurp-old)
+(=(surp-mode ) nisurp-old)
 (=(db-ratio) 0.5)
 
 
@@ -49,7 +50,6 @@
 
 ;; with sorting 
 ;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
-
 
 
 
