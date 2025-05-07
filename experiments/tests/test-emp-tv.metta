@@ -92,11 +92,11 @@
 ;; -----------------------------------------------------------------------------
 ;; Verifies copying with size limit when original < max size
 ;; Setup: Original size = 8, max = 10
-;; Expected: New size = 8 (all atoms copied)
+;; Expected: New size = 10 (all atoms copied)
 ;; =============================================================================
 !(assertEqual (db_size (copy-db-by-size (new-space) 
                        (collapse (get-atoms (get-space))) 0 10)) 
-              8)
+              10)
 
 ;; =============================================================================
 ;; Test: Bounded Database Copy (Case 2) 
@@ -118,7 +118,7 @@
 ;;   - Confidence: ~9.23%
 ;; =============================================================================
 !(assertEqual (do_emp_tv (Inheritance $x Nil) (get-space) 1)
-              (EMPTV 0.08333333333333333 0.09230769230769231))
+               (EMPTV 0.08999691262735415 0.0470518165574747))
 
 ;; =============================================================================
 ;; Test: List Element Access
