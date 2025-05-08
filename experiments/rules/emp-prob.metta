@@ -28,15 +28,15 @@
 ;; Function: emp-prob
 ;; -----------------------------------------------------------------------------
 ;; Purpose:
-;;   Computes the empirical probability of a pattern in a database
+;;   Computes the empirical probability of a pattern in a Corpus
 ;;
 ;; Parameters:
 ;;   - $pattern: Pattern to evaluate
-;;   - $db: Database to search
+;;   - $db: Corpus to search
 ;;
 ;; Computation:
 ;;   1. universe-count: Get total relevant items
-;;   2. sup-num: Get pattern occurrences
+;;   2. sup-num: Get pattern occurrences(support)
 ;;   3. Return (support / universe-count)
 ;;
 ;; Returns:
@@ -64,7 +64,7 @@
 ;;
 ;; Parameters:
 ;;   - $pattern: Pattern to evaluate
-;;   - $db: Database to search
+;;   - $db: Corpus to search
 ;;   - $subsize: Subsample size threshold
 ;;
 ;; Behavior:
@@ -91,7 +91,7 @@
 ;;
 ;; Parameters:
 ;;   - $pattern: Pattern to evaluate
-;;   - $db: Database to search
+;;   - $db: Corpus to search
 ;;   - $n_resample: Number of samples to generate
 ;;   - $subsize: Subsample size
 ;;
@@ -126,7 +126,7 @@
 ;;
 ;; Parameters:
 ;;   - $pattern: Pattern to evaluate
-;;   - $db: Database to search
+;;   - $db: Corpus to search
 ;;   - $n_resample: Bootstrap iterations
 ;;   - $subsize: Subsample size
 ;;
@@ -153,7 +153,7 @@
 ;;
 ;; Parameters:
 ;;   - $pattern: Multi-conjunct pattern
-;;   - $db: Database to search
+;;   - $db: Corpus to search
 ;;   - $db_ratio: Probability adjustment factor
 ;;
 ;; Behavior:
@@ -184,9 +184,9 @@
 ;;
 ;; Parameters:
 ;;   - $pattern: Pattern to evaluate
-;;   - $db: Database to search
+;;   - $db: Corpus to search
 ;;   - $prob-estimate: Initial probability estimate 
-;;   - $db-ratio: Database scaling factor
+;;   - $db-ratio: Corpus scaling factor
 ;;
 ;; Computation Flow:
 ;;   1. Convert prob-estimate to expected support
