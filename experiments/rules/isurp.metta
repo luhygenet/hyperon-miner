@@ -121,7 +121,7 @@
 ;; Function: do-ji-prob
 ;; -----------------------------------------------------------------------------
 ;; Purpose:
-;;   Recursively computes joint inclusion probabilities (JI-Probs) for a pattern
+;;   Recursively computes joint independent probabilities (JI-Probs) for a pattern
 ;;   across multiple partitions in a database, returning a list of probability estimates.
 ;;
 ;; Inputs:
@@ -192,7 +192,7 @@
 ;; ==============================================================
 ;; Function: ji_prob_est_interval
 ;; Purpose: Estimates the expected probability interval [emin, emax] for a pattern
-;;          using a jackknife-inspired (JI) estimation method
+;;          using a joint independent (JI) estimation method
 ;;
 ;; Parameters:
 ;;   $pattern    - The pattern whose probability we want to estimate
@@ -200,10 +200,9 @@
 ;;   $db_ratio   - Ratio parameter controlling database sampling/weighting
 ;;
 ;; How it works:
-;; 1. Generates partitions of the database excluding the pattern:
+;; 1. Generates partitions from the pattern excluding the pattern:
 ;;    (generet-partition-without-pattern $pattern)
-;;    - Creates modified versions of the database that exclude the target pattern
-;;    - This is similar to jackknife resampling in statistics
+;;   
 ;;
 ;; 2. Computes probability estimates across partitions:
 ;;    (do-ji-prob partitions $pattern $db $db_ratio)
@@ -215,16 +214,6 @@
 ;;    - Finds the range [emin, emax] of probability values across partitions
 ;;
 ;; 4. Returns the probability interval as (emin emax)
-;;
-;; Mathematical Interpretation:
-;;   Provides a robust probability estimation by:
-;;   - Creating multiple variants of the database (pattern-excluded)
-;;   - Measuring how the pattern's probability varies across these variants
-;;   - Returning the observed range of probabilities
-;;
-;; Typical Usage:
-;;   Used as input for surprisingness measures (like isurp) to determine
-;;   whether a pattern occurs more/less frequently than expected
 ;;
 ;; Return Value:
 ;;   Returns a pair (emin emax) representing the estimated probability range
