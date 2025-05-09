@@ -21,7 +21,7 @@
 
 ;; Initializers
 ;;initialize the necessary input parameters in the KB,
-(= (init-miner-old $db $kb $ms $surp $db-ratio)
+(= (init-miner $db $kb $ms $surp $db-ratio)
     (         let* (  
                  (() (add-atom $kb (: msT (ms-threshold $ms))))
                  (() (add-atom $kb (: dbref (db-ref $db))))
@@ -34,15 +34,15 @@
                 ;; (() (add-reduct $kb (minsup-rule)))
                 ;; (() (add-reduct $kb (surp-rule)))
                 )()))
-(= (init-miner $db $kb $ms)
-    (         let* (  
-                 (() (add-atom $kb (: msT (ms-threshold $ms))))
-                 (() (add-atom $kb (: dbref (db-ref $db))))
-                 (() (add-atom &self (kb-ref $kb)))
-                 (() (add-atom $kb (db-ref $db)))
-                ;; (() (add-reduct $kb (minsup-rule)))
-                ;; (() (add-reduct $kb (surp-rule)))
-                )()))
+; (= (init-miner $db $kb $ms)
+;     (         let* (  
+;                  (() (add-atom $kb (: msT (ms-threshold $ms))))
+;                  (() (add-atom $kb (: dbref (db-ref $db))))
+;                  (() (add-atom &self (kb-ref $kb)))
+;                  (() (add-atom $kb (db-ref $db)))
+;                 ;; (() (add-reduct $kb (minsup-rule)))
+;                 ;; (() (add-reduct $kb (surp-rule)))
+;                 )()))
 
 
 ;;Returns frequent patters with their support from the kb
@@ -84,6 +84,19 @@
                (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.8)))
 ))
 
+(= (abstract $depth $kb)
+    (chain (syn $kb $depth (: $prf (AbstractPattern $x))) $res (add-reduct $kb $res))
+)
+(= (specialization $depth $kb)
+    (chain (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))) $res (add-reduct $kb $res))
+) 
+(= (support $depth $kb)
+    (chain (syn $kb $depth (: $prf (supportOf $sptrn $cnt))) $res (add-reduct $kb $res))
+)
+
+(= (candidate $depth $kb)
+    (chain (syn $kb $depth (: $prf (candidatePattern $x))) $res (add-reduct $kb $res))
+)
 
 
 
@@ -96,6 +109,16 @@
          (() (add-atom $kb (: FACT4 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
         ;; (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (jsdsurp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
         ) ()
+))
+
+
+(= (frequent-miner-new $db $kb) ( 
+     let*  ( 
+         (() (abstract (fromNumber 4) $kb))
+         (() (specialization (fromNumber 3) $kb))
+         (() (support (fromNumber 4) $kb))
+         (() (candidate (fromNumber 5) $kb))
+      ) ()
 ))
 
 
