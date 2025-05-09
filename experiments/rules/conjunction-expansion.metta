@@ -42,11 +42,11 @@
      ;                 ($temp (get_variables_for_tree $pattern))
      ;                 ($temp2 (get_variables_for_tree $cnjtion)))
      ;             (+ (count-atom-element  $temp) (count-atom-element  $temp2))) $mv)
+     ; )
     (if $es
         (expand_conjunctin_es_rec $cnjtion $pattern $db $ms)
-        (expand_conjunction_rec $cnjtion $pattern $db $ms))
-     ; )
-     ; )
+        (expand_conjunction_rec $cnjtion $pattern $db $ms)
+    )
 )
 
 (= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
@@ -71,7 +71,8 @@
 )
 
 ;  ! (get_variables_for_tree  (LIST_LINK (INHERITANCE_LINK (INHERITANCE_LINK (INHERITANCE_LINK $S $K) (INHERITANCE_LINK $n $m)) (INHERITANCE_LINK (INHERITANCE_LINK $S $K) (INHERITANCE_LINK $n $m))) (INHERITANCE_LINK (INHERITANCE_LINK $g $t) (INHERITANCE_LINK $p $r))))
-;; inprogress
+
+
 (= (get_variable_for_pattern $pattern)
     (case ($pattern) (
             ( (()) ())
@@ -117,36 +118,33 @@
             ))
     ( (  ($link $x $y) $variables)
         (let* (
-                ( ($subx $remaining) (if ( == ( get-metatype $x ) Expression) (substitute $x $variables) (substitute ($x) $variables)))
+                ( ($sublink $remains) (if ( == ( get-metatype $link ) Expression) (substitute $link $variables) (substitute ($link) $variables)))
+                ( ($subx $remaining) (if ( == ( get-metatype $x ) Expression) (substitute $x $remains) (substitute ($x) $remains)))
 
                 ( ($suby $final) (if (== (get-metatype $y) Expression) (substitute $y $remaining) (substitute ($y) $remaining)))
             )
-        ( ($link $subx $suby) $final)
+        ( ($sublink $subx $suby) $final)
     )
 )
 ( ( ($link $x) $variables)
     (let* (
-            ( ($subx $remaining) (if ( == ( get-metatype $x ) Expression) (substitute $x $variables) (substitute ($x) $variables)))
+            ( ($sublink $remains) (if ( == ( get-metatype $link ) Expression) (substitute $link $variables) (substitute ($link) $variables)))
+            ( ($subx $remaining) (if ( == ( get-metatype $x ) Expression) (substitute $x $remains) (substitute ($x) $remains)))
         )
-    ( ($link $subx) $remaining)
+    ( ($sublink $subx) $remaining)
 )
 )
 )
 )
 )
 
-;  ! (substitute (LIST_LINK (INHERITANCE_LINK (INHERITANCE_LINK $S $K) (INHERITANCE_LINK $n $m)) (INHERITANCE_LINK (INHERITANCE_LINK $g $t) (INHERITANCE_LINK $p $r))) ($R-D1737102179 $A $b $c $d $e $f $h))
+;  ! (substitute ($LIST_LINK (INHERITANCE_LINK (INHERITANCE_LINK $S $K) (INHERITANCE_LINK $n $m)) (INHERITANCE_LINK (INHERITANCE_LINK $g $t) (INHERITANCE_LINK $p $r))) ($R-D1737102179 $A $b $c $d $e $f $h))
 
  
  ;############################################################
  ;###############   alpha convert  ###########################
  ;############################################################
- ; (= (var $x)
 
- ;     $x
-!(filter-atom (1 2 3 4) $v (eval (== $v 3)))
- ; )
- ; ! (var ($link $x))
 (= (alpha_convert  $pattern_vars $cnjtion_vars)
     (extract_values (consolidate_keys (address_conflict $pattern_vars $cnjtion_vars)))
 )
@@ -315,6 +313,8 @@
 (= ( append_pat $pat $conj) ( , $pat $conj))
 
  ; ! (expand_conjunction_disconnect (INHERITANCE_LINK A $X) (LIST_LINK $X B))
+;  !(expand_conjunction (Inheritance $x human) (Inheritance $y sodaDrinker) &db 2 2 False)
+
 
  ;##############
  ;# Test cases #
