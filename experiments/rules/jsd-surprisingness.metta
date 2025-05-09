@@ -33,6 +33,7 @@
 )
 )
 
+
 (= (gen-jsd-surprisingness-rule $nary)
     (
         if (> $nary 1)
@@ -40,12 +41,9 @@
                 ($cnj-bodies (gen-variables "$gen-body" $nary))
                 ($f ($cnj-bodies))
                 ($jsd-e (jsd-eval $f))
-                ($_ (println! $jsd-e))
-
                 ($conclusion (surp-eval jsd-surp $f))
 
                 ($mean_confidece (cog-mean $jsd-e))
-                ($_ (println! $mean_confidece))
 
                 ($surp (car-atom $mean_confidece) )
 
