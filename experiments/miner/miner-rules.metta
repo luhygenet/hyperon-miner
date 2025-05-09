@@ -7,6 +7,16 @@
                  (-> (⍃ $ms $cnt)
                        (minsup $ptrn)))))
 
+
+
+ ;; (: surprisingness 
+ ;;   (-> (minsup $ptrn)
+ ;;          (-> (surpabsent $ptrn)
+ ;;                  (surp $ptrn (do-surp $ptrn)))))
+
+
+
+
 ;; rule to extract abstract patterns from the database
 (: abstract-pattern
  (-> (db-ref $db)

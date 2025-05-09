@@ -87,15 +87,15 @@
 !(abstract &db (min-sup) &kb)
 
 ;; test the cog-miner
-; ! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
- !(fcc &kb (fromNumber 4) (: dbref (db-ref &db)))
-; !(fcc &kb (fromNumber 13) (: AbstractPattern (AbstractPattern (Inheritance $x $y))))
-; !(expand_conjunction (Inheritance $x human) (Inheritance $y sodaDrinker) &db 2 2 False)
-;!(fcc &kb (fromNumber 6) (: candidateP (candidatePattern (Inheritance $x human))))
-; !(fcc &kb (fromNumber 2) (: msT (ms-threshold $ms)))
+;; without sorting 
+! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
+
+;; with sorting 
+;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
 
 
-; (: (abstract-pattern dbref) (-> (uniqueLink GroundingSpace-0x16de2938) (-> (Abstract $ptrn#7690) (-> (minsup $ptrn#7690) (AbstractPattern $ptrn#7690)))))
+
+
 
 
 

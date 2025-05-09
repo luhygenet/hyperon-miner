@@ -56,7 +56,7 @@
 ;; extract the mode of the Surprisingness
 ;; if the surprisingness mode is none return lis of mined patterns
 ;; otherwise launches the backward chainer for surprising patterns mining
-(= (init-surp-old $kb $res $surp-mode)  
+(= (init-surp $kb $res $surp-mode)  
   (           
         if (== $surp-mode none) 
               (chain (get-patterns $kb) $result (add-atom $res $result))  
@@ -66,7 +66,7 @@
 )))
 
 
-(= (init-surp $kb $res $surp-mode)  
+(= (init-surp-old $kb $res $surp-mode)  
   (           
         if (== $surp-mode none) 
               (chain (get-patterns $kb) $result (add-atom $res $result))  
@@ -212,7 +212,8 @@
           ;;Store the chainer result in to the &res (new space)
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
              (() (frequent-miner $db $kb))
-             (() (init-surp $kb &res $surp))       
+             (() (init-surp $kb &res $surp))  
+            
     )
     ;; return all atoms in &res
     (match &res $x $x)

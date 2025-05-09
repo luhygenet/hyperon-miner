@@ -1,5 +1,5 @@
- ; (Inheritance (And (And C D) (Or P G)) (Or (And T S) (And N M)))
- ; (Inheritance (And (And C D) (Or P G)) (Or (And T S) (And N M)))
+ (Inheritance (And (And C D) (Or P G)) (Or (And T S) (And N M)))
+ (Inheritance (And (And C D) (Or P G)) (Or (And T S) (And N M)))
 (Inheritance (And (And C D) E) L)
 (Inheritance (And (And C D) E) L)
 (Implication P Q)
@@ -16,3 +16,9 @@
  ; (kebede)
  ; (chala)
  ; (abebe)
+
+((Inheritance A B)
+(Inheritance A B)
+(Inheritance A C)
+(Inheritance D D)
+ )
