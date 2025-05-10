@@ -5,7 +5,7 @@
     (-> (supportOf $ptrn $cnt)
           (-> (ms-threshold $ms)
                  (-> (⍃ $ms $cnt)
-                     (minsup $ptrn)))))
+                       (minsup $ptrn)))))
 
 
 
@@ -17,40 +17,61 @@
 
 
 
+;; rule to extract abstract patterns from the database
 (: abstract-pattern
-  (-> (db-ref $db)
-    (-> (uniqueLink $db)
-      (-> (Abstract $ptrn)
-        (-> (minsup $ptrn)
-          (AbstractPattern $ptrn))))))
-          
+ (-> (db-ref $db)
+   (-> (uniqueLink $db $ptrn $cnt)
+    (-> (ms-threshold $ms)
+      (-> (⍃ $ms $cnt)
+       (AbstractPattern $ptrn))))))
 
+;; rule to specialize abstract patterns
 (: specialization
     (-> (AbstractPattern $aptrn) 
-        (-> (specializationOf $aptrn (build-specialization $aptrn $dbspace)))))
+      (-> (db-ref $db)
+        (specializationOf $aptrn (build-specialization-chain $aptrn $db)))))
 
-(: candidatePattern  
-      (-> (specializationOf $aptrn $sptrn)
-                (candidatePattern $sptrn)))
-
-(: supportOf 
+;; rule to get candidate patterns
+(: candidate  
       (-> (minsup $ptrn)
+         (candidatePattern $ptrn)))
+
+;; rule to get the support of specialized patterns
+
+(: hasSupport 
+      (-> (specializationOf $aptrn $sptrn)
             (-> (db-ref $db)
-                  (-> (db-ratio $ratio)
-                        (supportOf $ptrn (do-sup $ptrn $db $ratio))))))
+                (supportOf $sptrn (counter $db $sptrn)))))
 
-
-(: conjunction-expansion
+;; rule to expand conjunctions
+(: conjunction
       (-> (candidatePattern $ptrn1)
             (-> (candidatePattern $ptrn2)
                (-> (ms-threshold $ms)
-                        (supportOf (do-conjunct) (count ))))))
+                  (-> (db-ref $db)
+                        (conjunction (expand_conjunction $ptrn1 $ptrn2 $db $ms 2 False)))))))
+
+;; rule for creating conjunctions with more clauses
+(: conjunction-next
+      (-> (conjunction-clean $ptrn1)
+            (-> (candidatePattern $ptrn2)
+               (-> (ms-threshold $ms)
+                  (-> (db-ref $db)
+                        (conjunction (expand_conjunction $ptrn1 $ptrn2 $db $ms 2 False)))))))
+
+;; rule to clean conjunctions from redundant clauses
+(: remove-conjuncts-with-redundant-clause
+      (-> (conjunction $ptrn)
+            (conjunction-clean (remove_conjuncts_with_redundant_clauses $ptrn1))))
+
 
 
 ;; iSurprisingness rule
 (: surprisingness 
       (-> (minsup $ptrn)
             (surp $ptrn (do-surp $ptrn))))
+
+
 
 
 
