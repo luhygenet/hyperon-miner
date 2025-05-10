@@ -5,7 +5,7 @@
     (-> (supportOf $ptrn $cnt)
           (-> (ms-threshold $ms)
                  (-> (⍃ $ms $cnt)
-                     (minsup $ptrn)))))
+                        (minsup $ptrn)))))
 
 
 
@@ -55,6 +55,16 @@
 
 
 
+
+;;(do-ji-tv-est $db $ptrn)
+;; Rule to calculate the empirical truth value of a pattern.
+(: emp-rule 
+   (-> (minsup $ptrn) 
+          (-> (db-ref $db) 
+                 (emp-val $ptrn (emp-tv (flatten $ptrn) $db)))))
+
+;;(do_emp_tv (flatten $ptrn) $db $ratio)
+
 ;; Rule to calculate the probability (or truth value) estimate of a
 ;; pattern, given the empirical probabilities (truth values) of its
 ;; components.
@@ -62,17 +72,8 @@
    (-> (minsup $ptrn)
          (-> (emp-val $ptrn $emp)
                (-> (db-ref $db)
-                     (est-tv $ptrn (do-ji-tv-est $db $ptrn))))))
+                     (est-tv $ptrn (do-ji-tv-est $db $ptrn $emp))))))
 
-
-
-;;(do-ji-tv-est $db $ptrn)
-;; Rule to calculate the empirical truth value of a pattern.
-(: emp-val 
-   (-> (minsup $ptrn) 
-          (-> (db-ref $db) 
-                 (-> (db-ratio $ratio)
-                           (emp-val $ptrn (do_emp_tv $ptrn $db $ratio))))))
 
 
 ;;(do_emp_tv $ptrn $db $ratio)

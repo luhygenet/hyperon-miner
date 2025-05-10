@@ -40,7 +40,7 @@
 
 ;; define parameters 
 (=(min-sup) 6)
-(=(surp-mode ) nisurp-old)
+(=(surp-mode ) jsdsurp)
 (=(db-ratio) 0.5)
 
 
@@ -52,4 +52,4 @@
 ;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
 
 
-
+;!(flatten (,(Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)))

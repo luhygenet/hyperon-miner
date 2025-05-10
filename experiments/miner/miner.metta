@@ -47,16 +47,23 @@
 ;; extract the mode of the Surprisingness
 ;; if the surprisingness mode is none return lis of mined patterns
 ;; otherwise launches the backward chainer for surprising patterns mining
+(= (init-surp-p $kb $res $surp-mode)  
+  (           
+        if (== $surp-mode none) 
+              (chain (get-patterns $kb) $result (add-atom $res $result))  
+                 (if  ( == $surp-mode jsdsurp)  
+                       (chain  (syn $kb (fromNumber 8) (: $prf (jsd-surp $what_is_surprise $value))) $result   (add-atom $res $result))                              
+                               (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result))         
+)))
+
 (= (init-surp $kb $res $surp-mode)  
   (           
         if (== $surp-mode none) 
               (chain (get-patterns $kb) $result (add-atom $res $result))  
                  (if  ( == $surp-mode jsdsurp)  
-                       (chain  (syn $kb (fromNumber 6) (: $prf (jsd-surp $what_is_surprise $value))) $result   (add-atom $res $result))                              
+                       (chain  (syn $kb (fromNumber 12) (: $prf (est-tv $what_is_surprise $value))) $result   (add-atom $res $result))                              
                                (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result))         
 )))
-
-
 
 
 
@@ -68,8 +75,8 @@
 ;; mocking the frequent pattern miner results 
 (= (frequent-miner $db $kb) ( 
      let*  ( (() (add-atom $kb (: FACT1  (supportOf (, (, (Inheritance $x human) (Inheritance $x ugly)) (Inheritance $x woman)) 5))))
-         (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 8))))
-         (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
+         (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 5))))
+         (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 4))))
          (() (add-atom $kb (: FACT4 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
         ;; (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (jsdsurp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
         ) ()
@@ -166,7 +173,9 @@
           ;;Store the chainer result in to the &res (new space)
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
              (() (frequent-miner $db $kb))
+             (() (println! (Here)))
              (() (init-surp $kb &res $surp))  
+              (() (println! (Here2)))
             
     )
     ;; return all atoms in &res
