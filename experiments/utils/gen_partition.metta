@@ -12,7 +12,7 @@
 ;;   - Python backend for some partition generation functions
 ;; =============================================================================
 
-(! (import! &self partition))
+! (import! &self partition)
 
 ;; =============================================================================
 ;; Function: get-clauses
