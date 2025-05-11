@@ -203,7 +203,7 @@
 ;; 1. Generates partitions of the pattern excluding the pattern:
 ;;    (generet-partition-without-pattern $pattern)
 ;;    - Creates modified versions of the database that exclude the target pattern
-;;    - This is similar to jackknife resampling in statistics
+;;    - This is similar to resampling in statistics
 ;;
 ;; 2. Computes probability estimates across partitions:
 ;;    (do-ji-prob partitions $pattern $db $db_ratio)
