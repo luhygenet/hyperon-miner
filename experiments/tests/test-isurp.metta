@@ -22,7 +22,7 @@
 ;; Test: ji-prob-est (Single Partition)
 ;; -----------------------------------------------------------------------------
 ;; Purpose:
-;;   Verify correct joint inclusion probability calculation for a pattern across
+;;   Verify correct joint independent probability calculation for a pattern across
 ;;   a single partition with overlapping clauses.
 ;;
 ;; Inputs:
@@ -152,7 +152,7 @@
     &kb
     0.2)
   (0.009135566413047788 0.13155215634788814))
-  
+
 
 ;; =============================================================================
 ;; Test: isurp

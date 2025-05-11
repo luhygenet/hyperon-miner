@@ -154,7 +154,7 @@
 ;; Function: emp-prob-pbs (Overload 1)
 ;; -----------------------------------------------------------------------------
 ;; Purpose:
-;;   Estimates probability with joint inclusion correction
+;;   Estimates probability with joint independent correction
 ;;
 ;; Parameters:
 ;;   - $pattern: Multi-conjunct pattern
