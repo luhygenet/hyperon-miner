@@ -1,5 +1,27 @@
 !(import! &self  emp-tv-bs)
 
+;; =============================================================================
+;; Function: subsample-py
+;; -----------------------------------------------------------------------------
+;; Purpose:
+;;   Creates a random subsample from a database by selecting a specified number
+;;   of atoms and placing them in a new space.
+;;
+;; Inputs:
+;;   - `$db`: The source database/space to subsample
+;;   - `$subsize`: The number of atoms to include in the subsample
+;;
+;; Output:
+;;   - A new space containing the randomly selected atoms
+;;
+;; How it works:
+;;   1. Extracts all atoms from the source database using `get-atoms`
+;;   2. Collapses the result into a flat list
+;;   3. Randomly selects `$subsize` atoms using `generet_random_subsample`
+;;   4. Creates a copy of the selected atoms in a new space
+;;
+
+;; =============================================================================
 (= (subsample-py $db $new-space $subsize )
     (let* (
             
