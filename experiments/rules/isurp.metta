@@ -200,9 +200,10 @@
 ;;   $db_ratio   - Ratio parameter controlling database sampling/weighting
 ;;
 ;; How it works:
-;; 1. Generates partitions from the pattern excluding the pattern:
+;; 1. Generates partitions of the pattern excluding the pattern:
 ;;    (generet-partition-without-pattern $pattern)
-;;   
+;;    - Creates modified versions of the database that exclude the target pattern
+;;    - This is similar to resampling in statistics
 ;;
 ;; 2. Computes probability estimates across partitions:
 ;;    (do-ji-prob partitions $pattern $db $db_ratio)
@@ -214,6 +215,11 @@
 ;;    - Finds the range [emin, emax] of probability values across partitions
 ;;
 ;; 4. Returns the probability interval as (emin emax)
+;;
+;;
+;; Typical Usage:
+;;   Used as input for surprisingness measures (like isurp) to determine
+;;   whether a pattern occurs more/less frequently than expected
 ;;
 ;; Return Value:
 ;;   Returns a pair (emin emax) representing the estimated probability range

@@ -1383,4 +1383,3 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
         )
     )
 )
-

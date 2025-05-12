@@ -22,8 +22,6 @@
 
 
 
-
-
 ;; =============================================================================
 ;; Function: emp-prob
 ;; -----------------------------------------------------------------------------
@@ -46,12 +44,13 @@
     (let*
         ( ( $ucount   (universe-count $pattern $db))
 
-            ( $sup  (sup-num $db $pattern))
+            ( $sup  (sup-num-special $db $pattern))
 
 
         ) 
         (// $sup  $ucount)      
 ))
+
 
 
 
@@ -81,7 +80,6 @@
         (emp-prob $pattern $db)
     )
 )
-
 
 ;; =============================================================================
 ;; Function: emp_prob_helper
@@ -118,6 +116,7 @@
  
 
 
+
 ;; =============================================================================
 ;; Function: emp_prob_bs
 ;; -----------------------------------------------------------------------------
@@ -145,11 +144,17 @@
 
 )
 
+
+
+
+
+
+
 ;; =============================================================================
 ;; Function: emp-prob-pbs (Overload 1)
 ;; -----------------------------------------------------------------------------
 ;; Purpose:
-;;   Estimates probability with joint inclusion correction
+;;   Estimates probability with joint independent correction
 ;;
 ;; Parameters:
 ;;   - $pattern: Multi-conjunct pattern
@@ -175,7 +180,6 @@
 
 
 
-
 ;; =============================================================================
 ;; Function: emp-prob-pbs (Overload 2)
 ;; -----------------------------------------------------------------------------
@@ -197,6 +201,7 @@
 ;; Returns:
 ;;   - Context-appropriate probability estimate
 ;; =============================================================================
+
 (= (emp-prob-pbs $pattern $db $prob-estimate $db-ratio)
     (let* ( ($support-estimate (prob_to_support $pattern $db $prob-estimate))
             ($db-size (* (db_size $db) $db-ratio)))
@@ -210,3 +215,12 @@
         )
     )
 )
+
+
+
+
+
+
+
+
+

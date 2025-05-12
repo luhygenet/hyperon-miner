@@ -22,7 +22,7 @@
 ;; Test: ji-prob-est (Single Partition)
 ;; -----------------------------------------------------------------------------
 ;; Purpose:
-;;   Verify correct joint inclusion probability calculation for a pattern across
+;;   Verify correct joint independent probability calculation for a pattern across
 ;;   a single partition with overlapping clauses.
 ;;
 ;; Inputs:
@@ -154,3 +154,25 @@
   (0.009135566413047788 0.13155215634788814))
 
 
+;; =============================================================================
+;; Test: isurp
+;; -----------------------------------------------------------------------------
+;; Purpose:
+;;   Verify calculation of independent-surprise for a pattern across all
+;;   possible partition configurations.
+;;
+;; Inputs:
+;;   - Pattern
+;;   - DB Reference: &kb
+;;   - Ratio: 0.2
+;;
+;; Expected Output:
+;;   0.8684478436521119 - Independent surprise value
+
+;; Verification:
+;;   1. Tests correct calculation of independent surprise
+;;   2. Verifies handling of different ratio parameter
+;;   3. Checks proper output format
+;; =============================================================================
+
+!(assertEqual (isurp (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb True 0.2) 0.8684478436521119)

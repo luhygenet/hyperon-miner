@@ -269,23 +269,3 @@
 
 
 
-
-
-
-
-
-
-
-
-
-((AND (AND (Boy $y) (Or Bob $x)) (Human $x (Or Bob $x))))
-
-
-
-
-
-;;(Beta (mean 54) (variance 57))
-;!(get_beta_mean_var (Beta (mean 54) (variance 57)) var)
-;!(+ (square 3.0) 3)
-;!(var_accumulater ((Beta (mean 4) (variance 57)) (Beta (mean 6) (variance 57))) 0 5)
-;!(avrg_tv ((Beta (mean 4) (variance 57)) (Beta (mean 6) (variance 57)) (Beta (mean 4) (variance 57))) )

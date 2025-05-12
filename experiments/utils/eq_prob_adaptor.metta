@@ -1,6 +1,4 @@
 ! (import! &self  eq-prob)
-
-
 ;; =============================================================================
 ;; Function: eq-prob-py (Python Probability Adapter)
 ;; -----------------------------------------------------------------------------
@@ -31,10 +29,10 @@
 ;;   - Requires Python implementation of `eq-prob-func` to be available
 ;;   - Requires proper `import!` of the Python module
 ;; =============================================================================
-(! (import! &self eq_prob))
 
 (= (eq-prob-py $partition $pattern $db-size)
-   (eq-prob-func $partition $pattern $db-size))
+     (eq-prob-func $partition $pattern $db-size)
+)
 
 
      

@@ -259,19 +259,19 @@
 ;; Function: ji_tv_est
 ;; -----------------------------------------------------------------------------
 ;; Purpose:
-;;   Estimate the truth value (TV) of a pattern in a database using a joint inference method.
+;;   Estimate the truth value (TV) of a pattern in a database using a joint independent method.
 ;;
 ;; Parameters:
 ;;   - $pattern: The pattern for which the truth value is being estimated.
 ;;   - $db: The database containing data for evaluation.
 ;;
 ;; Internal Calculation:
-;;   1. Call `do-ji-tv-est` with the database and pattern to perform joint inference estimation.
+;;   1. Call `do-ji-tv-est` with the database and pattern to perform joint independent estimation.
 ;;   2. Extract the truth value ($tv) from the result, which is assumed to be a tuple ($pat $tv).
 ;;   3. Return the extracted truth value.
 ;;
 ;; Returns:
-;;   - $tv: The estimated truth value of the pattern based on joint inference.
+;;   - $tv: The estimated truth value of the pattern based on joint independent.
 ;; =============================================================================
 (= (ji_tv_est $pattern $db) 
     (let* 
@@ -806,4 +806,3 @@
 
 )
 (EMPTV $mode $confidence))
-
