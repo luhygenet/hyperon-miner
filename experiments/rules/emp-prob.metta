@@ -42,11 +42,9 @@
 ;; =============================================================================
 (= (emp-prob $pattern $db)
     (let*
-        ( ( $ucount   (universe-count $pattern $db))
-
-            ( $sup  (sup-num-special $db $pattern))
-
-
+        ( ( $ucount   (universe-count $pattern $db))     
+            ( $sup  (sup-num $db $pattern))
+            
         ) 
         (// $sup  $ucount)      
 ))

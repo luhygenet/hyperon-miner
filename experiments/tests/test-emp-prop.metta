@@ -51,7 +51,7 @@
 ;; Verification:
 ;;   Tests correct handling of patterns with no matches in the space
 ;; =============================================================================
-!(assertEqual 
+(assertEqual 
   (emp-prob-pbs 
     (, (Inheritance $x $z) (Inheritance $x human)) 
     (get-space) 
@@ -76,7 +76,7 @@
 ;; Verification:
 ;;   Tests basic probability calculation for single-atom patterns
 ;; =============================================================================
-!(assertEqual 
+(assertEqual 
   (emp-prob-pbs 
     (Inheritance $x human) 
     (get-space) 
@@ -101,7 +101,7 @@
 ;;   Tests that subsampling returns a new space object with random selection
 ;;   Note: Exact contents vary due to randomness
 ;; =============================================================================
-!(subsample-py (get-space) 4)
+(subsample-py (get-space) 4)
 
 
 ;; =============================================================================
@@ -120,7 +120,7 @@
 ;; Verification:
 ;;   Tests accurate counting of pattern instances in the knowledge base
 ;; =============================================================================
-!(assertEqual 
+(assertEqual 
   (sup-num 
     (get-space) 
     (Inheritance $x human)) 
@@ -145,7 +145,7 @@
 ;;   Tests probabilistic estimation with multiple iterations
 ;;   Note: Non-deterministic output requires statistical validation
 ;; =============================================================================
-!(emp_prob_bs 
+(emp_prob_bs 
   (, (Inheritance $x man) (Inheritance $x ugly)) 
   &kb 
   5 
@@ -170,7 +170,7 @@
 ;;   Tests probabilistic estimation for simpler patterns
 ;;   Note: Non-deterministic output requires statistical validation
 ;; =============================================================================
-!(emp_prob_bs 
+(emp_prob_bs 
   (Inheritance $x man)  
   &kb 
   5 
@@ -199,7 +199,7 @@
 ;   2. Still accounts for full pattern complexity
 ;   3. Maintains same calculation structure as other ratio values
 ; =============================================================================
-!(assertEqual
+(assertEqual
   (subsmp-size 
     (, (Inheritance $x man)
        (Inheritance $x ugly) 

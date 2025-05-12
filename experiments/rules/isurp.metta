@@ -220,7 +220,7 @@
 ;; Parameters:
 ;;   $pattern    - The pattern to evaluate for surprisingness
 ;;   $db         - The database/context to evaluate against
-;;   $normalize  - Boolean flag to normalize the result (0-1 range)
+;;   $normalize  - Boolean flag to normalize the result (0-1 range) 
 ;;   $db_ratio   - Ratio parameter for database sampling/weighting
 ;;
 ;; How it works:
