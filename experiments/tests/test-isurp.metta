@@ -6,6 +6,7 @@
 ! (import! &self experiments:utils:surp-utils)
 ! (import! &self experiments:utils:miner-utils)
 ! (import! &self experiments:utils:gen_partition)
+! (import! &self experiments:utils:bs-utils) 
 
 ! (import! &self experiments:rules:est-tv)
 ! (import! &self experiments:rules:emp-tv)
@@ -39,7 +40,7 @@
 ;;   Tests basic JI-Prob calculation when clauses are distributed across two
 ;;   partition components with some overlap in variables.
 ;; =============================================================================
-!(assertEqual 
+(assertEqual 
   (ji-prob-est 
     (((Inheritance $x man) (Inheritance $x sodaDrinker)) 
     ((Inheritance $x ugly)))
@@ -71,7 +72,7 @@
 ;;   Tests that completely separated clauses in partition yield higher JI-Prob
 ;;   than overlapping cases (Test 1), demonstrating proper dependence modeling.
 ;; =============================================================================
-!(assertEqual 
+(assertEqual 
   (ji-prob-est 
     (((Inheritance $x man)) 
      ((Inheritance $x sodaDrinker)) 
@@ -109,7 +110,7 @@
 ;;   2. Verifies order preservation in results
 ;;   3. Checks proper accumulation of estimates
 ;; =============================================================================
-!(assertEqual 
+(assertEqual 
   (do-ji-prob 
     ((((Inheritance $x man) (Inheritance $x sodaDrinker)) 
       ((Inheritance $x ugly)))
@@ -146,7 +147,7 @@
 ;;   2. Verifies handling of different ratio parameter
 ;;   3. Checks proper tuple output format
 ;; =============================================================================
-!(assertEqual 
+(assertEqual 
   (ji_prob_est_interval 
     (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker))
     &kb
@@ -175,4 +176,6 @@
 ;;   3. Checks proper output format
 ;; =============================================================================
 
-!(assertEqual (isurp (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb True 0.2) 0.8684478436521119)
+(assertEqual (isurp (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb True 0.2) 0.8684478436521119)
+
+!(isurp (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb True 0.2)
