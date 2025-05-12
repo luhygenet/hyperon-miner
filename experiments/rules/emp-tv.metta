@@ -24,7 +24,8 @@
  ;; calculate the empirical truth value of a pattern.
 (= (emp-tv $pattern $db)
     (let*
-        ( ( ($ucount ) ( (universe-count $pattern $db)))
+        (   (() (println! (reached here : $pattern )))
+            ( ($ucount ) ( (universe-count $pattern $db)))
             ( ($ms) ($ucount)) ;;  we didn't use ms for support calculation
             ( ($sup) ( (sup-num $pattern $db)))
 

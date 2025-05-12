@@ -8,7 +8,7 @@
 ! (import! &self experiments:utils:gen_partition)
 ! (import! &self experiments:rules:est-tv)
 ! (import! &self experiments:rules:emp-tv)
-! (import! &kb experiments:data:ugly_man_sodaDrinker)
+! (import! &db experiments:data:ugly_man_sodaDrinker)
 
 
 
@@ -36,7 +36,7 @@
 
 
 ;!(do-ji-tv-est  &kb (,(Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)))
-!(do-ji-tv-est  &kb (, (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x man)))
+;!(do-ji-tv-est  &db (, (Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)))
 
 
 
