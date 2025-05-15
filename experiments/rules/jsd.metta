@@ -1,41 +1,51 @@
-;! (register-module! ../../experiments)
-;! (import! &self experiments:utils:util-jsd)
+! (register-module! ../../experiments)
+! (import! &self experiments:utils:util-jsd)
+!(import! &self experiments:utils:common-utils)
 
 
-(= (do-jsd $emp $est)
+;; =============================================================================
+;; Function: do-jsd
+;; -----------------------------------------------------------------------------
+;; Purpose:
+;;   Computes a modified Jensen-Shannon Divergence (JSD) between two probability 
+;;   distributions. This is a symmetric measure of similarity between distributions 
+;;   with custom logarithmic scaling.
+;;
+;; Parameters:
+;;   - $empirical_distribution: Observed distribution (TruthValue type)
+;;   - $estimated_distribution: Predicted distribution (TruthValue type)
+;;
+;; Internal Computation:
+;;   1. Extract strength components from both distributions
+;;   2. Calculate midpoint distribution average
+;;   3. Compute logarithmic ratios (base 10):
+;;      a. log(empirical/midpoint)
+;;      b. log(estimated/midpoint)
+;;   4. Calculate entropy contributions:
+;;      a. (empirical_strength * log_ratio_empirical) / 2
+;;      b. (estimated_strength * log_ratio_estimated) / 2
+;;   5. Sum contributions and take square root
+;;
+;; Returns:
+;;   - Non-negative float representing distribution divergence
+
+;; =============================================================================
+
+(= (do-jsd $empirical_distribution $estimated_distribution)
     (let* (
-            ($emp_extracted (strength $emp))
-            ($est_extracted (strength $est))
-            ($m (// (+ $emp_extracted $est_extracted) 2))
+            ($empirical_strength (strength $empirical_distribution))
+            ($estimated_strength (strength $estimated_distribution))
+            ($midpoint_distribution (// (+ $empirical_strength $estimated_strength) 2))
+            ($log_empirical_over_midpoint (log-math 10 (// $empirical_strength $midpoint_distribution)))
+            ($log_estimated_over_midpoint (log-math 10 (// $estimated_strength $midpoint_distribution)))
+            ($empirical_entropy_contribution (// (* $empirical_strength $log_empirical_over_midpoint) 2))
+            ($estimated_entropy_contribution (// (* $estimated_strength $log_estimated_over_midpoint) 2))
+
         )
-    (sqrt-math (+ (// (* $emp_extracted (log-math 10 (// $emp_extracted $m))) 2)
-
-             (// (* $est_extracted (log-math 10 (// $est_extracted $m))) 2)))
+    (sqrt-math (+ $empirical_entropy_contribution $estimated_entropy_contribution))
 )
 )
 
-; (= (jsd-rule $pattern $db)
-;     (let* (
-;             ($emp (emp-eval $pattern))
-;             ($est (est-eval $pattern))
-;             ($emp-tv (cog-tv $emp))
-;             ($est-tv (cog-tv $est))
-;             ($conclusion (jsd-eval $pattern))
-
-;         )
-;     (if (and (and (exist $emp) (exist $est))
-;             (and
-;                 (gt_zero_confidence_eval $emp-tv)
-;                 (gt_zero_confidence_eval $est-tv)))
-;         (let* (
-;             ($jsd (do-jsd $emp-tv $est-tv))
-;             ($jsd-tv (cog-new-stv $jsd 1))
-;         )
-;         (cog-set-tv $conclusion $jsd-tv)
-;         )
-;         (superpose ())
-;     ))
-; )
 
 
 
@@ -43,11 +53,7 @@
 
 
  ;  ;; Test 
-;!(do-jsd (STV 0.5 1) (STV 0.65 1))
-; !(cog-set-tv (emp-eval (Parent abel henok)) (STV 15 10))
-; !(cog-set-tv (est-eval (Parent abel henok)) (STV 25 12))
+!(do-jsd (STV 0.5 1) (STV 0.65 1))
 
-; ! (jsd-rule (Parent abel henok) db1)
-; !(cog-tv (jsd-eval (Parent abel henok)))
 
 
