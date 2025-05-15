@@ -1,8 +1,3 @@
-! (register-module! ../../experiments)
-! (import! &self experiments:utils:util-jsd)
-!(import! &self experiments:utils:common-utils)
-
-
 ;; =============================================================================
 ;; Function: do-jsd
 ;; -----------------------------------------------------------------------------
@@ -52,8 +47,7 @@
 
 
 
- ;  ;; Test 
-!(do-jsd (STV 0.5 1) (STV 0.65 1))
+
 
 
 
