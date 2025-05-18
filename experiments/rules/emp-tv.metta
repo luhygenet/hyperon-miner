@@ -32,6 +32,7 @@
             ( ($conf) ( (count_to_confidence $ucount)) )
             ($mean (// $sup $ucount))
             ($confidence   (* 1e-1 $conf))
+            (() (println! (reached here2 : $confidence )))
         )
     (EMPTV $mean  $confidence)))
 
@@ -268,6 +269,7 @@
     (if (== $index 0)
         (car-atom $list) ; Return the first element if index is 0
         (get-element (- $index 1) (cdr-atom $list))))
+
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;;;;; Implmented Before ;;;;
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;

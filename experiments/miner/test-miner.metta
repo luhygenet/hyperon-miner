@@ -38,18 +38,34 @@
 !(let $atoms  (get-atoms &temp) (add-atom &kb $atoms) )
 ;!(chain (get-atoms &temp) $atoms (add-atom &kb $atoms))
 
+
+
 ;; define parameters 
 (=(min-sup) 6)
 (=(surp-mode ) jsdsurp)
 (=(db-ratio) 0.5)
 
+(=(do-ji-tv-est-f $db $ptrn $emp) (
+      EST 0.5 0.6
+))
 
 ;; test the cog-miner
 ;; without sorting 
-! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
+!(cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
+
+;!(syn $kb (S Z) (: $prf (emp-cpu (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man))  &db $emp)))
+;!(syn &kb (fromNumber 6) (: $prf (emp-val $ptrn $emp)))
+;!(syn &kb (fromNumber 6) (: $prf (minsup $ptrn )))
+;!(syn &kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value)))
+
+;(syn $kb $_ (: $prf (emp-cpu $ptrn $db $emp)))
+
 
 ;; with sorting 
 ;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
 
 
 ;!(flatten (,(Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)))
+
+
+;!(do-jsd (EMPTV 0.8 0.8) (EST 0.7 0.8))

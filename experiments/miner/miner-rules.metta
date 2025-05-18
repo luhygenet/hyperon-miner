@@ -29,15 +29,18 @@
     (-> (AbstractPattern $aptrn) 
         (-> (specializationOf $aptrn (build-specialization $aptrn $dbspace)))))
 
+
 (: candidatePattern  
       (-> (specializationOf $aptrn $sptrn)
                 (candidatePattern $sptrn)))
 
-(: supportOf 
+
+(: supportOfff 
       (-> (minsup $ptrn)
             (-> (db-ref $db)
                   (-> (db-ratio $ratio)
-                        (supportOf $ptrn (do-sup $ptrn $db $ratio))))))
+                        (supportOfff $ptrn (do-sup $ptrn $db $ratio))))))
+
 
 
 (: conjunction-expansion
@@ -58,22 +61,35 @@
 
 ;;(do-ji-tv-est $db $ptrn)
 ;; Rule to calculate the empirical truth value of a pattern.
-(: emp-rule 
-   (-> (minsup $ptrn) 
-          (-> (db-ref $db) 
-                 (emp-val $ptrn (emp-tv (flatten $ptrn) $db)))))
+;(: emp-rule 
+ ;         (-> (minsup $ptrn) 
+  ;                (-> (db-ref $db) 
+   ;                      (-> (emp-cpu $ptrn $db $emp) 
+    ;                               (emp-val $ptrn (emp-tv (flatten $ptrn) $db))))))
 
+
+(: emp-rule 
+          (-> (minsup $ptrn) 
+               (-> (emp-cpu $ptrn $emp ) 
+                        (emp-val $ptrn $emp))))
+
+
+;; (emp-tv (flatten $ptrn) $db)
 ;;(do_emp_tv (flatten $ptrn) $db $ratio)
+
+
 
 ;; Rule to calculate the probability (or truth value) estimate of a
 ;; pattern, given the empirical probabilities (truth values) of its
 ;; components.
 (: est-rule 
-   (-> (minsup $ptrn)
-         (-> (emp-val $ptrn $emp)
-               (-> (db-ref $db)
-                     (est-tv $ptrn (do-ji-tv-est $db $ptrn $emp))))))
+          (-> (minsup $ptrn)
+                (->  (emp-val $ptrn $emp)
+                                 (->(est-cpu $ptrn $emp $est)
+                                           (est-tv $ptrn $est)))))
+                      
 
+;;(do-ji-tv-est $db $ptrn $emp)
 
 
 ;;(do_emp_tv $ptrn $db $ratio)
@@ -84,10 +100,11 @@
 ;; truth value and the truth value estimate of a pattern according to
 ;; some db.
 (: jsd-tv 
-      (-> (emp-val $ptrn $emp)
-            (-> (est-tv $ptrn $est)
-                  (jsdsurp $ptrn (do-jsd $emp $est)))))
+            (-> (minsup $ptrn)
+                 (-> (emp-val $ptrn $emp)
+                       (-> (est-tv $ptrn $est)
+                            (jsdsurp $ptrn (do-jsd $emp $est))))))
 
-
+;;(do-jsd $emp $est)
                       
                       

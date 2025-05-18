@@ -17,6 +17,18 @@
     )
 
 
+(= (syn $kb $_ (: $prf (emp-cpu $ptrn  $emp ))) 
+    (let $dbb (match $kb (db-ref $db) $db)
+    (: CPUEMP (emp-cpu $ptrn  (emp-tv $ptrn $dbb ))) ) 
+)
+
+(= (syn $kb $_ (: $prf (est-cpu  $ptrn $emp $est))) 
+    (let $dbb (match $kb (db-ref $db) $db)
+    (: CPUEST (est-cpu $ptrn $emp (do-ji-tv-est-f $dbb $ptrn $emp))) ) 
+)
+
+
+
 ;; System proof for Surpabsent
 ;; check if surprisingness value already calculated 
 ;; if count > 0 then no proof for the absent of the surprisingness value 

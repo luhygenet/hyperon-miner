@@ -95,7 +95,7 @@
           ( let* (
             (() (println! (Inest $pattern)))
             (($strength $confidence) (avrg_tv (ji-est-tv $db (db_size $db) $pattern $prtns) )))
-          ($pattern  (STV $strength $confidence)))            
+           (STV $strength $confidence))           
 ))
 
 
