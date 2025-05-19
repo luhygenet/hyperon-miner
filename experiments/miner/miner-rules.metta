@@ -59,41 +59,42 @@
 
 
 
-;;(do-ji-tv-est $db $ptrn)
+
 ;; Rule to calculate the empirical truth value of a pattern.
-;(: emp-rule 
- ;         (-> (minsup $ptrn) 
-  ;                (-> (db-ref $db) 
-   ;                      (-> (emp-cpu $ptrn $db $emp) 
-    ;                               (emp-val $ptrn (emp-tv (flatten $ptrn) $db))))))
+;;(: emp-rule 
+;;         (-> (minsup $ptrn) 
+;;               (-> (db-ref $db) 
+;;                      (-> (emp-cpu $ptrn $db $emp) 
+;;                               (emp-val $ptrn (emp-tv (flatten $ptrn) $db))))))
 
-
+;; Rule to calculate the empirical truth value of a pattern.
+-----------------------------------------------------------------------
+;; The change made was that the emp-tv function, which was 
+;; previously placed in the conclusion, was interrupting the chainer.
+;; So, it was moved to emp-cpu, which serves as a system-proof.
+-----------------------------------------------------------------------
 (: emp-rule 
-          (-> (minsup $ptrn) 
-               (-> (emp-cpu $ptrn $emp ) 
-                        (emp-val $ptrn $emp))))
+       (-> (minsup $ptrn) 
+              (-> (emp-cpu $ptrn $emp ) 
+                      (emp-val $ptrn $emp))))
 
-
-;; (emp-tv (flatten $ptrn) $db)
-;;(do_emp_tv (flatten $ptrn) $db $ratio)
 
 
 
 ;; Rule to calculate the probability (or truth value) estimate of a
 ;; pattern, given the empirical probabilities (truth values) of its
 ;; components.
+----------------------------------------------------------------------
+;;For now, the emp result is not used by est-tv because it represents 
+;;the pattern emp-tv , not its components. The component-wise emp-tv is 
+;;calculated within the est-tv function
+---------------------------------------------------------------------
 (: est-rule 
-          (-> (minsup $ptrn)
-                (->  (emp-val $ptrn $emp)
-                                 (->(est-cpu $ptrn $emp $est)
-                                           (est-tv $ptrn $est)))))
+    (-> (minsup $ptrn)
+        (->  (emp-val $ptrn $emp)
+                (->(est-cpu $ptrn $emp $est)
+                      (est-tv $ptrn $est)))))
                       
-
-;;(do-ji-tv-est $db $ptrn $emp)
-
-
-;;(do_emp_tv $ptrn $db $ratio)
-;;(do_emp_tv (flatten $ptrn) $db $ratio)
 
 
 ;; Rule to calculate the Jensen-Shannon Distance between the empirical
@@ -103,8 +104,8 @@
             (-> (minsup $ptrn)
                  (-> (emp-val $ptrn $emp)
                        (-> (est-tv $ptrn $est)
-                            (jsdsurp $ptrn (do-jsd $emp $est))))))
+                              (jsdsurp $ptrn (do-jsd $emp $est))))))
 
-;;(do-jsd $emp $est)
+
                       
                       

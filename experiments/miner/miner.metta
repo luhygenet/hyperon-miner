@@ -167,10 +167,7 @@
           ;;Store the chainer result in to the &res (new space)
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
              (() (frequent-miner $db $kb))
-             (() (println! (Here)))
-             (() (init-surp $kb &res $surp))  
-              (() (println! (Here2)))
-            
+             (() (init-surp $kb &res $surp))           
     )
     ;; return all atoms in &res
     (match &res $x $x)

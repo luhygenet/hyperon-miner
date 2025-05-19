@@ -24,15 +24,13 @@
  ;; calculate the empirical truth value of a pattern.
 (= (emp-tv $pattern $db)
     (let*
-        (   (() (println! (reached here : $pattern )))
+        (  
             ( ($ucount ) ( (universe-count $pattern $db)))
             ( ($ms) ($ucount)) ;;  we didn't use ms for support calculation
             ( ($sup) ( (sup-num $pattern $db)))
-
             ( ($conf) ( (count_to_confidence $ucount)) )
             ($mean (// $sup $ucount))
             ($confidence   (* 1e-1 $conf))
-            (() (println! (reached here2 : $confidence )))
         )
     (EMPTV $mean  $confidence)))
 
