@@ -45,9 +45,6 @@
 (=(surp-mode ) jsdsurp)
 (=(db-ratio) 0.5)
 
-(=(do-ji-tv-est-f $db $ptrn $emp) (
-      EST 0.5 0.6
-))
 
 ;; test the cog-miner
 ;; without sorting 

@@ -159,12 +159,14 @@
 ;; new space to store the init-surp results
 !(bind! &res (new-space))
 
+---------------------------------------------------------------------------
+;; initializes the necessary input parameters in the KB
+;;configures and runs the frequent pattern miner with conjunction expansion
+;;proceeds to surprisingness pattern mining using the backward chainer 
+;;Store the chainer result in to the &res (new space)
+----------------------------------------------------------------------------
 (= (cog-mine $db $kb $ms $surp $db-ratio) (
     let* (
-          ;; initializes the necessary input parameters in the KB
-          ;;configures and runs the frequent pattern miner with conjunction expansion
-          ;;proceeds to surprisingness pattern mining using the backward chainer 
-          ;;Store the chainer result in to the &res (new space)
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
              (() (frequent-miner $db $kb))
              (() (init-surp $kb &res $surp))           
