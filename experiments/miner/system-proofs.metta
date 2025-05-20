@@ -10,13 +10,21 @@
           (: CPU (⍃ $X $Y))
              (empty)))
 
-(= (syn $kb $_ (: $prf (uniqueLink $db))) 
-    (let $uniquelink (unique (match $db ($link $x $y) $link)) 
+             
+
+(= (syn $kb $_ (: $prf (uniqueLink $db $pattern $cnt))) 
+    (let* (
+        ($uniquelink (collapse (unique (match $db ($link $x $y) $link)) ) )
+        ($sup (superpose $uniquelink))
+        (add-atom $kb (unqLink $sup))
+        )
     (if (== (size-atom $uniquelink) 0)
           (empty)
              (: CPUUnique (Abstract ($uniquelink $x $y)))
              ))
     )
+
+
 ----------------------------------------------------------------------------
 ;; system proof  to calculate the emp-tv for the given pattern. 
 ;; The database is queried here because, when it was placed in the premises, 
@@ -36,16 +44,6 @@
     (let $dbb (match $kb (db-ref $db) $db)
     (: CPUEST (est-cpu $ptrn $emp (do-ji-tv-est $dbb (flatten $ptrn) $emp))) ) 
 )
-
-
-
-;; System proof for Surpabsent
-;; check if surprisingness value already calculated 
-;; if count > 0 then no proof for the absent of the surprisingness value 
-;;(= (syn $kb $_ (: $prf (surpabsent $ptrn))) 
-;;      (if (> (counter $kb (surp $ptrn $value)) 0) ;; use match here
-;;             (empty)
-;;               (: CPUSurpAb (surpabsent $ptrn))))
 
 
 

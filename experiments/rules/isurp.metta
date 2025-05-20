@@ -121,7 +121,7 @@
 ;; Function: do-ji-prob
 ;; -----------------------------------------------------------------------------
 ;; Purpose:
-;;   Recursively computes joint inclusion probabilities (JI-Probs) for a pattern
+;;   Recursively computes joint independent probabilities (JI-Probs) for a pattern
 ;;   across multiple partitions in a database, returning a list of probability estimates.
 ;;
 ;; Inputs:
@@ -160,30 +160,6 @@
              (cons-atom $jip $dummy) ))
 )
 
-; TODO:  check why the superpose is not working
-;; ==============================================================
-;; Previous Implementation: ^
-;; - Utilizes explicit recursion to operate over the list of partitions.
-;; - Decomposes the partitions list using a deconstructing approach (decons-atom).
-;; - For each partition, it computes the probability estimate using ji-prob-est.
-;; - Recursively processes the remaining partitions until an empty list is reached.
-;; - This method leverages conditional checks and explicit recursion, which can lead to deeper call stacks.
-;;
-;; New Implementation: v
-;; - Avoids explicit recursion by exploiting metta's non-deterministic properties.
-;; - Uses the 'superpose' function to combine results directly from all partitions.
-;; - Applies 'collapse' to aggregate the result of ji-prob-est computed on the combined partitions.
-;; - This approach is more concise and potentially more efficient as it abstracts the iteration over partitions.
-;;
-;; Overall Comparison:
-;; - Both versions aim to calculate the ji-prob-est over partitions with a given pattern and database ratio.
-;; - The older recursive approach handles each partition individually, while the new version collectively processes
-;;   the partitions via superposition and collapse.
-;; - The new implementation simplifies the code and leverages metta's capabilities to avoid deep recursion.
-
-; (=(do-ji-prob $partitions $pattern $db $db_ratio) (
-;    collapse (ji-prob-est (superpose $partitions) $pattern $db $db_ratio)
-; ))
 
 
 
@@ -192,7 +168,7 @@
 ;; ==============================================================
 ;; Function: ji_prob_est_interval
 ;; Purpose: Estimates the expected probability interval [emin, emax] for a pattern
-;;          using a jackknife-inspired (JI) estimation method
+;;          using a joint independent (JI) estimation method
 ;;
 ;; Parameters:
 ;;   $pattern    - The pattern whose probability we want to estimate
@@ -200,10 +176,10 @@
 ;;   $db_ratio   - Ratio parameter controlling database sampling/weighting
 ;;
 ;; How it works:
-;; 1. Generates partitions of the database excluding the pattern:
+;; 1. Generates partitions of the pattern excluding the pattern:
 ;;    (generet-partition-without-pattern $pattern)
 ;;    - Creates modified versions of the database that exclude the target pattern
-;;    - This is similar to jackknife resampling in statistics
+;;    - This is similar to resampling in statistics
 ;;
 ;; 2. Computes probability estimates across partitions:
 ;;    (do-ji-prob partitions $pattern $db $db_ratio)
@@ -216,11 +192,6 @@
 ;;
 ;; 4. Returns the probability interval as (emin emax)
 ;;
-;; Mathematical Interpretation:
-;;   Provides a robust probability estimation by:
-;;   - Creating multiple variants of the database (pattern-excluded)
-;;   - Measuring how the pattern's probability varies across these variants
-;;   - Returning the observed range of probabilities
 ;;
 ;; Typical Usage:
 ;;   Used as input for surprisingness measures (like isurp) to determine
@@ -242,14 +213,14 @@
 
 
 ;; ==============================================================
-;; Function: isurp (Intensional Surprisingness)
+;; Function: isurp (Independent Surprisingness)
 ;; Purpose:  Measures how statistically surprising a pattern is
 ;;           within a given database context, with optional normalization
 ;;
 ;; Parameters:
 ;;   $pattern    - The pattern to evaluate for surprisingness
 ;;   $db         - The database/context to evaluate against
-;;   $normalize  - Boolean flag to normalize the result (0-1 range)
+;;   $normalize  - Boolean flag to normalize the result (0-1 range) 
 ;;   $db_ratio   - Ratio parameter for database sampling/weighting
 ;;
 ;; How it works:
