@@ -85,10 +85,10 @@
 ;;   - EMPTV structure containing mean and confidence
 (= (emp-tv $pattern $db)
     (let*
-        ( ( ($ucount ) ( (universe-count $pattern $db)))
+        (  
+            ( ($ucount ) ( (universe-count $pattern $db)))
             ( ($ms) ($ucount)) ;;  we didn't use ms for support calculation
             ( ($sup) ( (sup-num $pattern $db)))
-
             ( ($conf) ( (count_to_confidence $ucount)) )
             ($mean (// $sup $ucount))
             ($confidence   (* 1e-1 $conf))
@@ -526,6 +526,7 @@
     (if (== $index 0)
         (car-atom $list) ; Return the first element if index is 0
         (get-element (- $index 1) (cdr-atom $list))))
+
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;;;;; Implmented Before ;;;;
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
