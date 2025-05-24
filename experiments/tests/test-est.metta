@@ -10,95 +10,125 @@
 ! (import! &self experiments:rules:emp-tv)
 ! (import! &kb experiments:data:ugly_man_sodaDrinker)
 
-
-
-
-
-
-
 ! (bind! square (py-atom numpy.square (-> Number Number)))
 
 
 
 
-! (add-reduct &self (= (get-space) (new-space)))
-! (add-atom (get-space) (Inheritance Abe human))
-! (add-atom (get-space) (Inheritance Abe human))
-! (add-atom (get-space) (Inheritance Abe human))
-
-! (add-atom (get-space) (Inheritance Rio human))
-! (add-atom (get-space) (Inheritance Bob human))
-! (add-atom (get-space) (Inheritance Mike human))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Inheritance Zac human))
-! (add-atom (get-space) (Parent Abe Nil ))
-! (add-atom (get-space)  (Inheritance Bob (And human (Or zac))) ) 
 
 
-;!(do-ji-tv-est  &kb (,(Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)))
-!(do-ji-tv-est  &kb (, (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x man)))
+;; =============================================================================
+;; Test: do-ji-tv-est (Joint Independet Probability - Zero Strength Case)
+;; -----------------------------------------------------------------------------
+;; Purpose:
+;;   Verify correct calculation of joint independent probability for a multi-clause pattern
+;;   when no matching instances exist in the knowledge base.
+;;
+;; Inputs:
+;;   - Knowledge Base: &kb (assumed to contain inheritance relations)
+;;   - Pattern: 
+;;       (, (Inheritance $x sodaDrinker) 
+;;          (Inheritance $x human) 
+;;          (Inheritance $x woman))
+;;
+;; Expected Output:
+;;   ((<original-pattern>) (STV 0 0.010755362007978185))
+;;
+;; Verification:
+;;   1. Pattern Structure: Tests handling of 3-clause conjunction
+;;   2. Strength Verification: 0 indicates no matches in &kb
+;;   3. Confidence Calculation: Validates low-confidence estimation logic
+;;   4. Return Structure: Ensures (pattern, truth-value) tuple format
+;;
+
+;; =============================================================================
+(assertEqual 
+  (do-ji-tv-est &kb 
+    (, (Inheritance $x sodaDrinker) 
+       (Inheritance $x human) 
+       (Inheritance $x woman))) 
+  ((, (Inheritance $x sodaDrinker) 
+      (Inheritance $x human) 
+      (Inheritance $x woman)) 
+   (STV 0 0.010755362007978185)))
+
+;; =============================================================================
+;; Test: conjunct-pattern (Pattern Construction - Two-Clause Conjunction)
+;; -----------------------------------------------------------------------------
+;; Purpose:
+;;   Verify correct construction of a conjunctive pattern from two inheritance clauses
+;;   using the `conjunct-pattern` function.
+;;
+;; Inputs:
+;;   - Knowledge Base: &kb (to store the conjucted pattern; not used for construction)
+;;   - Pattern Components: 
+;;       (Inheritance $x sodaDrinker)
+;;       (Inheritance $x woman)
+;;
+;; Expected Output:
+;;   (, (Inheritance $x sodaDrinker) (Inheritance $x woman))
+;;
+;; Verification:
+;;   1. Pattern Construction: Confirms correct formation of conjunction pattern
+;;   2. Structural Integrity: Ensures output is a list of the original clauses
+;;   3. Order Preservation: Maintains clause ordering as given in input
+;;   4. Unification Readiness: Valid format for further logical operations
+;;
+;; Key Observations:
+;;   - The test checks a pure syntactic transformation without evaluation
+;;   - The knowledge base is not actively queried; only passed as context
+;;   - Ensures consistent behavior for downstream processing pipelines
+;; =============================================================================
+(assertEqual 
+  (conjunct-pattern 
+    ((Inheritance $x sodaDrinker) 
+     (Inheritance $x woman)) 
+    &kb) 
+  (, (Inheritance $x sodaDrinker) 
+     (Inheritance $x woman)))
+     
+
+;; =============================================================================
+;; Test: flatten (Pattern Flattening - Nested Conjunction Case)
+;; -----------------------------------------------------------------------------
+;; Purpose:
+;;   Ensure that nested conjunctions are properly flattened into a single-level pattern
+;;   using the `flatten` function.
+;;
+;; Inputs:
+;;   - Pattern: 
+;;       (, 
+;;         (, (Inheritance $x human) 
+;;             (Inheritance $x sodaDrinker)) 
+;;         (Inheritance $x man))
+;;
+;; Expected Output:
+;;   (, 
+;;     (Inheritance $x human) 
+;;     (Inheritance $x sodaDrinker) 
+;;     (Inheritance $x man))
+;;
+;; Verification:
+;;   1. Nesting Elimination: Confirms proper flattening of nested conjunctions
+;;   2. Clause Preservation: All original clauses are retained in the correct order
+;;   3. Output Format: Validates resulting flat pattern is usable in reasoning functions
+;;   4. Structural Integrity: No loss or duplication of pattern elements
+;;
+;; Key Observations:
+;;   - Nested patterns commonly arise from dynamic pattern generation
+;;   - Flattening ensures compatibility with pattern matchers expecting flat lists
+;;   - Supports compositional pattern logic in inference engines
+;; =============================================================================
+(assertEqual 
+  (flatten 
+    (, 
+      (, (Inheritance $x human) 
+         (Inheritance $x sodaDrinker)) 
+      (Inheritance $x man))) 
+  (, 
+    (Inheritance $x human) 
+    (Inheritance $x sodaDrinker) 
+    (Inheritance $x man)))
 
 
 
-
-
-
-
-
-;;dummy
-;; Emperical truth value for partitions of the pattern (,(Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman))
-(EMPTV 0.018867924528301886 0.09814814814814815)   ;; comment out some of the facts
-(EMPTV 0.016666666666666666 0.09836065573770492)   ;;full db
-
-partitions
-(
-(
-(((Inheritance $x human)) ((Inheritance $x sodaDrinker)) ((Inheritance $x woman))) 
-(((Inheritance $x human) (Inheritance $x woman)) ((Inheritance $x sodaDrinker))) 
-(((Inheritance $x human) (Inheritance $x sodaDrinker)) ((Inheritance $x woman))) 
-(((Inheritance $x human)) ((Inheritance $x sodaDrinker) (Inheritance $x woman)))
-)
-)
-
-;; result of each components 
-(((((Inheritance $x human) (EMPTV 0.016666666666666666 0.09836065573770492)) 
-((Inheritance $x sodaDrinker) (EMPTV 0.016666666666666666 0.09836065573770492)) 
-((Inheritance $x woman) (EMPTV 0.016666666666666666 0.09836065573770492)))
-
- ((((Inheritance $x human) (Inheritance $x sodaDrinker)) (EMPTV 0.0002687449610319806 0.09997313272434176)) ;; 10
- ((Inheritance $x woman) (EMPTV 0.01639344262295082 0.09838709677419355))) ;;
- 
- (((Inheritance $x human) (EMPTV 0.01639344262295082 0.09838709677419355)) 
- (((Inheritance $x sodaDrinker) (Inheritance $x woman)) (EMPTV 0.00026014568158168577 0.0999739921976593))) 
- 
- ((((Inheritance $x human) (Inheritance $x woman)) (EMPTV 0.0002519526329050139 0.09997481108312344)) 
- ((Inheritance $x sodaDrinker) (EMPTV 0.015873015873015872 0.09843750000000001)))))
-
-;; connected patterns
-(
-    (((Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x woman)) 
-     ((Inheritance $x human) (Inheritance $x woman) (Inheritance $x sodaDrinker)) 
-     ((Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x woman)) 
-     ((Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x woman))))
-
-
-((((Inheritance $x human) (Inheritance $x sodaDrinker)) ((Inheritance $x woman))) is 
-   ((Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x woman))) 
-
-;!(sup-num &kb (Inheritance $x woman))
-
-;!(emp-tv (, (Inheritance $x sodaDrinker) (Inheritance $x woman)) &kb)
-
-;!(conjunct-pattern ((Inheritance $x sodaDrinker) (Inheritance $x woman)) &kb)
-
-
-;!(do-ji-tv-est (get-space) (,(Inheritance $x $y)  (Inheritance Abe $y) (Inheritance Zac $y)))
-;(((Inheritance $x man) (Inheritance $x sodaDrinker)) ((Inheritance $x ugly)))
-;[((((Inheritance $x man)) ((Inheritance $x sodaDrinker) (Inheritance $x ugly))) ((EMPTV 0.16129032258064516 0.09841269841269841) (EMPTV 0.0 0.09841269841269841)))]
-
-;;!(emp-tv  (remove-parenthesis (, (Inheritance $x sodaDrinker) (Inheritance $x ugly))) &kb)
-
-!(size-atom (collapse (match &kb (, (Inheritance $x $y) (Inheritance $x $z)) ($x $y $z)) ))
-; !(match &kb (, (Inheritance $x $y) (Inheritance $x $z)) ($x $y))  
-
-;!(flatten (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)))
