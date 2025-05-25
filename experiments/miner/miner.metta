@@ -34,15 +34,6 @@
                 ;; (() (add-reduct $kb (minsup-rule)))
                 ;; (() (add-reduct $kb (surp-rule)))
                 )()))
-; (= (init-miner $db $kb $ms)
-;     (         let* (  
-;                  (() (add-atom $kb (: msT (ms-threshold $ms))))
-;                  (() (add-atom $kb (: dbref (db-ref $db))))
-;                  (() (add-atom &self (kb-ref $kb)))
-;                  (() (add-atom $kb (db-ref $db)))
-;                 ;; (() (add-reduct $kb (minsup-rule)))
-;                 ;; (() (add-reduct $kb (surp-rule)))
-;                 )()))
 
 
 ;;Returns frequent patters with their support from the kb
@@ -56,25 +47,16 @@
 ;; extract the mode of the Surprisingness
 ;; if the surprisingness mode is none return lis of mined patterns
 ;; otherwise launches the backward chainer for surprising patterns mining
+
 (= (init-surp $kb $res $surp-mode)  
   (           
         if (== $surp-mode none) 
               (chain (get-patterns $kb) $result (add-atom $res $result))  
                  (if  ( == $surp-mode jsdsurp)  
-                       (chain  (syn $kb (fromNumber 6) (: $prf (jsd-surp $what_is_surprise $value))) $result   (add-atom $res $result))                              
-                               (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result))         
+                            (chain  (syn $kb (fromNumber 13) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-reduct $res $result))                           
+                                   (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-reduct $res $result))         
 )))
 
-
-(= (init-surp-old $kb $res $surp-mode)  
-  (           
-        if (== $surp-mode none) 
-              (chain (get-patterns $kb) $result (add-atom $res $result))  
-                 (if  ( == $surp-mode jsdsurp)  
-                      (chain  (syn $kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-atom $res $result)) 
-                            ;(syn $kb (fromNumber 10) (: $prf (jsdsurp $what_is_surprise $value)))         
-                               (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result))         
-)))
 
 ; !(fcc &kb (: dbref (db-ref $db)))
 
@@ -131,10 +113,12 @@
 ;;;;; Dummies ;;;;;;
 ;; mocking the frequent pattern miner results 
 (= (frequent-miner $db $kb) ( 
-     let*  ( (() (add-atom $kb (: FACT1  (supportOf (, (, (Inheritance $x human) (Inheritance $x ugly)) (Inheritance $x woman)) 5))))
-         (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 8))))
-         (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
+     let*  ( ;(() (add-atom $kb (: FACT1  (supportOf (, (, (Inheritance $x human) (Inheritance $x ugly)) (Inheritance $x woman)) 5))))
+        ; (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 5))))
+        ; (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 4))))
          (() (add-atom $kb (: FACT4 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
+        ; (() (add-atom $kb (: ((est-rule (((minsupport FACT4) msT) CPU)) dbref) (est-tv (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 0.6))))
+        ; (() (add-atom $kb (: ((emp-rule (((minsupport FACT4) msT) CPU)) CPUEMP) (emp-val (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) (EMPTV 0.5 0.7)))))
         ;; (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (jsdsurp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
         ) ()
 ))
@@ -233,18 +217,17 @@
 ;; new space to store the init-surp results
 !(bind! &res (new-space))
 
+---------------------------------------------------------------------------
+;; initializes the necessary input parameters in the KB
+;;configures and runs the frequent pattern miner with conjunction expansion
+;;proceeds to surprisingness pattern mining using the backward chainer 
+;;Store the chainer result in to the &res (new space)
+----------------------------------------------------------------------------
 (= (cog-mine $db $kb $ms $surp $db-ratio) (
     let* (
-          ;; initializes the necessary input parameters in the KB
-          ;;configures and runs the frequent pattern miner with conjunction expansion
-          ;;proceeds to surprisingness pattern mining using the backward chainer 
-          ;;Store the chainer result in to the &res (new space)
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
-            ;  (() (frequent-miner $db $kb))
-             (() (frequent-miner-new $db $kb))
-
-            ;  (() (init-surp $kb &res $surp))  
-            
+             (() (frequent-miner $db $kb))
+             (() (init-surp $kb &res $surp))           
     )
     ;; return all atoms in &res
     ; (match &res $x $x)

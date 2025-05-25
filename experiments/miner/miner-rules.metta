@@ -5,7 +5,7 @@
     (-> (supportOf $ptrn $cnt)
           (-> (ms-threshold $ms)
                  (-> (⍃ $ms $cnt)
-                       (minsup $ptrn)))))
+                        (minsup $ptrn)))))
 
 
 
@@ -37,12 +37,17 @@
        (-> (replace_variables $ptrn)
          (candidatePattern $ptrn))))
 
-;; rule to get the support of specialized patterns
-
-(: hasSupport 
+(: candidatePattern  
       (-> (specializationOf $aptrn $sptrn)
+                (candidatePattern $sptrn)))
+
+
+(: supportOfff 
+      (-> (minsup $ptrn)
             (-> (db-ref $db)
-                (supportOf $sptrn (counter $db $sptrn)))))
+                  (-> (db-ratio $ratio)
+                        (supportOfff $ptrn (do-sup $ptrn $db $ratio))))))
+
 
 ;; rule to expand conjunctions
 ; (: conjunction
@@ -90,37 +95,51 @@
 
 
 
+;; Rule to calculate the empirical truth value of a pattern.
+;;(: emp-rule 
+;;         (-> (minsup $ptrn) 
+;;               (-> (db-ref $db) 
+;;                      (-> (emp-cpu $ptrn $db $emp) 
+;;                               (emp-val $ptrn (emp-tv (flatten $ptrn) $db))))))
+
+;; Rule to calculate the empirical truth value of a pattern.
+-----------------------------------------------------------------------
+;; The change made was that the emp-tv function, which was 
+;; previously placed in the conclusion, was interrupting the chainer.
+;; So, it was moved to emp-cpu, which serves as a system-proof.
+-----------------------------------------------------------------------
+(: emp-rule 
+       (-> (minsup $ptrn) 
+              (-> (emp-cpu $ptrn $emp ) 
+                      (emp-val $ptrn $emp))))
+
+
+
+
 ;; Rule to calculate the probability (or truth value) estimate of a
 ;; pattern, given the empirical probabilities (truth values) of its
 ;; components.
+----------------------------------------------------------------------
+;;For now, the emp result is not used by est-tv because it represents 
+;;the pattern emp-tv , not its components. The component-wise emp-tv is 
+;;calculated within the est-tv function
+---------------------------------------------------------------------
 (: est-rule 
-   (-> (minsup $ptrn)
-         (-> (emp-val $ptrn $emp)
-               (-> (db-ref $db)
-                     (est-tv $ptrn (do-ji-tv-est $db $ptrn))))))
-
-
-
-;;(do-ji-tv-est $db $ptrn)
-;; Rule to calculate the empirical truth value of a pattern.
-(: emp-val 
-   (-> (minsup $ptrn) 
-          (-> (db-ref $db) 
-                 (-> (db-ratio $ratio)
-                           (emp-val $ptrn (do_emp_tv $ptrn $db $ratio))))))
-
-
-;;(do_emp_tv $ptrn $db $ratio)
-;;(do_emp_tv (flatten $ptrn) $db $ratio)
+    (-> (minsup $ptrn)
+        (->  (emp-val $ptrn $emp)
+                (->(est-cpu $ptrn $emp $est)
+                      (est-tv $ptrn $est)))))
+                      
 
 
 ;; Rule to calculate the Jensen-Shannon Distance between the empirical
 ;; truth value and the truth value estimate of a pattern according to
 ;; some db.
 (: jsd-tv 
-      (-> (emp-val $ptrn $emp)
-            (-> (est-tv $ptrn $est)
-                  (jsdsurp $ptrn (do-jsd $emp $est)))))
+            (-> (minsup $ptrn)
+                 (-> (emp-val $ptrn $emp)
+                       (-> (est-tv $ptrn $est)
+                              (jsdsurp $ptrn (do-jsd $emp $est))))))
 
 
                       

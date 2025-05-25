@@ -1,5 +1,5 @@
 !(register-module! ../../experiments)
-!(register-module! ../../../../chaining)
+!(register-module!  ../../../chaining)
 
 !(import! &self experiments:miner:miner)
 !(import! &self experiments:miner:miner-utils)
@@ -36,7 +36,6 @@
 
 ;; config kb : load the chainer , rules , system-proofs ....
 !(import! &self  chaining:dtl:backward:curried)
-!(import! &self  chaining:dtl:forward:curried)
 !(import! &temp   experiments:miner:miner-rules)
 !(import! &self  experiments:miner:system-proofs)
 
@@ -76,8 +75,8 @@
 
 
 ;; define parameters 
-(=(min-sup) 2)
-(=(surp-mode ) isurp-old) 
+(=(min-sup) 6)
+(=(surp-mode ) jsdsurp)
 (=(db-ratio) 0.5)
 ; !(add-atom &kb (: msT (ms-threshold 2)))
 ; !(add-atom &kb (: SUP (supportOf $ptrn 5)))
