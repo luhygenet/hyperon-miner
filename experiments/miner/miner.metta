@@ -85,20 +85,48 @@
 ))
 
 (= (abstract $depth $kb)
-    (chain (syn $kb $depth (: $prf (AbstractPattern $x))) $res (add-reduct $kb $res))
+    ; (chain (syn $kb $depth (: $prf (AbstractPattern $x))) $res (add-reduct $kb $res))
+    (let $res (syn $kb $depth (: $prf (AbstractPattern $x))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
 )
 (= (specialization $depth $kb)
-    (chain (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))) $res (add-reduct $kb $res))
+    ; (chain (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))) $res (add-reduct $kb $res))
+    (let $res (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
 ) 
 (= (support $depth $kb)
-    (chain (syn $kb $depth (: $prf (supportOf $sptrn $cnt))) $res (add-reduct $kb $res))
+    ; (chain (syn $kb $depth (: $prf (supportOf $sptrn $cnt))) $res (add-reduct $kb $res))
+    (let $res (syn $kb $depth (: $prf (supportOf $sptrn $cnt))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
 )
 
 (= (candidate $depth $kb)
-    (chain (syn $kb $depth (: $prf (candidatePattern $x))) $res (add-reduct $kb $res))
+    ; (chain (syn $kb $depth (: $prf (candidatePattern $x))) $res (add-reduct $kb $res))
+    (let $res (syn $kb $depth (: $prf (candidatePattern $x))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
+)
+(= (conjunction-old $depth $kb)
+    ; (chain (syn $kb $depth (: $prf (candidatePattern $x))) $res (add-reduct $kb $res))
+    ; (let $res (syn $kb $depth (: $prf (conjunction $x))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
+    (let $res (syn $kb $depth (: $prf (conjunction $x))) (add-reduct $kb $res))
+)
+(= (conjunction-clean $depth $kb)
+    ; (chain (syn $kb $depth (: $prf (candidatePattern $x))) $res (add-reduct $kb $res))
+    ; (let $res (syn $kb $depth (: $prf (conjunction $x))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
+    (let $res (syn $kb $depth (: $prf (conjunction-clean $x))) (add-reduct $kb $res))
 )
 
-
+(= (conjunction $depth $kb $rec $maxrec) 
+    (let*
+        (
+        ($prevrec (- $rec 1))
+        (() (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
+        ; (() (println! $rec))
+        (() (add-atom $kb (: maxClauses (maxClauses $rec))))
+        ($conj (collapse (syn $kb $depth (: $prf (conjunction $x)))))
+        (() (add-reduct $kb $conj))
+        ($res (collapse (syn $kb (fromNumber 4) (: $prf (candidatePattern $y)))))
+        ; (() (remove-atom $kb $res))
+        (() (add-reduct $kb $res))
+        )
+    (if (> (+ $rec 1) $maxrec) () (conjunction $depth $kb (+ $rec 1) $maxrec)))
+)
 
 ;;;;; Dummies ;;;;;;
 ;; mocking the frequent pattern miner results 
@@ -114,10 +142,11 @@
 
 (= (frequent-miner-new $db $kb) ( 
      let*  ( 
-         (() (abstract (fromNumber 4) $kb))
-         (() (specialization (fromNumber 3) $kb))
-         (() (support (fromNumber 4) $kb))
-         (() (candidate (fromNumber 5) $kb))
+         ($re (collapse (abstract (fromNumber 4) $kb)))
+         ($res (collapse (specialization (fromNumber 3) $kb)))
+         ($resu (collapse (support (fromNumber 4) $kb)))
+         ($result (collapse (candidate (fromNumber 5) $kb)))
+        ;  ($results (collapse (conjunction (fromNumber 5) $kb)))
       ) ()
 ))
 
@@ -211,12 +240,15 @@
           ;;proceeds to surprisingness pattern mining using the backward chainer 
           ;;Store the chainer result in to the &res (new space)
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
-             (() (frequent-miner $db $kb))
-             (() (init-surp $kb &res $surp))  
+            ;  (() (frequent-miner $db $kb))
+             (() (frequent-miner-new $db $kb))
+
+            ;  (() (init-surp $kb &res $surp))  
             
     )
     ;; return all atoms in &res
-    (match &res $x $x)
+    ; (match &res $x $x)
+    (match $kb $x $x)
 ))
 
 
