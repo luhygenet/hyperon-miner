@@ -1,5 +1,5 @@
 !(register-module! ../../experiments)
-!(register-module!  ../../../chaining)
+!(register-module!  ../../../../chaining)
 
 !(import! &self experiments:miner:miner)
 !(import! &self experiments:miner:miner-utils)
@@ -75,8 +75,8 @@
 
 
 ;; define parameters 
-(=(min-sup) 6)
-(=(surp-mode ) jsdsurp)
+(=(min-sup) 2)
+(=(surp-mode) jsdsurp)
 (=(db-ratio) 0.5)
 ; !(add-atom &kb (: msT (ms-threshold 2)))
 ; !(add-atom &kb (: SUP (supportOf $ptrn 5)))
@@ -84,7 +84,7 @@
 !(init-miner &db &kb (min-sup) (surp-mode) (db-ratio))
 ; !(candidate &kb)
 
-; !(syn &kb Z (: $prf (replace_index (Inheritance Z (S Z)))))
+; !(syn &kb Z (: $prf (replace_variables (,(Inheritance Z sodaDrinker) (Inheritance Z sodaDrinker)))))
 ; !(collapse (abstract (fromNumber 4) &kb))
 ; !(collapse (specialization (fromNumber 3) &kb))
 ; !(collapse (support (fromNumber 4) &kb))
@@ -100,23 +100,57 @@
 
 ;; with sorting 
 ;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
-
+; !(add-atom &kb (: maxClauses (maxClauses 1)))
 ; !(syn &kb Z (: $prf (equals 2 2)))
-
+; !(syn &kb (fromNumber 4) (: $prf (AbstractPattern $x)))
+; !(add-atom &kb (: conj (conjunction (, (Inheritance $b53 sodaDrinker) (Inheritance $b53 sodaDrinker)))))
+; !(add-reduct &kb (: min (minsup (,(Inheritance $b53 sodaDrinker) (Inheritance $b53 sodaDrinker)))))
+; !(add-atom &kb (: candidate (candidatePattern (,(Inheritance Z sodaDrinker) (Inheritance Z sodaDrinker)))))
+;  (: (((((((((((((conjunction-expand candidate) CPUReplacevar) CPUReplaceindex) CPUCount) maxClauses) CPUequals) candidate) CPUReplacevar) CPUReplaceindex) CPUCount) CPUequals) msT) dbref) (candidatePattern (, (Inheritance $d48#273405 sodaDrinker) (Inheritance $d48#273405 sodaDrinker))))
 !(add-atom &kb (: candidate (candidatePattern (Inheritance Z ugly))))
 !(add-atom &kb (: candidate (candidatePattern (Inheritance Z sodaDrinker))))
 ; !(add-atom &kb (: candidate (candidatePattern (Inheritance Allen Z))))
 ; !(add-atom &kb (: candidate (candidatePattern (Inheritance Cason Z))))
+(= (conjunction-test $depth $kb $max)
+    ; (chain (syn $kb $depth (: $prf (candidatePattern $x))) $res (add-reduct $kb $res))
+    ; (let $res (syn $kb $depth (: $prf (conjunction $x))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
+    (let* (
+        ($prevrec (- $max 1))
+        (() (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
+        (() (add-atom $kb (: maxClauses (maxClauses $max))))
+        ($res (syn $kb $depth (: $prf (candidatePattern $ptrn))))
+    ) (add-reduct $kb $res))
+)
 
+; (= (conjunction $depth $kb $rec $maxrec) 
+;     (let*
+;         (
+;         ($prevrec (- $rec 1))
+;         ($re (collapse (remove-atom $kb (: maxClauses (maxClauses $prevrec)))))
+;         ; (() (println! $rec))
+;         ($add (collapse (add-atom $kb (: maxClauses (maxClauses $rec)))))
+;         ; ($conj (syn $kb $depth (: $prf (conjunction $x))))
+;         ; (() (add-reduct $kb $conj))
+;         ($res (collapse (syn $kb $depth (: $prf (candidatePattern $y)))))
+;         ; (() (remove-atom $kb $res))
+;         ($red (collapse (add-reduct $kb (superpose $res))))
+;         )
+;     (if (> (+ $rec 1) $maxrec) () (conjunction $depth $kb (+ $rec 1) $maxrec))
+;     ; (superpose $res)
+;     ; $res
+;     )
+; )
+; (syn &kb (fromNumber 14) (: $prf (candidatePattern $ptrn)))
 
-
-; !(abstract (fromNumber 4) &kb)
+; !(abstract (fromNumber 5) &kb)
 ; !(specialization (fromNumber 3) &kb)
 ; !(support (fromNumber 4) &kb)
 ; !(candidate (fromNumber 5) &kb)
-!(conjunction (fromNumber 10) &kb 1 2)
-; !(conjunction-clean (fromNumber 4) &kb)
+!(conjunction (fromNumber 14) &kb 1 2)
+; !(conjunction-test (fromNumber 14) &kb 1)
+; !(conjunction-test (fromNumber 14) &kb 2)
 
+; !(match &db $x $x)
 !(match &kb $x $x)
 ; !(syn &kb Z (: $prf (clause_count (, (,(Inheritance Z sodaDrinker) (Inheritance Z ugly)) (Inheritance Z ugly)) $cnt)))
 
@@ -129,7 +163,7 @@
 
 ;;Dummies
 
-;!(match &kb $x $x)
+; !(match &kb $x $x)
 
 ;!(get-metatype (@doc random-int (@desc "Returns random int number from range defined by two numbers (first and second argument)")))
 
