@@ -98,16 +98,20 @@
     (let*
         (
         ($prevrec (- $rec 1))
-        (() (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
+        ($re (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
         ; (() (println! $rec))
-        (() (add-atom $kb (: maxClauses (maxClauses $rec))))
-        ($conj (collapse (syn $kb $depth (: $prf (conjunction $x)))))
-        (() (add-reduct $kb $conj))
-        ($res (collapse (syn $kb (fromNumber 4) (: $prf (candidatePattern $y)))))
+        ($add (collapse (add-atom $kb (: maxClauses (maxClauses $rec)))))
+        ; ($conj (syn $kb $depth (: $prf (conjunction $x))))
+        ; (() (add-reduct $kb $conj))
+        ($res (collapse (syn $kb $depth (: $prf (candidatePattern $y)))))
         ; (() (remove-atom $kb $res))
-        (() (add-reduct $kb $res))
+        ($sup (remove-parenthesis $res))
+        ($rem (collapse (remove-atom $kb $sup)))
+        ($red (collapse (add-reduct $kb $sup)))
         )
-    (if (> (+ $rec 1) $maxrec) () (conjunction $depth $kb (+ $rec 1) $maxrec)))
+     (if (> (+ $rec 1) $maxrec) () (conjunction $depth $kb (+ $rec 1) $maxrec))
+    ; (remove-parenthesis $res)
+    )
 )
 
 ;;;;; Dummies ;;;;;;
