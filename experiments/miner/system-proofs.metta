@@ -17,7 +17,6 @@
     (if (and (and (is-number $X) (is-number $Y)) (== $X $Y))
           (: CPUequals (equals $X $Y))
              (empty)))
-
              
 
 (= (syn $kb $_ (: $prf (uniqueLink $db $pattern $cnt))) 
@@ -27,7 +26,7 @@
         )
     (if (== (size-atom $uniquelink) 0)
           (empty)
-             (: CPUUnique (Abstract ($uniquelink $x $y)))
+             (: CPUUnique (uniqueLink $db ($sup $a $b) (counter $db ($sup $a $b))))
              ))
     )
 
