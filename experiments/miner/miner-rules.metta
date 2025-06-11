@@ -32,14 +32,14 @@
         (specializationOf $aptrn (build-specialization-chain $aptrn $db)))))
 
 ;; rule to get candidate patterns
-(: candidate  
-      (-> (minsup $ptrn)
-       (-> (replace_variables $ptrn)
-         (candidatePattern $ptrn))))
+; (: candidate  
+;       (-> (minsup $ptrn)
+;        (-> (replace_variables $ptrn)
+;          (candidatePattern $ptrn))))
 
-(: candidatePattern  
-      (-> (specializationOf $aptrn $sptrn)
-                (candidatePattern $sptrn)))
+; (: candidatePattern  
+;       (-> (specializationOf $aptrn $sptrn)
+;                 (candidatePattern $sptrn)))
 
 
 (: supportOfff 
@@ -62,25 +62,29 @@
 ;; rule for creating conjunctions with more clauses
 (: conjunction-expand
       (-> (candidatePattern $ptrn1)
-      (-> (replace_index $ptrn1 $nptrn1)
+       (-> (replace_variables $ptrn1)
+       (-> (replace_index $ptrn1 $nptrn1)
          (-> (clause_count $nptrn1 $cnt)   
           (-> (maxClauses $max)
             (-> (equals $cnt $max)
             (-> (candidatePattern $ptrn2)
+             (-> (replace_variables $ptrn2)
              (-> (replace_index $ptrn2 $nptrn2)
+             (-> (clause_count $nptrn2 $cnt2)
+             (-> (equals $cnt2 1)
                (-> (ms-threshold $ms)
                   (-> (db-ref $db)
-                        (conjunction (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False))))))))))))
+                        (candidatePattern (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False))))))))))))))))
 
-(: conjunction-i
-      (-> (conjunction $conj)
-         (-> (replace_variables $conj)
-            (candidatePattern $conj))))
+; (: conjunction-i
+;       (-> (conjunction $conj)
+;             (candidatePattern $conj)))
+      ;    (-> (replace_variables $conj))
 ;; rule to clean conjunctions from redundant clauses
-(: remove-conjuncts-with-redundant-clause
-      (-> (conjunction $ptrn)
-        (-> (replace_variables $ptrn)
-            (conjunction-clean (remove_conjuncts_with_redundant_clauses $ptrn)))))
+; (: remove-conjuncts-with-redundant-clause
+;       (-> (conjunction $ptrn)
+;         (-> (replace_variables $ptrn)
+;             (conjunction-clean (remove_conjuncts_with_redundant_clauses $ptrn)))))
 
 
 
