@@ -1,3 +1,15 @@
 ; Check if a variable is in a list
 (= (is-var-in-list $var $list) (if (== $list ()) False (let $head (car-atom $list) (if (== $var $head) True (is-var-in-list $var (cdr-atom $list))))))
 
+
+; Generate combinations of variables
+(= (combine-vars $vars $count $combinations) 
+    (let* (
+        ($tmp-vars (superpose $vars))
+        ($tmp-combinations (if (== (car-atom ($combinations)) ()) () (superpose $combinations)))
+        ($new-pattern (cons-atom $tmp-vars $tmp-combinations)))
+        (if (== $count 1) $new-pattern (combine-vars $vars (- $count 1) (collapse $new-pattern)))))
+
+
+
+
