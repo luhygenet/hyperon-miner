@@ -248,8 +248,9 @@
 )
 (= (replace_pattern $cnjtion $pattern $pv2cv)
     (let* (
-            ($sup (superpose $pv2cv))
-            ($exp (substitute $pattern $sup))
+            ; ($sup (superpose $pv2cv))
+            ; ($exp (substitute $pattern $sup))
+            ($exp (substitute $pattern $pv2cv))
             ($new_cnjtion (, $cnjtion (car-atom $exp)))
         )
         $new_cnjtion
