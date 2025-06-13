@@ -24,5 +24,10 @@
 ))
 
 
+(= (create-variables $all-vars $cleared) (
+    if (== $all-vars ()) $cleared (let $head (car-atom $all-vars ) (if (is-var-in-list $head $cleared) (create-variables (cdr-atom $all-vars) $cleared) (create-variables (cdr-atom $all-vars) (cons-atom $head $cleared))))
+))
+
+
 
 
