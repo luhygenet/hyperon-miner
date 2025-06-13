@@ -39,3 +39,11 @@
 ))
 
 
+; !(experimenting with the second pattern that has 1 variable)
+; !(combine_lists (link AAA $BBB) (link CCC $CCC))
+
+; !(experimenting with the second pattern that has 2 variables)
+; !(combine_lists (link  $AAA $BBB ) (link $BB $AA))
+
+; !(experimenting with the second pattern that has 3 variables)
+; !(combine_lists (link $AAA $BBB) (link $AA (link1 $CCC $DDD)))
