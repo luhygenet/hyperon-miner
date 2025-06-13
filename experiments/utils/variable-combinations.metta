@@ -14,5 +14,15 @@
 (= (vars-exist $list1 $list2) (if (== $list1 ()) False (let $head (car-atom $list1) (if (is-var-in-list $head $list2) True (vars-exist (cdr-atom $list1) $list2)))))
 
 
+; Get filtered combinations of variables
+(= (get-filtered-combinations $all-vars $vars1 $vars2 $length) 
+    (let* (
+        ($combinations (combine-vars $all-vars $length ()))
+        ($vars1-check (if (vars-exist $combinations $vars1) $combinations Empty))
+        ($vars2-check (if (vars-exist $combinations $vars2) $combinations Empty))
+    ) $combinations
+))
+
+
 
 
