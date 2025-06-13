@@ -20,9 +20,10 @@
  ;  *
  ;  */
 
-; ! (register-module! ../../experiments)
-; ! (import! &self experiments:utils:common-utils)
-! (import! &self conj-exp)
+! (register-module! ../../experiments)
+! (import! &self experiments:utils:common-utils)
+! (import! &self experiments:utils:variable-combinations)
+; ! (import! &self conj-exp)
 
  ; The starting point for the conjunction expansion. It passes
  ; the Alpha Converted pattern (if necessary) to the expand_conjunction functions.
@@ -232,6 +233,7 @@
 (= (expand_conjunction_rec $cnjtion $apat $db $ms)
     (let $npat (expand_conjunction_connect $cnjtion $apat (get_variable_for_pattern $cnjtion) (get_variable_for_pattern $apat))
          (checker $db $npat $ms)
+        ;  $npat
     )
 )
 
@@ -322,14 +324,14 @@
 
  ;Populate the Atomspace with some data
 
-; (INHERITANCE_LINK A B)
-; (LIST_LINK A B)
-; (LIST_LINK A C)
-; (LIST_LINK B C)
-; (INHERITANCE_LINK A D)
-; (INHERITANCE_LINK X Y)
-; (LIST_LINK Y C)
-; (INHERITANCE_LINK X D)
+(INHERITANCE_LINK A B)
+(LIST_LINK A B)
+(LIST_LINK A C)
+(LIST_LINK B C)
+(INHERITANCE_LINK A D)
+(INHERITANCE_LINK X Y)
+(LIST_LINK Y C)
+(INHERITANCE_LINK X D)
 
  ;(expand_conjunction_inputs cnjtion pattern db ms mv es)
-; !(expand_conjunction (,(INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $F) &self 5 2 False)
+!(expand_conjunction (,(INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $F) &self 5 2 False)
