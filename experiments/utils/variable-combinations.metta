@@ -10,6 +10,9 @@
         ($new-pattern (cons-atom $tmp-vars $tmp-combinations)))
         (if (== $count 1) $new-pattern (combine-vars $vars (- $count 1) (collapse $new-pattern)))))
 
+; Check if variables from one list exist in another list
+(= (vars-exist $list1 $list2) (if (== $list1 ()) False (let $head (car-atom $list1) (if (is-var-in-list $head $list2) True (vars-exist (cdr-atom $list1) $list2)))))
+
 
 
 
