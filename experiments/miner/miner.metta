@@ -94,7 +94,26 @@
     (let $res (syn $kb $depth (: $prf (conjunction-clean $x))) (add-reduct $kb $res))
 )
 
-(= (conjunction $depth $kb $rec $maxrec) 
+; (= (conjunction $depth $kb $rec $maxrec) 
+;     (let*
+;         (
+;         ($prevrec (- $rec 1))
+;         ($re (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
+;         ; (() (println! $rec))
+;         ($add (collapse (add-atom $kb (: maxClauses (maxClauses $rec)))))
+;         ; ($conj (syn $kb $depth (: $prf (conjunction $x))))
+;         ; (() (add-reduct $kb $conj))
+;         ($res (collapse (syn $kb $depth (: $prf (candidatePattern $y)))))
+;         ; (() (remove-atom $kb $res))
+;         ($sup (remove-parenthesis $res))
+;         ($rem (collapse (remove-atom $kb $sup)))
+;         ($red (collapse (add-reduct $kb $sup)))
+;         )
+;      (if (> (+ $rec 1) $maxrec) () (conjunction $depth $kb (+ $rec 1) $maxrec))
+;     ; (remove-parenthesis $res)
+;     )
+; )
+(= (conjunction $depth $kb $rec) 
     (let*
         (
         ($prevrec (- $rec 1))
@@ -112,6 +131,18 @@
      (if (> (+ $rec 1) $maxrec) () (conjunction $depth $kb (+ $rec 1) $maxrec))
     ; (remove-parenthesis $res)
     )
+)
+(= (conjunction-test $depth $kb $max)
+    (let* (
+        ($prevrec (- $max 1))
+        (() (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
+        (() (add-atom $kb (: maxClauses (maxClauses $max))))
+        ($res (syn $kb $depth (: $prf (candidatePattern $ptrn))))
+    ) (add-reduct $kb $res))
+)
+
+(= (conj-next $depth $kb $max $limit)
+    (let $x (conjunction-test $depth $kb $max) (if (> (+ $max 1) $limit) () (conjunction-test $depth $kb (+ $max 1))))
 )
 
 ;;;;; Dummies ;;;;;;

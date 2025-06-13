@@ -111,16 +111,14 @@
 !(add-atom &kb (: candidate (candidatePattern (Inheritance Z sodaDrinker))))
 ; !(add-atom &kb (: candidate (candidatePattern (Inheritance Allen Z))))
 ; !(add-atom &kb (: candidate (candidatePattern (Inheritance Cason Z))))
-(= (conjunction-test $depth $kb $max)
-    ; (chain (syn $kb $depth (: $prf (candidatePattern $x))) $res (add-reduct $kb $res))
-    ; (let $res (syn $kb $depth (: $prf (conjunction $x))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
-    (let* (
-        ($prevrec (- $max 1))
-        (() (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
-        (() (add-atom $kb (: maxClauses (maxClauses $max))))
-        ($res (syn $kb $depth (: $prf (candidatePattern $ptrn))))
-    ) (add-reduct $kb $res))
-)
+; (= (conjunction-test $depth $kb $max)
+;     (let* (
+;         ($prevrec (- $max 1))
+;         (() (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
+;         (() (add-atom $kb (: maxClauses (maxClauses $max))))
+;         ($res (syn $kb $depth (: $prf (candidatePattern $ptrn))))
+;     ) (add-reduct $kb $res))
+; )
 
 ; (= (conjunction $depth $kb $rec $maxrec) 
 ;     (let*
@@ -146,10 +144,10 @@
 ; !(specialization (fromNumber 3) &kb)
 ; !(support (fromNumber 4) &kb)
 ; !(candidate (fromNumber 5) &kb)
-!(conjunction (fromNumber 14) &kb 1 2)
+; !(conjunction (fromNumber 14) &kb 1 2)
 ; !(conjunction-test (fromNumber 14) &kb 1)
 ; !(conjunction-test (fromNumber 14) &kb 2)
-
+!(conj-next (fromNumber 14) &kb 1 2)
 ; !(match &db $x $x)
 !(match &kb $x $x)
 ; !(syn &kb Z (: $prf (clause_count (, (,(Inheritance Z sodaDrinker) (Inheritance Z ugly)) (Inheritance Z ugly)) $cnt)))
