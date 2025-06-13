@@ -29,5 +29,13 @@
 ))
 
 
+; Create combinations of variables from two patterns
+(= (combine_lists $vars1 $vars2)
+    (let* (
+        ($all-vars1 (union-atom $vars1 $vars2))
+        ($all-vars (create-variables $all-vars1 ()))
+        ($length (tuple-count $vars2))
+    ) (if (== $length 1) $vars1 (get-filtered-combinations $all-vars $vars1 $vars2 $length))
+))
 
 
