@@ -325,14 +325,14 @@
 
  ;Populate the Atomspace with some data
 
-(INHERITANCE_LINK A B)
-(LIST_LINK A B)
-(LIST_LINK A C)
-(LIST_LINK B C)
-(INHERITANCE_LINK A D)
-(INHERITANCE_LINK X Y)
-(LIST_LINK Y C)
-(INHERITANCE_LINK X D)
+; (INHERITANCE_LINK A B)
+; (LIST_LINK A B)
+; (LIST_LINK A C)
+; (LIST_LINK B C)
+; (INHERITANCE_LINK A D)
+; (INHERITANCE_LINK X Y)
+; (LIST_LINK Y C)
+; (INHERITANCE_LINK X D)
 
  ;(expand_conjunction_inputs cnjtion pattern db ms mv es)
-!(expand_conjunction (,(INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $F) &self 5 2 False)
+; !(expand_conjunction (,(INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $F) &self 5 2 False)
