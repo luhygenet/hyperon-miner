@@ -1,5 +1,5 @@
 !(register-module! ../../experiments)
-!(register-module!  ../../../../chaining)
+; !(register-module!  ../../../../chaining)
 
 !(import! &self experiments:miner:miner)
 !(import! &self experiments:miner:miner-utils)
@@ -35,7 +35,7 @@
 
 
 ;; config kb : load the chainer , rules , system-proofs ....
-!(import! &self  chaining:dtl:backward:curried)
+; !(import! &self  chaining:dtl:backward:curried)
 !(import! &temp   experiments:miner:miner-rules)
 !(import! &self  experiments:miner:system-proofs)
 
@@ -120,48 +120,77 @@
 ;     ) (add-reduct $kb $res))
 ; )
 
-; (= (conjunction $depth $kb $rec $maxrec) 
-;     (let*
-;         (
-;         ($prevrec (- $rec 1))
-;         ($re (collapse (remove-atom $kb (: maxClauses (maxClauses $prevrec)))))
-;         ; (() (println! $rec))
-;         ($add (collapse (add-atom $kb (: maxClauses (maxClauses $rec)))))
-;         ; ($conj (syn $kb $depth (: $prf (conjunction $x))))
-;         ; (() (add-reduct $kb $conj))
-;         ($res (collapse (syn $kb $depth (: $prf (candidatePattern $y)))))
-;         ; (() (remove-atom $kb $res))
-;         ($red (collapse (add-reduct $kb (superpose $res))))
-;         )
-;     (if (> (+ $rec 1) $maxrec) () (conjunction $depth $kb (+ $rec 1) $maxrec))
-;     ; (superpose $res)
-;     ; $res
-;     )
-; )
-; (syn &kb (fromNumber 14) (: $prf (candidatePattern $ptrn)))
+(= (conjunction-o $depth $kb $rec $maxrec) 
+    (let*
+        (
+        ($prevrec (- $rec 1))
+        ($re (collapse (remove-atom $kb (: maxClauses (maxClauses $prevrec)))))
+        ; (() (println! $rec))
+        ($add (collapse (add-atom $kb (: maxClauses (maxClauses $rec)))))
+        ; ($conj (syn $kb $depth (: $prf (conjunction $x))))
+        ; (() (add-reduct $kb $conj))
+        ($res (collapse (syn $kb $depth (: $prf (candidatePattern $y)))))
+        ; (() (remove-atom $kb $res))
+        ($red (collapse (add-reduct $kb (superpose $res))))
+        )
+    (if (> (+ $rec 1) $maxrec) () (conjunction $depth $kb (+ $rec 1) $maxrec))
+    ; (superpose $res)
+    ; $res
+    )
+)
+!(syn &kb (fromNumber 14) (: $prf (candidatePattern $ptrn)))
+(= (conjunction-test $depth $kb $max)
+    (let* (
+        ($prevrec (- $max 1))
+        (() (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
+        (() (add-atom $kb (: maxClauses (maxClauses $max))))
+        ; ($res (syn $kb $depth (: $prf (candidatePattern $ptrn))))
+        ($res (collapse (syn $kb $depth (: $prf (candidatePattern $ptrn)))))
+        ($rem (collapse (remove-atom $kb (superpose $res))))
+    ) 
+            (add-reduct $kb (superpose $res))
+      
+    )
+)
+
+(= (conj-next $depth $kb $max $limit)
+    (let $x (conjunction-test $depth $kb $max) (let $next (+ $max 1) (if (> $next $limit) () (conjunction-test $depth $kb $next))))
+)
 
 ; !(abstract (fromNumber 5) &kb)
 ; !(specialization (fromNumber 3) &kb)
 ; !(support (fromNumber 4) &kb)
 ; !(candidate (fromNumber 5) &kb)
-; !(conjunction (fromNumber 14) &kb 1 2)
+; !(conjunction (fromNumber 14) &kb 1 1)
+; !(call (fromNumber 14) &kb 1 2)
 ; !(conjunction-test (fromNumber 14) &kb 1)
 ; !(conjunction-test (fromNumber 14) &kb 2)
-!(conj-next (fromNumber 14) &kb 1 2)
+; !(conj-next (fromNumber 14) &kb 1 2)
 ; !(match &db $x $x)
-!(match &kb $x $x)
+; !(match &kb $x $x)
 ; !(syn &kb Z (: $prf (clause_count (, (,(Inheritance Z sodaDrinker) (Inheritance Z ugly)) (Inheritance Z ugly)) $cnt)))
 
+(= (func () $list)
+    ()
+)
 
+(= (func $pattern $list)
+    (let* (
+        ($head (car-atom $pattern))
+        ($tail (cdr-atom $pattern))
+        ; ($res (if (== (get-type $head) Nat) (concatTuple ($head) $list) $list))
+    )
+    ($head (func $tail ()))
+    ; ($res (func $tail $res))
+    )
+)
 
-
-
-
+; !(func (Inheritance Z (S (S Z))) ())
 
 
 ;;Dummies
 
-; !(match &kb $x $x)
+!(match &kb $x $x)
 
 ;!(get-metatype (@doc random-int (@desc "Returns random int number from range defined by two numbers (first and second argument)")))
 
