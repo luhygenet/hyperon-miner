@@ -1,11 +1,13 @@
 !(register-module! ../../experiments)
-; !(register-module!  ../../../../chaining)
+!(register-module!  ../../../../chaining)
 
 !(import! &self experiments:miner:miner)
 !(import! &self experiments:miner:miner-utils)
 !(import! &self experiments:rules:conj-exp)
 !(import! &self experiments:rules:freq-pat)
 !(import! &self experiments:rules:use-python)
+!(import! &self experiments:utils:variable-combinations)
+
 
 
 
@@ -35,7 +37,7 @@
 
 
 ;; config kb : load the chainer , rules , system-proofs ....
-; !(import! &self  chaining:dtl:backward:curried)
+!(import! &self  chaining:dtl:backward:curried)
 !(import! &temp   experiments:miner:miner-rules)
 !(import! &self  experiments:miner:system-proofs)
 
@@ -107,8 +109,8 @@
 ; !(add-reduct &kb (: min (minsup (,(Inheritance $b53 sodaDrinker) (Inheritance $b53 sodaDrinker)))))
 ; !(add-atom &kb (: candidate (candidatePattern (,(Inheritance Z sodaDrinker) (Inheritance Z sodaDrinker)))))
 ;  (: (((((((((((((conjunction-expand candidate) CPUReplacevar) CPUReplaceindex) CPUCount) maxClauses) CPUequals) candidate) CPUReplacevar) CPUReplaceindex) CPUCount) CPUequals) msT) dbref) (candidatePattern (, (Inheritance $d48#273405 sodaDrinker) (Inheritance $d48#273405 sodaDrinker))))
-!(add-atom &kb (: candidate (candidatePattern (Inheritance Z ugly))))
-!(add-atom &kb (: candidate (candidatePattern (Inheritance Z sodaDrinker))))
+!(add-atom &kb (: candidate (candidatePattern (Inheritance $x ugly))))
+!(add-atom &kb (: candidate (candidatePattern (Inheritance $y sodaDrinker))))
 ; !(add-atom &kb (: candidate (candidatePattern (Inheritance Allen Z))))
 ; !(add-atom &kb (: candidate (candidatePattern (Inheritance Cason Z))))
 ; (= (conjunction-test $depth $kb $max)
@@ -138,38 +140,39 @@
     ; $res
     )
 )
-!(syn &kb (fromNumber 14) (: $prf (candidatePattern $ptrn)))
-(= (conjunction-test $depth $kb $max)
-    (let* (
-        ($prevrec (- $max 1))
-        (() (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
-        (() (add-atom $kb (: maxClauses (maxClauses $max))))
-        ; ($res (syn $kb $depth (: $prf (candidatePattern $ptrn))))
-        ($res (collapse (syn $kb $depth (: $prf (candidatePattern $ptrn)))))
-        ($rem (collapse (remove-atom $kb (superpose $res))))
-    ) 
-            (add-reduct $kb (superpose $res))
-      
-    )
-)
+; !(syn &kb (fromNumber 14) (: $prf (candidatePattern $ptrn)))
+; (= (conjunction-test $depth $kb $max)
+;     (let* (
+;         ($prevrec (- $max 1))
+;         ($rem (collapse (remove-atom $kb (: maxClauses (maxClauses $prevrec)))))
+;         ($add (collapse (add-atom $kb (: maxClauses (maxClauses $max)))))
+;         ($res (syn $kb $depth (: $prf (candidatePattern $ptrn))))
+;         ($fin (add-reduct $kb $res))
+;     )())
+; )
 
-(= (conj-next $depth $kb $max $limit)
-    (let $x (conjunction-test $depth $kb $max) (let $next (+ $max 1) (if (> $next $limit) () (conjunction-test $depth $kb $next))))
-)
+; (= (conj-next $depth $kb $max $limit)
+;     (let $x 
+;     (collapse (conjunction-test $depth $kb $max)) 
+;     (if (> (+ $max 1) $limit) () (conj-next $depth $kb (+ $max 1) $limit))
+;     ; $x
+;     ; 1
+;     )
+; )
 
 ; !(abstract (fromNumber 5) &kb)
 ; !(specialization (fromNumber 3) &kb)
 ; !(support (fromNumber 4) &kb)
 ; !(candidate (fromNumber 5) &kb)
-; !(conjunction (fromNumber 14) &kb 1 1)
+; !(conjunction (fromNumber 14) &kb 1 2)
 ; !(call (fromNumber 14) &kb 1 2)
 ; !(conjunction-test (fromNumber 14) &kb 1)
 ; !(conjunction-test (fromNumber 14) &kb 2)
-; !(conj-next (fromNumber 14) &kb 1 2)
+!(conj-next (fromNumber 14) &kb 1 2)
 ; !(match &db $x $x)
 ; !(match &kb $x $x)
 ; !(syn &kb Z (: $prf (clause_count (, (,(Inheritance Z sodaDrinker) (Inheritance Z ugly)) (Inheritance Z ugly)) $cnt)))
-
+; !(syn &kb (fromNumber 10) (: $prf (candidatePattern $y)))
 (= (func () $list)
     ()
 )
@@ -191,7 +194,6 @@
 ;;Dummies
 
 !(match &kb $x $x)
-
 ;!(get-metatype (@doc random-int (@desc "Returns random int number from range defined by two numbers (first and second argument)")))
 
 ;;add the rb ref to the kb 
