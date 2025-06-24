@@ -35,8 +35,14 @@ Generates all subsets (the powerset) of a given list
 ;the subset can't be an empty set or the orginal set itself
 (= (valid-subset $subset $original)
    (and (not (== $subset ()))
-        (not (== $subset $original))))
+        (not (== $subset $original))))  
 
+=========================================================================================
+;;This function explores all combinations of valid, 
+;;disjoint subsets that together cover the original list exactly once. It ensures:
+;;No repetition.
+;;No subset is empty or equal to the full set.
+;;Each partition is complete (checked by all-in in partitions-helper).
 
 ; Collect partitions by trying each valid subset
 (= (partitions-collect $subsets $original $current $used)
@@ -44,7 +50,7 @@ Generates all subsets (the powerset) of a given list
        ()
        (let ($subset $rest) (decons-atom $subsets)   
          (if (and (valid-subset $subset $original)
-                  (not (any-in $subset $used)))
+                  (not (any-in $subset $used)))     ;; ((a b) ( c))
              (let* (
                     ($first (partitions-helper $subsets $original (cons-atom $subset $current) (union-atom $used $subset)))
                       ($second (partitions-collect $rest $original $current $used)))
@@ -109,4 +115,4 @@ Generates all subsets (the powerset) of a given list
 (:partitions (-> list_of_patterns partitions))
 (=(partitions $original) (partitions (powerset $original) $original))
 
-!(partitions (a b c))
+!(partitions ((Inheritance $x man) (Inheritance $x sodaDrinker) (Inheritance $x ugly)))

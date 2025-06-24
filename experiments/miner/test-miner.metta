@@ -26,7 +26,7 @@
 
 
 ;; config kb : load the chainer , rules , system-proofs ....
-!(import! &self  chaining:dtl:backward:curried)
+;!(import! &self  chaining:dtl:backward:curried)
 !(import! &temp   experiments:miner:miner-rules)
 !(import! &self  experiments:miner:system-proofs)
 
@@ -39,7 +39,7 @@
 
 ;; define parameters 
 (=(min-sup) 6)
-(=(surp-mode ) jsdsurp)
+(=(surp-mode ) nisurp-old)
 (=(db-ratio) 0.5)
 
 
@@ -49,3 +49,6 @@
 
 ;; with sorting 
 ;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
+
+
+;!(unify (: $prfabs (-> $prms $ccln)) (: surprisingness (-> (minsup $what_is_surprise) (surp $what_is_surprise (do-surp $what_is_surprise)))) Yes NO)
