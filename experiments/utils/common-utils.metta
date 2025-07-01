@@ -266,6 +266,7 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ;;      a. Splits list into `$head` (first element) and `$tail` (remaining elements)
 ;;      b. Recursively reverses `$tail`
 ;;      c. Appends `$head` to the end of the reversed tail using `push-back`
+
 (=(reverse-list ()) ())
 (=(reverse-list $subparts)(
       let ($head $tail) (decons-atom $subparts) (push-back $head (reverse-list $tail))

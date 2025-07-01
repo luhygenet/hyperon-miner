@@ -31,6 +31,4 @@
 
 
 
-(=(is-number $x) 
-   (== (get-type $x) Number) 
-)
+

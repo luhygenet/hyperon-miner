@@ -1,12 +1,16 @@
 
+(=(is-number $x) 
+   (== (get-type $x) Number)  
+)
+
 ;; define system proofs 
 ------------------------------------------------------------------
 ;; System proof for ⍃
 ;; if conclusion equals (⍃ $X $Y), then return (: CPU (⍃ $X $Y)) 
 ;; if $x and $Y are fully grounded and (< $X $Y)
 ------------------------------------------------------------------
-(= (syn $kb $_ (: $prf (⍃ $X $Y))) 
-    (if (and (and (is-number $X) (is-number $Y)) (< $X $Y))
+(= (syn $kb $x (: $prf (⍃ $X $Y))) 
+    (if (is-number $X)
           (: CPU (⍃ $X $Y))
              (empty)))
 
@@ -48,3 +52,39 @@
 
 
 
+
+;; Base case
+(= (syn $kb $_ (: $prf $ccln)) (match $kb (: $prf $ccln) (: $prf $ccln)))
+
+;; Recursive step
+(= (syn $kb (S $k) (: ($prfabs $prfarg) $ccln))
+   (let* (
+     ((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))
+          (() (println! (Next prims : $prms)))
+          ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms)))
+          )
+     (: ($prfabs $prfarg) $ccln)))
+
+;; Base case.  For now it terminates at exactly iteration Z to avoid
+;; collecting too many redundant results.
+(= (isyn $kb $depth Z $query) $query)
+
+;; Iterative step
+(= (isyn $kb $depth (S $k) $query)
+   (let* (
+      (() (println! (have called)))
+      ($cres (collapse (syn $kb $depth $query)))
+          (() (println! (cres: $cres)))
+          ($dummy (add-atoms-nodup $kb $cres)))
+     (isyn $kb $depth $k (superpose $cres))))
+
+
+
+
+(= (collapser $kb $depth  $query)
+   (let* (
+      (() (println! (have called)))
+      ($cres (collapse (syn $kb $depth $query)))
+      (() (println! (cres: $cres)))
+          )
+     $cres))

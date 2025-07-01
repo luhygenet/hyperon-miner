@@ -1,5 +1,5 @@
 !(register-module! ../../experiments)
-!(register-module!  ../../../chaining)
+;!(register-module!  ../../../chaining)
 
 !(import! &self experiments:miner:miner)
 !(import! &self experiments:miner:miner-utils)
@@ -12,7 +12,6 @@
 ! (import! &self experiments:utils:constants)
 ! (import! &self experiments:utils:TruthValue)
 ! (import! &self experiments:utils:surp-utils)
-! (import! &self experiments:utils:miner-utils)
 ! (import! &self experiments:utils:gen_partition)
 ! (import! &self experiments:rules:est-tv)
 ! (import! &self experiments:rules:emp-tv)
@@ -26,8 +25,9 @@
 
 
 ;; config kb : load the chainer , rules , system-proofs ....
-;!(import! &self  chaining:dtl:backward:curried)
+;!(import! &self  icog:chaining:dtl:backward:curried)
 !(import! &temp   experiments:miner:miner-rules)
+;!(import! &temp2   experiments:miner:test-rules)
 !(import! &self  experiments:miner:system-proofs)
 
 ;;create new space for kb
@@ -45,10 +45,14 @@
 
 ;; test the cog-miner
 ;; without sorting 
-! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
+!(cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
 
 ;; with sorting 
 ;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
 
 
-;!(unify (: $prfabs (-> $prms $ccln)) (: surprisingness (-> (minsup $what_is_surprise) (surp $what_is_surprise (do-surp $what_is_surprise)))) Yes NO)
+
+
+
+
+                            

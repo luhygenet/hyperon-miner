@@ -19,6 +19,9 @@
 
 
 
+
+
+
 ;; Initializers
 ;;initialize the necessary input parameters in the KB,
 (= (init-miner $db $kb $ms $surp $db-ratio)
@@ -48,23 +51,17 @@
 ;; if the surprisingness mode is none return lis of mined patterns
 ;; otherwise launches the backward chainer for surprising patterns mining
 
-(= (init-surp $kb $res $surp-mode)  
+(= (mine-surp $kb $res $surp-mode)  
   (           
         if (== $surp-mode none) 
               (chain (get-patterns $kb) $result (add-atom $res $result))  
                  (if  ( == $surp-mode jsdsurp)  
-                            (chain  (syn $kb (fromNumber 13) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-reduct $res $result))                           
-                                   (chain  (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-reduct $res $result))         
+                            (chain  (syn $kb (fromNumber 13) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-atom $res $result))                          
+                                   ;(chain   (syn $kb (fromNumber 4)  (: $prf (surp $what_is_surprise $value))) $result  $result)   
+                                     (chain (collapser $kb (fromNumber 4)  (: $prf (surp $what_is_surprise $value))) $result  $result) 
+                                     ;(chain   (collapser $kb (fromNumber 4)  (: $prf (-> (→ $q $r) (-> (→ $p $q) (-> $p $r))))) $result  $result)                                         
 )))
 
-
-; !(fcc &kb (: dbref (db-ref $db)))
-
-
-(=(call-this) (
-      superpose((: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))
-               (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.8)))
-))
 
 
 
@@ -72,17 +69,33 @@
 ;;;;; Dummies ;;;;;;
 ;; mocking the frequent pattern miner results 
 (= (frequent-miner $db $kb) ( 
-     let*  ( ;(() (add-atom $kb (: FACT1  (supportOf (, (, (Inheritance $x human) (Inheritance $x ugly)) (Inheritance $x woman)) 5))))
-        ; (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 5))))
-        ; (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 4))))
+     let*  ( 
+
+         (() (add-atom $kb (: FACT1  (supportOf (, (, (Inheritance $x human) (Inheritance $x ugly)) (Inheritance $x woman)) 8))))
+         (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 8))))
+         (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 4))))
          (() (add-atom $kb (: FACT4 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
+
+         ;; fro new surp 
+        ;  (() (add-atom $kb (: FACT1  (supportOf (, (Inheritance $x human) (Inheritance $x ugly) (Inheritance $x woman)) 8))))
+        ;  (() (add-atom $kb (: FACT2 (supportOf (, (Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) 8))))
+        ;  (() (add-atom $kb (: FACT3 (supportOf (,  (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) 4))))
+        ;  (() (add-atom $kb (: FACT4 (supportOf (,  (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x man)) 8))))
         ; (() (add-atom $kb (: ((est-rule (((minsupport FACT4) msT) CPU)) dbref) (est-tv (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 0.6))))
         ; (() (add-atom $kb (: ((emp-rule (((minsupport FACT4) msT) CPU)) CPUEMP) (emp-val (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) (EMPTV 0.5 0.7)))))
         ;; (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (jsdsurp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
         ) ()
 ))
 
+(: do-emp-prob (->  $db $kb atom))
+(=(do-emp-prob $db $kn) ( 
+   let $frq-patterns  (get-atoms $kb) 
+              (let (: $fact (supportOf $pattern $support)) $frq-patterns 
+                      (add-reduct $kb (empProb $pattern (prob $pattern $db))))
+))
 
+(: init-surp (->  $db $kb atom))
+(= (init-surp  $db $kb))
 
 
 
@@ -95,11 +108,12 @@
           ($db    (match $kb (db-ref $ref) $ref))
           ($db-ratio (match $kb (db-ratio $db-ratio) $db-ratio))
           ($db-size (match $kb (db-size $db-size) $db-size))   
-          ($ptrn (flatten $pattern))        
+          ($ptrn (flatten $pattern))
     )
      (case $surp (
         (isurp-old (isurp-old $ptrn $db False))
         (nisurp-old (isurp-old $ptrn $db True))
+         ;(nisurp-old (0.5))
         (isurp (isurp $ptrn $db False $db-ratio))
         (nisurp (isurp $ptrn $db True $db-ratio))
         ($_ (isurp $ptrn $db False $db-ratio)))
@@ -166,6 +180,7 @@
 ;; new space to store the init-surp results
 !(bind! &res (new-space))
 
+
 ---------------------------------------------------------------------------
 ;; initializes the necessary input parameters in the KB
 ;;configures and runs the frequent pattern miner with conjunction expansion
@@ -176,10 +191,14 @@
     let* (
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
              (() (frequent-miner $db $kb))
-             (() (init-surp $kb &res $surp))           
+             ;($var (collapse (init-surp $db $kb)))           
+             ($var (mine-surp $kb &res $surp))           
     )
     ;; return all atoms in &res
-    (match &res $x $x)
+      ; (match $kb (empProb $pattern $prob) (empProb $pattern $prob))
+     ; (collapse (match &res $x $x))
+       $var
+    
 ))
 
 
