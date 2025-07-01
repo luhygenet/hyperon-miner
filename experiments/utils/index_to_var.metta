@@ -49,6 +49,13 @@
             (return $tail-filtered) )))))
     (return ()) ))))
 
+(= (debruijn2num Z) 0)
+
+(= (debruijn2num (S $k)) (+ 1 (debruijn2num $k)))
+
+(= (fromNum $n) (if (<= $n 0) Z (S (fromNum (- $n 1)))))
+; !(filter (($x 1) ($y 2) ($z 3)) $v (eval (equals $v $y)))
+
 
 
 
