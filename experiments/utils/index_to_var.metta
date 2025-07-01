@@ -10,14 +10,14 @@
 (= (fromNum $n) (if (<= $n 0) Z (S (fromNum (- $n 1)))))
 
 
-(= (deb2var $pattern)
+(= (replacev $pattern)
     (map-atom $pattern $x (if (== (get-type $x) Nat) (gen_var (eval (debruijn2num $x))) (if (and (not (== (get-type $x) Nat)) (== (get-metatype $x) Expression)) (deb2var $x) $x))) ;
 )
 (= (num2deb $pattern)
     (map-atom $pattern $x (if (== (get-type $x) Number) (fromNumber $x) (if (and (not (== (get-type $x) Number)) (== (get-metatype $x) Expression)) (num2deb $x) $x)))
 )
 
-(= (var2deb $pattern)
+(= (replace $pattern)
     (let* (
         (($numpat $index $list) (var2num $pattern 0 ()))
         ($deb  (num2deb $numpat)) 
