@@ -65,6 +65,11 @@
 ; !(num2deb (,(, (link 1 2) (an 3 1)) (this 2 4)))
 
 ; !(filter (1 2 3 4 5) $x (eval (> $x 3))) 
+!(map-atom (Inheritance 1 2) $x (if (== (get-type $x) Number) (fromNum $x) $x))
+(= (randomvar) 
+    (random)
+)
+
 
 
 
