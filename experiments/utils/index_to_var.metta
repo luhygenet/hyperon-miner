@@ -71,7 +71,9 @@
 )
 
 
-
+(= (var2num () $index $list)
+    (() $index $list) ; Return the empty list, current index, and list
+)
 
 (= (check $list $var)
    (if (== (intersection-atom $list $var) ()) False True)
