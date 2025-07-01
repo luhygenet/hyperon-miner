@@ -74,6 +74,18 @@
    (if (== (intersection-atom $list $var) ()) False True)
 )
 !(check ($1 $x $y) ($x))
+(= (find_index () $var $index)
+    ()
+)
+(= (find_index $list $var $index)
+    (let* (
+        ($head (car-atom $list))
+        ($tail (cdr-atom $list))
+        ($res (if (== $head $var) $index (find_index $tail $var (+ $index 1)))) ; if head is equal to var, return index
+    )
+    $res
+    )
+)
 
 (= (var2deb $pattern)
 )
