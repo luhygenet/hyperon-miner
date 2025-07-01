@@ -70,14 +70,13 @@
     (random)
 )
 
+(= (check $list $var)
+   (if (== (intersection-atom $list $var) ()) False True)
+)
+!(check ($1 $x $y) ($x))
 
-
-
-
-
-
-
-
+(= (var2deb $pattern)
+)
 
 !(var2deb (,(, (link $x $y) (an $o $y)) (this $x $t)))
 !(var2deb (Inheritance $x $y))
