@@ -58,7 +58,21 @@
 
 
 
+!(var2deb (,(, (link $x $y) (an $o $y)) (this $x $t)))
+!(var2deb (Inheritance $x $y))
+; !(index-atom ($x $y 1) 1)
+; !(get-metatype 1)
+!(union-atom ($x) ())
 
+(= (equals $x $y)
+    ; (== $x $y)
+    (function
+        (eval (chain (== (car-atom $x) $y) $v
+            (return $v))))
+)
+(= (track $list $var)
+    (filter-atom $list $v (eval (equals $v $var)))
+)
 
 ; !(for-each-in-atom (($x 1) ($y 2) ($z 3)) (if (== (car-atom ))) )
 
