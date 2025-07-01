@@ -70,7 +70,14 @@
     (random)
 )
 
-
+(= (var2deb $pattern)
+    (let* (
+        (($numpat $index $list) (var2num $pattern 0 ()))
+        ($deb  (num2deb $numpat)) 
+    ) 
+    $deb
+    )
+)
 (= (var2num () $index $list)
     (() $index $list) ; Return the empty list, current index, and list
 )
@@ -118,7 +125,8 @@
     
 )
 
-
+!(var2deb (,(, (link $x $y) (an $o $y)) (this $x $t)))
+!(var2deb (Inheritance $x $y))
 ; !(index-atom ($x $y 1) 1)
 ; !(get-metatype 1)
 !(union-atom ($x) ())
