@@ -69,7 +69,9 @@
 (= (randomvar) 
     (random)
 )
-
+(= (func () $index $list)
+    ()
+)
 (= (check $list $var)
    (if (== (intersection-atom $list $var) ()) False True)
 )
@@ -86,7 +88,36 @@
     $res
     )
 )
-
+(= (func $pattern $index $list)
+    (let* (
+        ($head (car-atom $pattern))
+        ($tail (cdr-atom $pattern))
+        ($is_var (== (get-metatype $head) Variable))
+        ($is_expr (== (get-metatype $head) Expression))
+        ($res (if $is_expr
+                (func $head $index $list)
+                (if $is_var
+                 (if (check $list ($head))
+                     (find_index $list $head 0)  ;; return index if bound
+                     $index                     ;; return next index if new
+                 )
+                 $head)))
+        ($new_list (if $is_var
+                    (if (check $list ($head))
+                        $list
+                        (union-atom $list ($head))                    
+                    )
+                 $list))
+        ($fin (func $tail (if $is_var
+                            (if (check $list ($head))
+                                $index 
+                                (+ $index 1)                    ;; return next index if new
+                            )
+                            $index) $new_list))
+    )
+    (cons-atom $res $fin)
+    )
+)
 (= (var2deb $pattern)
 )
 
