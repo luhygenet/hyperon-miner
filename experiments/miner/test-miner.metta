@@ -164,11 +164,11 @@
 ; !(specialization (fromNumber 3) &kb)
 ; !(support (fromNumber 4) &kb)
 ; !(candidate (fromNumber 5) &kb)
-; !(conjunction (fromNumber 14) &kb 1 2)
+!(conjunction-ch (fromNumber 14) &kb 1 2)
 ; !(call (fromNumber 14) &kb 1 2)
 ; !(conjunction-test (fromNumber 14) &kb 1)
 ; !(conjunction-test (fromNumber 14) &kb 2)
-!(conj-next (fromNumber 14) &kb 1 2)
+; !(conj-next (fromNumber 14) &kb 1 1)
 ; !(match &db $x $x)
 ; !(match &kb $x $x)
 ; !(syn &kb Z (: $prf (clause_count (, (,(Inheritance Z sodaDrinker) (Inheritance Z ugly)) (Inheritance Z ugly)) $cnt)))
@@ -183,7 +183,7 @@
         ($tail (cdr-atom $pattern))
         ; ($res (if (== (get-type $head) Nat) (concatTuple ($head) $list) $list))
     )
-    ($head (func $tail ()))
+    (cons $head (func $tail ()))
     ; ($res (func $tail $res))
     )
 )
@@ -202,7 +202,8 @@
 
 
 
-
+; !(let $x (superpose (1 2 4 5 6)) (func (Inheritance Z (S (S Z))) ()))
+; !(chain (superpose (1 2 4 5 6)) $x (func (Inheritance Z (S (S Z))) ()))
 ;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) $res)
 
 (: Grounded Type)

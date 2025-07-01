@@ -108,28 +108,47 @@
     (let $res (syn $kb $depth (: $prf (conjunction-clean $x))) (add-reduct $kb $res))
 )
 
+; (= (conjunction $depth $kb $rec $maxrec) 
+;     (let*
+;         (
+;         ($prevrec (- $rec 1))
+;         ($re (collapse (remove-atom $kb (: maxClauses (maxClauses $prevrec)))))
+;         ; (() (println! $rec))
+;         ($add (collapse (add-atom $kb (: maxClauses (maxClauses $rec)))))
+;         ; ($res (syn $kb $depth (: $prf (candidatePattern $y))))
+;         ; ($res (collapse (syn $kb $depth (: $prf (candidatePattern $y)))))
+;         ; (() (remove-atom $kb $res))
+;         ($red (collapse (add-reduct $kb (syn $kb $depth (: $prf (candidatePattern $y))))))
+;         )
+;     (if (> (+ $rec 1) $maxrec) $red (conjunction $depth $kb (+ $rec 1) $maxrec))
+;     )
+; )
 (= (conjunction $depth $kb $rec $maxrec) 
     (let*
         (
         ($prevrec (- $rec 1))
         ($re (collapse (remove-atom $kb (: maxClauses (maxClauses $prevrec)))))
-        ; (() (println! $rec))
         ($add (collapse (add-atom $kb (: maxClauses (maxClauses $rec)))))
-        ; ($conj (syn $kb $depth (: $prf (conjunction $x))))
-        ; (() (add-reduct $kb $conj))
-        ; ($res (syn $kb $depth (: $prf (candidatePattern $y))))
-        ($res (collapse (syn $kb $depth (: $prf (candidatePattern $y)))))
-        ; (() (remove-atom $kb $res))
-        ($prin $res)
-        ; ($red (collapse (add-reduct $kb (superpose $res))))
+        ($res (syn $kb $depth (: $prf (candidatePattern $y))))
+        ($red (collapse (add-reduct $kb (syn $kb $depth (: $prf (candidatePattern $y))))))
         )
-    ; (if (> (+ $rec 1) $maxrec) () (conjunction $depth $kb (+ $rec 1) $maxrec))
-    ; (superpose $res)
-    ; $prin
-    ; $res
-    1
+    (if (> (+ $rec 1) $maxrec) $red (conjunction $depth $kb (+ $rec 1) $maxrec))
     )
 )
+
+(= (conjunction-ch $depth $kb $rec $maxrec)
+  (chain (- $rec 1) $prevrec
+    (chain (eval (remove-atom $kb (: maxClauses (maxClauses $prevrec)))) $re
+      (chain (eval (add-atom $kb (: maxClauses (maxClauses $rec)))) $add
+        (chain (syn $kb $depth (: $prf (candidatePattern $y))) $res
+          (chain (add-reduct $kb $res) $red
+            (eval (if (> (+ $rec 1) $maxrec) $red (conjunction-ch $depth $kb (+ $rec 1) $maxrec)))))))))
+
+
+; !(let $x (superpose ((: rule1 (-> (minsup $ptrn) (surp $ptrn $value)))
+;                      (: rule2 (-> (minsup $ptrn) (surp $ptrn $value)))))
+;    (unify (: $prfabs (-> $prms $ccln)) $x Yes No))
+
 
 (= (call $depth $kb $rec $maxrec)
     (conjunction $depth $kb $rec $maxrec)
@@ -140,10 +159,11 @@
         ($rem (collapse (remove-atom $kb (: maxClauses (maxClauses $prevrec)))))
         ($ad (collapse (add-atom $kb (: maxClauses (maxClauses $max)))))
         ($res (syn $kb $depth (: $prf (candidatePattern $ptrn))))
-        (() (println! $res))
-        ($fin (add-atom $kb $res))
+        ; (() (println! $res))
+        ; ($fin (collapse (add-reduct $kb (syn $kb $depth (: $prf (candidatePattern $ptrn))))))
+        ($fin (collapse (add-reduct $kb $res)))
     ) 
-    $res
+    $fin
     )
 )
 
@@ -153,6 +173,10 @@
     ;     ($max why)
     ; )
     ; )
+    (if (<= $max $limit) 
+        (chain (conjunction-test $depth $kb $max) $x (conj-next $depth $kb (+ $max 1) $limit))
+        why
+        )
     ; (if (<= $max $limit) 
     ;     (let $x (collapse (conjunction-test $depth $kb $max)) (conj-next $depth $kb (+ $max 1) $limit))
     ;     why
@@ -161,21 +185,20 @@
     ;     (superpose ((collapse (conjunction-test $depth $kb $max)) (conj-next $depth $kb (+ $max 1) $limit)))
     ;     why
     ;     )
-  (if (<= $max $limit) 
-    (let* (
-            (() (println! (max annd limit $max $limit)))
-            ($next (+ $max 1))
-            (() (println! (next $next)))
-            ($x (collapse (conjunction-test $depth $kb $max)))
-            ; (() (println! (this is result $x)))
-            ; ($res (conj-next $depth $kb $next $limit))
+;   (if (<= $max $limit) 
+;     (let* (
+;             (() (println! (max annd limit $max $limit)))
+;             ($next (+ $max 1))
+;             (() (println! (next $next)))
+;             ($x (conjunction-test $depth $kb $max))
+;             ; (() (println! (this is result $x)))
+;             ; ($res (conj-next $depth $kb $next $limit))
 
-        )
-        (conj-next $depth $kb $next $limit)
-        ; $x
-    )
-    why
-    )
+;         )
+;         (if (<= $next $limit) (conj-next $depth $kb $next $limit) $x)
+;     )
+;     why
+;     )
 )
 
 ;;;;; Dummies ;;;;;;
