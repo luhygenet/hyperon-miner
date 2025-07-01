@@ -56,6 +56,15 @@
 (= (fromNum $n) (if (<= $n 0) Z (S (fromNum (- $n 1)))))
 ; !(filter (($x 1) ($y 2) ($z 3)) $v (eval (equals $v $y)))
 
+(= (deb2var $pattern)
+    (map-atom $pattern $x (if (== (get-type $x) Nat) (gen_var (eval (debruijn2num $x))) (if (and (not (== (get-type $x) Nat)) (== (get-metatype $x) Expression)) (deb2var $x) $x))) ;
+)
+(= (num2deb $pattern)
+    (map-atom $pattern $x (if (== (get-type $x) Number) (fromNumber $x) (if (and (not (== (get-type $x) Number)) (== (get-metatype $x) Expression)) (num2deb $x) $x)))
+)
+; !(num2deb (,(, (link 1 2) (an 3 1)) (this 2 4)))
+
+; !(filter (1 2 3 4 5) $x (eval (> $x 3))) 
 
 
 
