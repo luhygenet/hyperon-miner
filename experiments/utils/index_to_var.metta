@@ -69,56 +69,60 @@
 (= (randomvar) 
     (random)
 )
-(= (func () $index $list)
-    ()
+
+(= (var2deb $pattern)
+    (let* (
+        (($numpat $index $list) (var2num $pattern 0 ()))
+        ($deb  (num2deb $numpat)) 
+    ) 
+    $deb
+    )
 )
+(= (var2num () $index $list)
+    (() $index $list) ; Return the empty list, current index, and list
+)
+
 (= (check $list $var)
    (if (== (intersection-atom $list $var) ()) False True)
 )
-!(check ($1 $x $y) ($x))
+
 (= (find_index () $var $index)
     ()
 )
+
 (= (find_index $list $var $index)
     (let* (
         ($head (car-atom $list))
         ($tail (cdr-atom $list))
-        ($res (if (== $head $var) $index (find_index $tail $var (+ $index 1)))) ; if head is equal to var, return index
+        ($res (if (== $head $var) $index (find_index $tail $var (+ $index 1))))
     )
     $res
     )
 )
-(= (func $pattern $index $list)
-    (let* (
-        ($head (car-atom $pattern))
-        ($tail (cdr-atom $pattern))
-        ($is_var (== (get-metatype $head) Variable))
-        ($is_expr (== (get-metatype $head) Expression))
-        ($res (if $is_expr
-                (func $head $index $list)
-                (if $is_var
-                 (if (check $list ($head))
-                     (find_index $list $head 0)  ;; return index if bound
-                     $index                     ;; return next index if new
-                 )
-                 $head)))
-        ($new_list (if $is_var
-                    (if (check $list ($head))
-                        $list
-                        (union-atom $list ($head))                    
-                    )
-                 $list))
-        ($fin (func $tail (if $is_var
-                            (if (check $list ($head))
-                                $index 
-                                (+ $index 1)                    ;; return next index if new
-                            )
-                            $index) $new_list))
-    )
-    (cons-atom $res $fin)
-    )
-)
-(= (var2deb $pattern)
+
+(= (var2num $pattern $index $list)
+        (let* (
+            ($head (car-atom $pattern))
+            ($tail (cdr-atom $pattern))
+            ($is_var (== (get-metatype $head) Variable))
+            ($is_expr (== (get-metatype $head) Expression))
+            ($processed_head_and_index (if $is_expr
+                                        (var2num $head $index $list) ; Recursive call for sub-expression
+                                        (if $is_var
+                                            (if (check $list ($head))
+                                                ((find_index $list $head 0) $index $list) ; Return existing index, current index, and list
+                                                ($index (+ $index 1) (union-atom $list ($head))) ; Return new index, incremented index, and updated list
+                                            )
+                                            ($head $index $list) ; Not a var or expr, return head, current index, and list
+                                        )
+                                    ))
+            (($res_head $new_index $new_list) $processed_head_and_index)
+            ($processed_tail_and_index (var2num $tail $new_index $new_list)) ; Recursive call for tail with updated index and list
+            (($res_tail $final_index $final_list) $processed_tail_and_index)
+        )
+        ((cons-atom $res_head $res_tail) $final_index $final_list)
+        )
+    
 )
 
 !(var2deb (,(, (link $x $y) (an $o $y)) (this $x $t)))
