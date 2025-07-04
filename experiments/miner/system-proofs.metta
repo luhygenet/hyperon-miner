@@ -9,12 +9,19 @@
 ;; if conclusion equals (⍃ $X $Y), then return (: CPU (⍃ $X $Y)) 
 ;; if $x and $Y are fully grounded and (< $X $Y)
 ------------------------------------------------------------------
-(= (syn $kb $x (: $prf (⍃ $X $Y))) 
-    (if (is-number $X)
+(= (syn $kb $_ (: $prf (⍃ $X $Y))) 
+    (if (and (and (is-number $X) (is-number $Y)) (<= $X $Y))
           (: CPU (⍃ $X $Y))
              (empty)))
 
+
+
+(= (syn $kb $_ (: $prf (⍄ $X $Y))) 
+    (if (and (and (is-number $X) (is-number $Y)) (> $X $Y))
+          (: CPU (⍄ $X $Y))
+             (empty))) 
              
+                        
 
 (= (syn $kb $_ (: $prf (uniqueLink $db $pattern $cnt))) 
     (let* (
@@ -50,6 +57,29 @@
 )
 
 
+-----------------------------------------------------------------------------
+(= (syn $kb $_ (: $prf (prob-cpu  $pattern $prob))) 
+    (let $dbb (match $kb (db-ref $db) $db)
+    (: CPUPROB (prob-cpu  $pattern (prob $pattern  $dbb) )) ) 
+)
+
+-----------------------------------------------------------------------------
+;; system proof to calculate the partitions for the given pattern.
+(= (syn $kb $_ (: $prf (partition-cpu  $pattern $partitions))) 
+    (let $partitions (generet-partition-without-pattern $pattern)
+    (: CPUPARTN (partition-cpu  $pattern $partitions)) ) 
+)
+
+(= (syn $kb $_ (: $prf (est-prob-cpu  $pattern $partitions $emin-emax))) 
+    (let $dbb (match $kb (db-ref $db) $db)
+    (: CPUESTPROB (est-prob-cpu   $pattern $partitions (min-max (isurp-old_  $partitions $dbb)))) ) 
+)
+
+
+(= (syn $kb $_ (: $prf (dst-cpu $x $y $dst))) 
+    (let $dst (- $x $y)
+    (: CPUDST (dst-cpu  $x $y $dst)) ) 
+)
 
 
 
@@ -75,7 +105,8 @@
       (() (println! (have called)))
       ($cres (collapse (syn $kb $depth $query)))
           (() (println! (cres: $cres)))
-          ($dummy (add-atoms-nodup $kb $cres)))
+          ($dummy (add-atoms-nodup $kb $cres))
+          )
      (isyn $kb $depth $k (superpose $cres))))
 
 
@@ -85,6 +116,13 @@
    (let* (
       (() (println! (have called)))
       ($cres (collapse (syn $kb $depth $query)))
+      ($dummy (add-atoms-nodup $kb $cres))
       (() (println! (cres: $cres)))
           )
      $cres))
+
+
+
+
+
+    

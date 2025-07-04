@@ -308,3 +308,14 @@ ugly_man_pattern (LambdaLink
        ) 
        $res
       (map-atom $res $var (unify  (: $prfabs (-> $prms $ccln))  $var  Yes  ($prfabs and $var)))) 
+
+
+
+
+
+
+
+
+[((: (partitions ((emp-prob-rule (((minsupport FACT4) msT) CPU)) CPUPROB))
+ (partitions (, (Inheritance $x#17740 human) (Inheritance $x#17740 sodaDrinker) (Inheritance $x#17740 man)) 
+ ((((Inheritance $x17740 human) (Inheritance $x17740 man)) ((Inheritance $x17740 sodaDrinker))) (((Inheritance $x17740 human)) ((Inheritance $x17740 man) (Inheritance $x17740 sodaDrinker))) (((Inheritance $x17740 human)) ((Inheritance $x17740 man)) ((Inheritance $x17740 sodaDrinker))) (((Inheritance $x17740 human) (Inheritance $x17740 sodaDrinker)) ((Inheritance $x17740 man)))))))]

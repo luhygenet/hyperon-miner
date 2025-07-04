@@ -1,5 +1,5 @@
 !(register-module! ../../experiments)
-;!(register-module!  ../../../chaining)
+!(register-module!  ../../../chaining)
 
 !(import! &self experiments:miner:miner)
 !(import! &self experiments:miner:miner-utils)
@@ -25,9 +25,8 @@
 
 
 ;; config kb : load the chainer , rules , system-proofs ....
-;!(import! &self  icog:chaining:dtl:backward:curried)
+;!(import! &self  chaining:dtl:backward:curried)
 !(import! &temp   experiments:miner:miner-rules)
-;!(import! &temp2   experiments:miner:test-rules)
 !(import! &self  experiments:miner:system-proofs)
 
 ;;create new space for kb
@@ -36,6 +35,7 @@
 ;;copy atoms from temp space to kb to remove unnecessary atoms from the space
 !(let $atoms  (get-atoms &temp) (add-atom &kb $atoms) )
 ;!(chain (get-atoms &temp) $atoms (add-atom &kb $atoms))
+
 
 ;; define parameters 
 (=(min-sup) 6)
@@ -49,8 +49,6 @@
 
 ;; with sorting 
 ;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
-
-
 
 
 
