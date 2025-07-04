@@ -1,8 +1,8 @@
 
 
-;;;;;;;;;;;
-;; To Do ;;
-;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;
+;; Basic steps ;;
+;;;;;;;;;;;;;;;;;
 
 ;: - Initialize Miner – Create a function to initialize the frequent pattern miner.
 ;: - Mine Patterns – Extract patterns that meet the minsup threshold.
@@ -22,24 +22,24 @@
 
 
 
-;; Initializers
-;;initialize the necessary input parameters in the KB,
+====================================================
+;;initialize the hyper-parameters in the KB,
 (= (init-miner $db $kb $ms $surp $db-ratio)
     (         let* (  
                  (() (add-atom $kb (: msT (ms-threshold $ms))))
                  (() (add-atom $kb (: dbref (db-ref $db))))
                  (() (add-atom $kb (: dbr (db-ratio $db-ratio))))
-                 (() (add-atom $kb (: normalize (normalized True))))
+                 (() (add-reduct $kb (if (or (== $surp nisurp) (== $surp nisurp-old)) 
+                                              (: normalize (normalized True))  
+                                              (: normalize (normalized False)))))
                  (() (add-atom $kb (surp-mod $surp)))
                  (() (add-atom $kb (db-ratio $db-ratio)))
                  (() (add-reduct $kb (db-size (db_size $db))))
                  (() (add-atom &self (kb-ref $kb)))
                  (() (add-atom $kb (db-ref $db)))
-                ;; (() (add-reduct $kb (minsup-rule)))
-                ;; (() (add-reduct $kb (surp-rule)))
                 )()))
 
-
+=========================================================================
 ;;Returns frequent patters with their support from the kb
 (= (get-patterns $kb) (
   chain (match $kb (: msT (ms-threshold $ms)) $ms) $msT
@@ -47,29 +47,22 @@
                 (let True (>= $value $msT) (($pattern) (sup $value))))           
 ))
 
-
+==========================================================================
 ;; extract the mode of the Surprisingness
 ;; if the surprisingness mode is none return lis of mined patterns
 ;; otherwise launches the backward chainer for surprising patterns mining
-
 (= (mine-surp $kb $res $surp-mode)  
-  (           
-        if (== $surp-mode none) 
-              (chain (get-patterns $kb) $result (add-atom $res $result))  
-                 (if  ( == $surp-mode jsdsurp)  
-                            (chain  (syn $kb (fromNumber 13) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-atom $res $result))                          
-                                   ; (chain   (syn $kb (fromNumber 4)  (: $prf (db-ref $db))) $result  $result)   
-                                    ; (chain (collapser $kb (fromNumber 4)  (: $prf (surp $what_is_surprise $value))) $result  $result) 
-                                     (chain (syn $kb (fromNumber 15) 
-                                            (: $prf (surp-old $pattern $emin-emax))) $result  $result) 
-                                     ;(chain   (collapser $kb (fromNumber 4)  (: $prf (-> (→ $q $r) (-> (→ $p $q) (-> $p $r))))) $result  $result)                                         
-)))
+  ( case $surp-mode (
+        (none  (chain (get-patterns $kb) $result (add-atom $res $result)) ) 
+        (jsdsurp (chain  (syn $kb (fromNumber 13) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-atom $res $result)))
+        (isurp-old (chain (syn $kb (fromNumber 15) (: $prf (surp-old $what_is_surprise $value))) $result   (add-atom $res $result)))
+        (isurp     (chain (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result)))
+        ($_        (chain (syn $kb (fromNumber 15) (: $prf (surp-old $what_is_surprise $value))) $result   (add-atom $res $result)))
+    )                                                         
+))
 
 
-
-
-
-;;;;; Dummies ;;;;;;
+==========================================================================
 ;; mocking the frequent pattern miner results 
 (= (frequent-miner $db $kb) ( 
      let*  ( 
@@ -79,7 +72,7 @@
         ;  (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 4))))
         ;  (() (add-atom $kb (: FACT4 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
 
-         ;; fro new surp 
+         ;; for new surp 
          (() (add-atom $kb (: FACT1  (supportOf (, (Inheritance $x human) (Inheritance $x ugly) (Inheritance $x woman)) 5))))
          (() (add-atom $kb (: FACT2 (supportOf (, (Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) 5))))
          (() (add-atom $kb (: FACT3 (supportOf (,  (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) 4))))
@@ -90,20 +83,9 @@
         ) ()
 ))
 
-(: do-emp-prob (->  $db $kb atom))
-(=(do-emp-prob $db $kb) ( 
-   let $frq-patterns  (get-atoms $kb) 
-              (let (: $fact (supportOf $pattern $support)) $frq-patterns 
-                      (add-reduct $kb (empProb $pattern (prob $pattern $db))))
-))
-
-(: init-surp (->  $db $kb atom))
-(= (init-surp  $db $kb)(
-  let* (($res1 (collapse (do-emp-prob $db $kb)))) ()
-))
 
 
-
+====================================================================
 ;; Action Functions
 (=(do-surp $pattern) (
      let* (
@@ -118,7 +100,6 @@
      (case $surp (
         (isurp-old (isurp-old $ptrn $db False))
         (nisurp-old (isurp-old $ptrn $db True))
-         ;(nisurp-old (0.5))
         (isurp (isurp $ptrn $db False $db-ratio))
         (nisurp (isurp $ptrn $db True $db-ratio))
         ($_ (isurp $ptrn $db False $db-ratio)))
@@ -201,8 +182,8 @@
     )
     ;; return all atoms in &res
        ;(match $kb (: $prf (empProb $pattern $prob)) (empProb $pattern $prob))
-     ; (collapse (match &res $x $x))
-       $var 
+      (collapse (match &res $x $x))
+      ; $var 
 ))
 
 
