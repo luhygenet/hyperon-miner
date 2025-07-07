@@ -21,17 +21,17 @@
         $p
         (let* (
                 ( ($link $x $y) $p)
-                ( $nx (depth-handler $x))
-                ( $ny (depth-handler $y))
+                ( $nx (collapse (depth-handler $x)))
+                ( $ny (collapse (depth-handler $y)))
             )
         (superpose (
-                ($link $nx $w)
-                ($link $z $ny)
+                ($link (superpose $nx) $w)
+                ($link $z (superpose $ny))
                 ($link $x $u)
                 ($link $k $y)
                 $d
                 ($link $g $o)
-                ($link $nx $ny)
+                ($link (superpose $nx) (superpose $ny))
             )
     )
 )
@@ -88,11 +88,12 @@
 (= (build-specialization-chain ($link $x $y) $dbspace) (superpose (
             (let*
                 (
+                    (() (println! (here in spec)))
                     ( ($subx $suby) (match $dbspace ($link $x $y) ($x $y))) ; getting the substitution /valuation of the pattern
-                    ($shabx (depth-handler $subx))                                 
-                    ($shaby (depth-handler $suby))  
-                    ($spec1 ($link $shabx $y)) ;build the specialization and change the variables to indexs 
-                    ($spec2 ($link $x $shaby)) ;build the specialization and change the variables to indexs
+                    ($shabx (collapse (depth-handler $subx)))                                 
+                    ($shaby (collapse (depth-handler $suby)))  
+                    ($spec1 ($link (superpose $shabx) $y)) ;build the specialization and change the variables to indexs 
+                    ($spec2 ($link $x (superpose $shaby))) ;build the specialization and change the variables to indexs
                      ; ($spec3 (replace (SpecializationOf ($link $shabx $shaby) ($link $x $y)))) ;optional
                 )
             (
@@ -100,7 +101,6 @@
                     $spec1
                     $spec2
                     ; $spec3
-
                 )
 
         )
@@ -109,11 +109,17 @@
 ))
 )
 
-;  ! (build-specialization Inheritance z (s z) &dbspace &specspace &specredspace)
 ;  ! (build-specialization (Inheritance Z (S Z)) &dbspace &specspace)
+;  ! (build-specialization-chain (Inheritance $x $y) &dbspace)
 
 ;  ! (match &specspace (SpecializationOf $x $y) (SpecializationOf $x $y))
  ; ! (match &specredspace (SpecializationOf $x $y) (SpecializationOf $x $y))
  ; ! (match &specredspace $h $h)
 
  ; ! (let $res (redunpat)  $res)
+
+(-> (AbstractPattern ($link $x $y)) 
+    (-> (replace_index ($link $x $y) ($link $nx $ny)) 
+        (-> (depthhandler $nx $shabx)
+            (-> (depthhandler $ny $shaby)
+                    (specializationOf ($link $x $y) ($link $shabx $shaby))))))
