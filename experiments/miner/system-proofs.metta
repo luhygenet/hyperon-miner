@@ -13,6 +13,7 @@
     (if (not (== (get-metatype $p) Expression))
         $p
         (let* (
+                (() (println! (Handling nested expression: $p)))
                 ( ($link $x $y) $p)
                 ( $nx (collapse (handle-nested-exp $x)))
                 ( $ny (collapse (handle-nested-exp $y)))
@@ -105,10 +106,20 @@
 )
 (= (syn $kb $_ (: $prf (depth-handler $p $np)))
     (let
-        (($np (handle-nested-exp $p)))
+     $np (handle-nested-exp $p)
     (if (== $np ())
           (empty)
              (: CPUHandleNestedExp (depth-handler $p $np))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (valuation $db ($link $x $y) ($valx $valy))))
+    (let
+        ($valx $valy) (match $db ($link $x $y) ($x $y))
+    (if (== ($valx $valy) ())
+          (empty)
+             (: CPUHandleValuation (valuation $db ($link $x $y) ($valx $valy)))
         )    
     )
 )
