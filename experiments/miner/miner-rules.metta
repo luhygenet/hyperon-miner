@@ -31,11 +31,29 @@
 ;        (AbstractPattern $ptrn))))
 
 ;; rule to specialize abstract patterns
-(: specialization
-    (-> (AbstractPattern $aptrn) 
-     (-> (replace_index $aptrn $naptrn)
-      (-> (db-ref $db)
-        (specializationOf $naptrn (build-specialization-chain $naptrn $db))))))
+; (: specialization
+;     (-> (AbstractPattern $aptrn) 
+;      (-> (replace_index $aptrn $naptrn)
+;       (-> (db-ref $db)
+;         (specializationOf $naptrn (build-specialization-chain $naptrn $db))))))
+
+(: specializationx
+       (-> (AbstractPattern ($link $x $y)) 
+        (-> (replace_index ($link $x $y) ($link $nx $ny)) 
+         (-> (db-ref $db)
+          (-> (valuation $db ($link $nx $ny) ($valx $valy))
+            (-> (depth-handler $valx $shabx)
+            (-> (replace_variables ($shabx $ny))
+              (specializationx ($link $x $y) ($link $shabx $ny)))))))))
+(: specializationy
+       (-> (AbstractPattern ($link $x $y)) 
+        (-> (replace_index ($link $x $y) ($link $nx $ny)) 
+         (-> (db-ref $db)
+          (-> (valuation $db ($link $nx $ny) ($valx $valy))
+            (-> (depth-handler $valy $shaby)
+            (-> (replace_variables ($nx $shaby))
+              (specializationy ($link $x $y) ($link $nx $shaby)))))))))
+
 
 (: support 
       (-> (specializationOf $aptrn $sptrn)
