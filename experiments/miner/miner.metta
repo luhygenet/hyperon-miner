@@ -10,7 +10,6 @@
 
 
 
-
 ;; import utils and rules files 
 ! (import! &self experiments:rules:isurp)
 ! (import! &self experiments:rules:isurp-old)
@@ -148,11 +147,15 @@
     ; (chain (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))) $res (add-reduct $kb $res))
     (collapse 
    (let* (
-    ($res (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))))
-    ($rem (remove-atom $kb $res))
-    ($add (add-reduct $kb $res))
+    ; ($resx (syn $kb $depth (: $prf (specializationx $aptrn $sptrn))))
+    ; ($rem (remove-atom $kb $resx))
+    ; ($add (add-reduct $kb $resx))
+    ($resy (syn $kb $depth (: $prf (specializationy $aptrn $sptrn))))
+    ($rem (remove-atom $kb $resy))
+    ($add (add-reduct $kb $resy))
+    
     ) 
-    $res
+    ($resx $resy)
     ))
 ) 
 (= (support $depth $kb)
@@ -236,12 +239,12 @@
 ( 
      let*  ( 
          ($re (collapse (abstract (fromNumber 5) $kb)))
-         ($res (collapse (specialization (fromNumber 4) $kb)))
-         ($resu (collapse (support (fromNumber 4) $kb)))
-         ($result (collapse (candidate (fromNumber 5) $kb)))
-         ($results (collapse (conjunction (fromNumber 13) $kb $maxclauses $limit)))
-         ($resultn (collapse (remove_redundant_conjunctions (fromNumber 2) $kb)))
-         ($resultf (collapse (format (fromNumber 4) $kb)))
+         ($res (collapse (specialization (fromNumber 6) $kb)))
+        ;  ($resu (collapse (support (fromNumber 4) $kb)))
+        ;  ($result (collapse (candidate (fromNumber 5) $kb)))
+        ;  ($results (collapse (conjunction (fromNumber 13) $kb $maxclauses $limit)))
+        ;  ($resultn (collapse (remove_redundant_conjunctions (fromNumber 2) $kb)))
+        ;  ($resultf (collapse (format (fromNumber 4) $kb)))
       ) ()
 )
 )
@@ -353,6 +356,7 @@
 
 ! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio) 1 2)
 
+; !(syn &kb Z (: $prf (valuation &db ($link $nx $ny) ($valx $valy))))
 
 ; !(init-miner &db &kb (min-sup) (surp-mode) (db-ratio))
 
