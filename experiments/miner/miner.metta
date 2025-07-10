@@ -1,8 +1,8 @@
 
 
-;;;;;;;;;;;
-;; To Do ;;
-;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;
+;; Basic steps ;;
+;;;;;;;;;;;;;;;;;
 
 ;: - Initialize Miner – Create a function to initialize the frequent pattern miner.
 ;: - Mine Patterns – Extract patterns that meet the minsup threshold.
@@ -19,23 +19,27 @@
 
 
 
-;; Initializers
-;;initialize the necessary input parameters in the KB,
+
+
+
+====================================================
+;;initialize the hyper-parameters in the KB,
 (= (init-miner $db $kb $ms $surp $db-ratio)
     (         let* (  
                  (() (add-atom $kb (: msT (ms-threshold $ms))))
                  (() (add-atom $kb (: dbref (db-ref $db))))
                  (() (add-atom $kb (: dbr (db-ratio $db-ratio))))
+                 (() (add-reduct $kb (if (or (== $surp nisurp) (== $surp nisurp-old)) 
+                                              (: normalize (normalized True))  
+                                              (: normalize (normalized False)))))
                  (() (add-atom $kb (surp-mod $surp)))
                  (() (add-atom $kb (db-ratio $db-ratio)))
                  (() (add-reduct $kb (db-size (db_size $db))))
                  (() (add-atom &self (kb-ref $kb)))
                  (() (add-atom $kb (db-ref $db)))
-                ;; (() (add-reduct $kb (minsup-rule)))
-                ;; (() (add-reduct $kb (surp-rule)))
                 )()))
 
-
+=========================================================================
 ;;Returns frequent patters with their support from the kb
 (= (get-patterns $kb) (
   chain (match $kb (: msT (ms-threshold $ms)) $ms) $msT
@@ -43,7 +47,7 @@
                 (let True (>= $value $msT) (($pattern) (sup $value))))           
 ))
 
-
+==========================================================================
 ;; extract the mode of the Surprisingness
 ;; if the surprisingness mode is none return lis of mined patterns
 ;; otherwise launches the backward chainer for surprising patterns mining
@@ -113,10 +117,18 @@
 ;;;;; Dummies ;;;;;;
 ;; mocking the frequent pattern miner results 
 (= (frequent-miner $db $kb) ( 
-     let*  ( ;(() (add-atom $kb (: FACT1  (supportOf (, (, (Inheritance $x human) (Inheritance $x ugly)) (Inheritance $x woman)) 5))))
-        ; (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 5))))
-        ; (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 4))))
-         (() (add-atom $kb (: FACT4 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
+     let*  ( 
+
+        ;  (() (add-atom $kb (: FACT1  (supportOf (, (, (Inheritance $x human) (Inheritance $x ugly)) (Inheritance $x woman)) 8))))
+        ;  (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 8))))
+        ;  (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 4))))
+        ;  (() (add-atom $kb (: FACT4 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
+
+         ;; for new surp 
+         (() (add-atom $kb (: FACT1  (supportOf (, (Inheritance $x human) (Inheritance $x ugly) (Inheritance $x woman)) 5))))
+         (() (add-atom $kb (: FACT2 (supportOf (, (Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) 5))))
+         (() (add-atom $kb (: FACT3 (supportOf (,  (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) 4))))
+         (() (add-atom $kb (: FACT4 (supportOf (,  (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x man)) 8))))
         ; (() (add-atom $kb (: ((est-rule (((minsupport FACT4) msT) CPU)) dbref) (est-tv (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 0.6))))
         ; (() (add-atom $kb (: ((emp-rule (((minsupport FACT4) msT) CPU)) CPUEMP) (emp-val (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) (EMPTV 0.5 0.7)))))
         ;; (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (jsdsurp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
@@ -146,7 +158,7 @@
           ($db    (match $kb (db-ref $ref) $ref))
           ($db-ratio (match $kb (db-ratio $db-ratio) $db-ratio))
           ($db-size (match $kb (db-size $db-size) $db-size))   
-          ($ptrn (flatten $pattern))        
+          ($ptrn (flatten $pattern))
     )
      (case $surp (
         (isurp-old (isurp-old $ptrn $db False))
@@ -217,6 +229,7 @@
 ;; new space to store the init-surp results
 !(bind! &res (new-space))
 
+
 ---------------------------------------------------------------------------
 ;; initializes the necessary input parameters in the KB
 ;;configures and runs the frequent pattern miner with conjunction expansion
@@ -227,7 +240,8 @@
     let* (
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
              (() (frequent-miner $db $kb))
-             (() (init-surp $kb &res $surp))           
+             ;($var (collapse (init-surp $db $kb)))           
+              ($var (collapse (mine-surp $kb &res $surp)))           
     )
     ;; return all atoms in &res
     ; (match &res $x $x)

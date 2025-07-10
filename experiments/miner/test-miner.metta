@@ -35,7 +35,7 @@
 
 
 ;; config kb : load the chainer , rules , system-proofs ....
-!(import! &self  chaining:dtl:backward:curried)
+;!(import! &self  chaining:dtl:backward:curried)
 !(import! &temp   experiments:miner:miner-rules)
 !(import! &self  experiments:miner:system-proofs)
 
@@ -76,7 +76,7 @@
 
 ;; define parameters 
 (=(min-sup) 6)
-(=(surp-mode ) jsdsurp)
+(=(surp-mode ) nisurp-old)
 (=(db-ratio) 0.5)
 ; !(add-atom &kb (: msT (ms-threshold 2)))
 ; !(add-atom &kb (: SUP (supportOf $ptrn 5)))
