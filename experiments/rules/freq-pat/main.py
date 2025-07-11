@@ -127,7 +127,7 @@ def replace_with_de_bruijn(metta: MeTTa, pattern):
             index += 1
         str_pattern = str_pattern.replace(var, var_map[var], 1)
 
-    return [metta.parse_single(str_pattern)]-*
+    return [metta.parse_single(str_pattern)]
 
 
 def replace_with_variable(metta: MeTTa, pattern):

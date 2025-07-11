@@ -20,8 +20,28 @@
     (if (and (and (is-number $X) (is-number $Y)) (> $X $Y))
           (: CPU (⍄ $X $Y))
              (empty))) 
+
+(= (syn $kb $_ (: $prf (Equal $X $Y))) 
+    (if (== $X $Y)
+          (: Equal-CPU (Equal $X $Y))
+             (empty)))
              
-                        
+; (= (syn $kb $depth (: $prf (XOR $x $y))) 
+;     (let* (    
+;         ( (: $xprf $query-x) (syn $kb $depth (: $prfx (superpose ( $x $y)))))
+;                (() (println! (""here"" $query-x))) 
+;             ($xres (unify $x $query-x True False))
+;             ($yres (unify $y $query-x True False))
+;                (() (println! (""here"" $xres))) 
+;                (() (println! (""here"" $yres))) 
+        
+;            )
+;           ( if (xor $xres $yres)
+;                  (: XOR-CPU (XOR $x $y)) 
+;                    (empty) )
+;             ))
+
+
 
 (= (syn $kb $_ (: $prf (uniqueLink $db $pattern $cnt))) 
     (let* (
@@ -82,6 +102,27 @@
 )
 
 
+(= (syn $kb $_ (: $prf (minimum $x $y $z)))
+         (let $min (min $x $y)
+               (: MINIMUMCPU  (minimum $x $y $min))))
+
+
+(= (syn $kb $_ (: $prf (divide $x $y $z)))
+         (let $div (// $x $y)
+               (: DIVIDECPU (divide $x $y $div))))
+
+
+
+
+
+
+
+
+
+
+
+
+================================================================================
 
 ;; Base case
 (= (syn $kb $_ (: $prf $ccln)) (match $kb (: $prf $ccln) (: $prf $ccln)))
@@ -90,7 +131,7 @@
 (= (syn $kb (S $k) (: ($prfabs $prfarg) $ccln))
    (let* (
      ((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))
-          (() (println! (Next prims : $prms)))
+         ; (() (println! (Next prims : $prms)))
           ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms)))
           )
      (: ($prfabs $prfarg) $ccln)))

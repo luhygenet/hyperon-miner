@@ -108,9 +108,10 @@
 
 (= (formatter $kb $conjspace $dbspace) 
     (let* (
+        (() (println! (inforamter)))
+        (() (println! (match $conjspace $pattern (sort_conj $pattern))))
         ($sorted (unique (match $conjspace $pattern (sort_conj $pattern))))
-        ($res (cons-atom , $sorted))
-        
+        ($res (cons-atom , $sorted))  
     )
     (add-atom $kb (supportOf $res (sup-num $dbspace (replacev $res))))
 )
@@ -156,5 +157,5 @@
 ;  ! (match &aptrnspace (AbstractPattern $pattern) $pattern)
 
 
-! (frequency-pattern-miner &kb &dbspace &specspace &cndpspace &aptrnspace &conjspace 5 0)
+! (frequency-pattern-miner &kb &dbspace &specspace &cndpspace &aptrnspace &conjspace 5 1)
 ! (match &kb $pattern $pattern)

@@ -156,7 +156,9 @@
    (-> (normalized True) 
       (-> (empProb $pattern $emp)
            (-> (dst $pattern $dst)
-                  (surp-old $pattern (min ( (// $dst $emp) 1.0)) )))))
+                  (-> (divide $dst $emp $normalized) 
+                        (-> (minimum $normalized 1.0 $minimum)
+                             (surp-old $pattern $minimum )))))))
 
 
 ---------------------------------------------------------------------
@@ -165,5 +167,6 @@
    (-> (normalized False) 
         (-> (empProb $pattern $emp)
                (-> (dst $pattern $dst)
-                     (surp-old $pattern (min ($dst 1.0)) )))))
+                     (-> (minimum $dst 1.0 $minimum )
+                              (surp-old $pattern $minimum ))))))
                                                   
