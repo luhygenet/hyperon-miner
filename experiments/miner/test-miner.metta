@@ -12,7 +12,6 @@
 ! (import! &self experiments:utils:constants)
 ! (import! &self experiments:utils:TruthValue)
 ! (import! &self experiments:utils:surp-utils)
-! (import! &self experiments:utils:miner-utils)
 ! (import! &self experiments:utils:gen_partition)
 ! (import! &self experiments:rules:est-tv)
 ! (import! &self experiments:rules:emp-tv)
@@ -26,7 +25,7 @@
 
 
 ;; config kb : load the chainer , rules , system-proofs ....
-!(import! &self  chaining:dtl:backward:curried)
+;!(import! &self  chaining:dtl:backward:curried)
 !(import! &temp   experiments:miner:miner-rules)
 !(import! &self  experiments:miner:system-proofs)
 
@@ -37,15 +36,21 @@
 !(let $atoms  (get-atoms &temp) (add-atom &kb $atoms) )
 ;!(chain (get-atoms &temp) $atoms (add-atom &kb $atoms))
 
+
 ;; define parameters 
 (=(min-sup) 6)
-(=(surp-mode ) jsdsurp)
+(=(surp-mode ) nisurp-old)
 (=(db-ratio) 0.5)
 
 
 ;; test the cog-miner
 ;; without sorting 
-! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
+!(cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
 
 ;; with sorting 
 ;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
+
+
+
+
+                            
