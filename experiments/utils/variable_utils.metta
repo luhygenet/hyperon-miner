@@ -2,15 +2,6 @@
 (= (is_var $v) (== (get-metatype $v) Variable))
 (= (is_exp $v) (== (get-metatype $v) Expression))
 
-; joins two expressions into one. e.g, (join ($a $b) ($c $d)) -> ($a $b $c $d)
-(= (join $exp1 $exp2)(
-      let* (
-         ($h (car-atom $exp1))
-         ($t (cdr-atom $exp1))
-         ($x (if (== $t ()) $exp2 (join $t $exp2)))
-      )
-      (cons-atom $h $x)
-))
 ; extracts variables from a nested expression and returns it
 (= (extract_vars $exp)
    ( let* (
@@ -26,7 +17,7 @@
             ($y (if (== $t ()) () (extract_vars $t))))
          (if (or (== $x Nil) (== $x ()))
             $y
-            (join $x $y))))
+            (union-atom $x $y))))
 
 ; finds existence of a variable on a list 
 ; returns a boolean
@@ -95,4 +86,4 @@
       )
 ))
 
-; !(remove_common_vars (Inheritance $a ($b $x) $l) (Inheritance $b $c))   ; [(Inheritance $c), (Inheritance $a ($x) $l)]
+!(remove_common_vars (Inheritance $a ($b $x) $l) (Inheritance $b $c))   ; [(Inheritance $c), (Inheritance $a ($x) $l)]
