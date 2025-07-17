@@ -31,20 +31,47 @@
 (=(checkIntersection $var $set) 
     (not (== ((intersection-atom ($var) $set)) (())))) 
 
-(=(process-pattern $acc $pattern $var)
- (if (== (get-metatype $pattern) Symbol) 
-        $acc 
+; (=(process-pattern $acc $pattern $var)
+;  (if (== (get-metatype $pattern) Symbol) 
+;         $acc 
+;         (let* (
+;                 ($is_pattern (let $pat_temp (is-pattern $pattern) (car-atom $pat_temp))) 
+;                 ($is_expression (== (get-metatype $pattern) Expression)) 
+;                 ($vars (cdr-atom $pattern)) 
+;                 ($is_connected (checkIntersection $var $vars))) 
+;             (if (and (and $is_pattern $is_expression) $is_connected)
+;                 (cons-atom $pattern $acc) 
+;                 $acc))))
+
+(=(process-pattern  $pattern $var)
+ 
+         
         (let* (
                 ($is_pattern (let $pat_temp (is-pattern $pattern) (car-atom $pat_temp))) 
                 ($is_expression (== (get-metatype $pattern) Expression)) 
                 ($vars (cdr-atom $pattern)) 
                 ($is_connected (checkIntersection $var $vars))) 
             (if (and (and $is_pattern $is_expression) $is_connected)
-                (cons-atom $pattern $acc) 
-                $acc))))
+                $pattern 
+                (empty))))
+
+; (=(connected-subpatterns-with-var $partition $var)
+
+
+;     (foldl-atom $partition () $acc $pattern (process-pattern $acc $pattern $var)))
 
 (=(connected-subpatterns-with-var $partition $var)
-    (foldl-atom $partition () $acc $pattern (process-pattern $acc $pattern $var)))
+(let* (($no-comma (cdr-atom $partition))
+($return (collapse (process-pattern (superpose $no-comma ) $var)))
+
+) (cons-atom , $return )
+    )
+    
+    
+    
+    
+    )
+
 
 
 
