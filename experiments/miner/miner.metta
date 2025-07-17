@@ -87,8 +87,19 @@
 ))
 
 
+(= (frequent-miner-new $db $kb) ( 
+     let*  ( 
+         ($re (collapse (abstract (fromNumber 4) $kb)))
+         ($res (collapse (specialization (fromNumber 3) $kb)))
+         ($resu (collapse (support (fromNumber 4) $kb)))
+         ($result (collapse (candidate (fromNumber 5) $kb)))
+        ;  ($results (collapse (conjunction (fromNumber 5) $kb)))
+      ) ()
+))
 
-====================================================================
+
+
+
 ;; Action Functions
 (=(do-surp $pattern) (
      let* (

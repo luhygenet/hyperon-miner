@@ -108,6 +108,9 @@ def call_python_process(metta: MeTTa):
     # return [ValueAtom(atoms, 'Expression')]
 
     return unique_patterns
+def generate_var(metta: MeTTa, suffix):
+    var =  f"$var{int(str(suffix))}"
+    return [metta.parse_single(var)]
 
 
 def replace_with_de_bruijn(metta: MeTTa, pattern):
