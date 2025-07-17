@@ -3,7 +3,7 @@
 ; ! (import! &db hyperon-miner:experiments:data:ugly_man_sodaDrinker)
 ! (import! &self build-specialization)
 ! (import! &self candidate-patterns)
-! (import! &self conjunction-expansion)
+! (import! &self conjunction-expansion-new)
 ;! (import! &self formatter)
 
 ; ! (import! &self hyperon-miner:experiments:utils:common-utils)
@@ -22,11 +22,6 @@
  (let $linkunique (unique (match $dbspace ($link $x $y) $link))
                        ( let True (sup-eval $dbspace ($linkunique $z $t) $minsup)
                          (add-atom $aptrnspace (AbstractPattern ($linkunique Z (S Z)))))))
-
-
-
-
-
 
 
 
