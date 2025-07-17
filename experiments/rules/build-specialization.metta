@@ -58,7 +58,7 @@
 
 (= (build-specialization ($link $x $y) $dbspace $specspace) 
             (let*
-                (
+                (  
                     ( ($link $x1 $y1) (replacev ($link $x $y)))                            ; replacev is a function that replaces index with variables
                     ( ($subx $suby) (match $dbspace ($link $x1 $y1) ($x1 $y1)))            ; getting the substitution /valuation of the pattern
                     ($shabx (depth-handler $subx))                                    ;handle depth in the x node
@@ -87,7 +87,8 @@
 
 (= (build-specialization-chain ($link $x $y) $dbspace) (superpose (
             (let*
-                (
+                ( 
+                     
                     ( ($subx $suby) (match $dbspace ($link $x $y) ($x $y))) ; getting the substitution /valuation of the pattern
                     ($shabx (depth-handler $subx))                                 
                     ($shaby (depth-handler $suby))  

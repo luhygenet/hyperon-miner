@@ -158,15 +158,16 @@
            (-> (dst $pattern $dst)
                   (-> (divide $dst $emp $normalized) 
                         (-> (minimum $normalized 1.0 $minimum)
-                             (surp-old $pattern $minimum )))))))
+                                 (surp-old $pattern $minimum )))))))
+
+
 
 
 ---------------------------------------------------------------------
 ;; Rule to calculate the old surprisingness value (normalized False).
 (: old-surp 
    (-> (normalized False) 
-        (-> (empProb $pattern $emp)
                (-> (dst $pattern $dst)
                      (-> (minimum $dst 1.0 $minimum )
-                              (surp-old $pattern $minimum ))))))
+                              (surp-old $pattern $minimum )))))
                                                   

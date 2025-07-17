@@ -23,6 +23,7 @@
 ; ! (register-module! ../../experiments)
 ; ! (import! &self experiments:utils:common-utils)
 ! (import! &self conj-exp)
+! (import! &self freq-pat)
 
  ; The starting point for the conjunction expansion. It passes
  ; the Alpha Converted pattern (if necessary) to the expand_conjunction functions.
@@ -333,3 +334,61 @@
 
  ;(expand_conjunction_inputs cnjtion pattern db ms mv es)
 ; !(expand_conjunction (,(INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $F) &self 5 2 False)
+
+
+
+(= (do-conjunct $db $cndb $coming_conj  $ms Z)
+    (let* (
+        ($conjunct (replacev $coming_conj))
+        (() (println! (here  $conjunct)))
+        ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
+        ($listconj (expand_conjunction $conjunct $matches $db $ms 2 False))
+        ($debconj (replace $listconj))
+        ($fitlered (remove_conjuncts_with_redundant_clauses $debconj))
+         (() (println! (current conj2 $fitlered)))
+    )
+    $fitlered
+    )
+)
+
+(= (do-conjunct $db $cndb $coming_conj $ms (S $K))
+    (let* (
+        ($conjunct (replacev $coming_conj))
+        ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
+        ($listconj (expand_conjunction $conjunct $matches $db $ms 2 False))
+        ($debconj (replace $listconj))
+        ($fitlered (remove_conjuncts_with_redundant_clauses $debconj))
+        ($varconj (replacev $fitlered))
+        ($conj (do-conjunct $db $cndb $varconj $ms $K))
+        (() (println! (current conj $conj)))
+    )
+    $conj
+    )
+)
+
+(= (add-atom-local $space $atom)
+   (case (match $space $atom $atom)
+     (
+      ($atom ())
+      (Empty (case $atom (
+               ((supportOf (,) $x) () )
+               ($_ (add-atom $space $atom))))))))
+
+(= (format-helper $var $dbspace ) (supportOf $var (sup-num $dbspace (replacev $var))) )
+
+(= (formatter $kb $conjspace $dbspace) 
+    (let* (
+        ($sorted  (match $conjspace $pattern (sort_conj $pattern)))
+        ($res  (cons-atom ,  $sorted))
+        ($formatted (format-helper $res $dbspace))
+        ($dummy  (add-atom-local $kb  $formatted)) 
+    )()
+    
+))
+
+(= (conjunct $dbspace $cndpspace $conjspace $minsup $depth )   
+      (let $pattern (match $cndpspace (CandidatePattern $Cpattern) $Cpattern)
+                   (let $conj  (do-conjunct $dbspace $cndpspace  $pattern $minsup (fromNumber $depth)) 
+                             (if (== $conj ()) () (add-atom $conjspace  $conj)))))   
+
+                             

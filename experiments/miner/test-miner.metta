@@ -21,19 +21,23 @@
 ! (import! &self experiments:utils:bs-utils)
 ! (import! &self experiments:utils:util-jsd)
 ! (import! &self experiments:utils:binomialMetta)
-! (import! &db experiments:data:ugly_man_sodaDrinker)
+! (import! &temp-db experiments:data:ugly_man_sodaDrinker)
 
 
 ;; config kb : load the chainer , rules , system-proofs ....
-;!(import! &self  chaining:dtl:backward:curried)
+!(import! &self  chaining:dtl:backward:curried)
 !(import! &temp   experiments:miner:miner-rules)
 !(import! &self  experiments:miner:system-proofs)
 
 ;;create new space for kb
 !(bind! &kb (new-space))
+!(bind! &db (new-space))
+
 
 ;;copy atoms from temp space to kb to remove unnecessary atoms from the space
 !(let $atoms  (get-atoms &temp) (add-atom &kb $atoms) )
+!(let $atoms  (get-atoms &temp-db) (add-atom &db $atoms) )
+
 ;!(chain (get-atoms &temp) $atoms (add-atom &kb $atoms))
 
 
@@ -46,10 +50,6 @@
 ;; test the cog-miner
 ;; without sorting 
 !(cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))
-
-;; with sorting 
-;! (let $res (collapse (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio))) (surp-sorting $res))
-
 
 
 

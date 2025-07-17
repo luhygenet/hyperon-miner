@@ -14,15 +14,15 @@
 
 
 ;get candidate patterns based on theri support
-(= (candidatePattern $dbspace $spezspace $minsup $cndpspace)
+(= (candidatePattern  $dbspace $spezspace $minsup $cndpspace)
     (match $spezspace (SpecializationOf $specialized $pattern)
-        (let* (
+        (let* ( 
                 ( $specializedvar (replacev $specialized))
                 ($result (sup-eval $dbspace $specializedvar $minsup))
             )
-        (if (== $result True)
+        (if  $result
             (add-atom $cndpspace (CandidatePattern $specialized))
-            $result
+            ()
         )
 
 )

@@ -80,7 +80,8 @@
 -----------------------------------------------------------------------------
 (= (syn $kb $_ (: $prf (prob-cpu  $pattern $prob))) 
     (let $dbb (match $kb (db-ref $db) $db)
-    (: CPUPROB (prob-cpu  $pattern (prob $pattern  $dbb) )) ) 
+    (: CPUPROB (prob-cpu  $pattern (prob $pattern  $dbb) ))
+    ) 
 )
 
 -----------------------------------------------------------------------------
@@ -90,23 +91,28 @@
     (: CPUPARTN (partition-cpu  $pattern $partitions)) ) 
 )
 
+----------------------------------------------------------------------------
+;; min max estimation of the pattern for isurp old
 (= (syn $kb $_ (: $prf (est-prob-cpu  $pattern $partitions $emin-emax))) 
     (let $dbb (match $kb (db-ref $db) $db)
     (: CPUESTPROB (est-prob-cpu   $pattern $partitions (min-max (isurp-old_  $partitions $dbb)))) ) 
 )
 
-
+-------------------------------------------------------------------------
+;; calculates the distance between the estimate value and emperical value
 (= (syn $kb $_ (: $prf (dst-cpu $x $y $dst))) 
     (let $dst (- $x $y)
     (: CPUDST (dst-cpu  $x $y $dst)) ) 
 )
 
-
+-------------------------------------------------------------------------
+;; create the minimum relation 
 (= (syn $kb $_ (: $prf (minimum $x $y $z)))
          (let $min (min $x $y)
                (: MINIMUMCPU  (minimum $x $y $min))))
 
-
+-------------------------------------------------------------------------
+;; division relation 
 (= (syn $kb $_ (: $prf (divide $x $y $z)))
          (let $div (// $x $y)
                (: DIVIDECPU (divide $x $y $div))))
@@ -122,7 +128,7 @@
 
 
 
-================================================================================
+; ================================================================================
 
 ;; Base case
 (= (syn $kb $_ (: $prf $ccln)) (match $kb (: $prf $ccln) (: $prf $ccln)))
@@ -136,19 +142,22 @@
           )
      (: ($prfabs $prfarg) $ccln)))
 
-;; Base case.  For now it terminates at exactly iteration Z to avoid
-;; collecting too many redundant results.
-(= (isyn $kb $depth Z $query) $query)
 
-;; Iterative step
-(= (isyn $kb $depth (S $k) $query)
-   (let* (
-      (() (println! (have called)))
-      ($cres (collapse (syn $kb $depth $query)))
-          (() (println! (cres: $cres)))
-          ($dummy (add-atoms-nodup $kb $cres))
-          )
-     (isyn $kb $depth $k (superpose $cres))))
+     
+
+; ;; Base case.  For now it terminates at exactly iteration Z to avoid
+; ;; collecting too many redundant results.
+; (= (isyn $kb $depth Z $query) $query)
+
+; ;; Iterative step
+; (= (isyn $kb $depth (S $k) $query)
+;    (let* (
+;       (() (println! (have called)))
+;       ($cres (collapse (syn $kb $depth $query)))
+;           (() (println! (cres: $cres)))
+;           ($dummy (add-atoms-nodup $kb $cres))
+;           )
+;      (isyn $kb $depth $k (superpose $cres))))
 
 
 

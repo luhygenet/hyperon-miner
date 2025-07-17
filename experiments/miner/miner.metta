@@ -32,9 +32,11 @@
                  (() (add-reduct $kb (if (or (== $surp nisurp) (== $surp nisurp-old)) 
                                               (: normalize (normalized True))  
                                               (: normalize (normalized False)))))
+
+                ;(() (add-atom $kb (: normalize (normalized True))))
                  (() (add-atom $kb (surp-mod $surp)))
                  (() (add-atom $kb (db-ratio $db-ratio)))
-                 (() (add-reduct $kb (db-size (db_size $db))))
+                 (() (add-atom $kb (db-size (db_size $db))))
                  (() (add-atom &self (kb-ref $kb)))
                  (() (add-atom $kb (db-ref $db)))
                 )()))
@@ -56,6 +58,7 @@
         (none  (chain (get-patterns $kb) $result (add-atom $res $result)) ) 
         (jsdsurp (chain  (syn $kb (fromNumber 13) (: $prf (jsdsurp $what_is_surprise $value))) $result   (add-atom $res $result)))
         (isurp-old (chain (syn $kb (fromNumber 15) (: $prf (surp-old $what_is_surprise $value))) $result   (add-atom $res $result)))
+        (nisurp-old (chain (syn $kb (fromNumber 15) (: $prf (surp-old $what_is_surprise $value))) $result   (add-atom $res $result)))
         (isurp     (chain (syn $kb (fromNumber 4) (: $prf (surp $what_is_surprise $value))) $result   (add-atom $res $result)))
         ($_        (chain (syn $kb (fromNumber 15) (: $prf (surp-old $what_is_surprise $value))) $result   (add-atom $res $result)))
     )                                                         
@@ -74,7 +77,7 @@
 
          ;; for new surp 
          (() (add-atom $kb (: FACT1  (supportOf (, (Inheritance $x human) (Inheritance $x ugly) (Inheritance $x woman)) 5))))
-         (() (add-atom $kb (: FACT2 (supportOf (, (Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) 8))))
+         (() (add-atom $kb (: FACT2 (supportOf (, (Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) 5))))
          (() (add-atom $kb (: FACT3 (supportOf (,  (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) 4))))
          (() (add-atom $kb (: FACT4 (supportOf (,  (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x man)) 8))))
         ; (() (add-atom $kb (: ((est-rule (((minsupport FACT4) msT) CPU)) dbref) (est-tv (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 0.6))))
@@ -124,11 +127,11 @@
 ;;Store the chainer result in to the &res (new space)
 ----------------------------------------------------------------------------
 (= (cog-mine $db $kb $ms $surp $db-ratio) (
-    let* (
+    let* (   
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
-             (() (frequent-miner $db $kb))
-             ;($var (collapse (init-surp $db $kb)))           
-              ($var (mine-surp $kb &res $surp))   `        
+             (() (frequent-miner $db $kb))         
+             ($var (mine-surp $kb &res $surp))        
+        
     )
     ;; return all atoms in &res
        ;(match $kb (: $prf (empProb $pattern $prob)) (empProb $pattern $prob))
