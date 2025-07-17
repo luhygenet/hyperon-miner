@@ -29,7 +29,7 @@
 
 ;; Jensen-Shannon Divergence (JSD) function
 ;; Converts C++ jsd function to MeTTa
-(=(jsd $l_tv $r_tv)(
+(=(do-jsd $l_tv $r_tv)(
     let* (
         ($bins 10)                                     ;; static int bins = 100
         ($l_bd (mk_distribution_jsd $l_tv))                 ;; BetaDistribution l_bd(l_tv)
