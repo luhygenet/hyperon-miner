@@ -6,7 +6,7 @@
 (Inheritance Abe ugly)
 (Inheritance Cason ugly)
 
-(Inheritance Lily woman)
+(Inheritance  woman)
 (Inheritance Emily woman)
 (Inheritance Lucy woman)
 

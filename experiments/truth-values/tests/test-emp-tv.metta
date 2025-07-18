@@ -1,5 +1,5 @@
 
-! (register-module! ../../experiments)
+! (register-module! ../../../../hyperon-miner/experiments)
 
 ! (import! &self experiments:utils:emp-tv-bs)
 ! (import! &self experiments:utils:bs-utils)
@@ -10,7 +10,7 @@
 ! (import! &self experiments:utils:surp-utils)
 ! (import! &self experiments:utils:miner-utils)
 ! (import! &self experiments:utils:gen_partition)
-! (import! &self experiments:rules:est-tv)
+! (import! &self experiments:truth-values:est-tv)
 ! (import! &self experiments:rules:emp-tv)
 ! (import! &kb experiments:data:ugly_man_sodaDrinker)
 

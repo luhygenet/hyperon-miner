@@ -144,6 +144,7 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 (: isurpo-old (-> Pattern Space Boolean Number)) 
 (=(isurp-old $pattern $db $normalize) (
     let* (
+        (() (called-for $pattern))
         ($pattern_prob (prob $pattern $db ))
         ($partitions (generet-partition-without-pattern $pattern))
         ($results  (isurp-old_  $partitions $db))
