@@ -121,16 +121,19 @@
 
 
 ;;;; combination maker;;;;;
-;; input: 3-params
+;; input: 6-params
   ;; 1st:- ()
   ;; 2nd:- (($a 1 pat1) ($1 1 pat2) ($2 2 pat2) ($3 3 pat2)) ;; ($a 1 pat1) means $a whose index is 1 is from pattern1 ....
   ;; 3rd:- (S (S ()))
+  ;; 4th:- 0 ;pointer 1, this shows the recent value ,from patter1 , that we use for this particular combination
+  ;; 5th:- 0 ;pointer 2, this shows the recent value ,from patter2 , that we use for this particular combination
+  ;; 6th:- 1 ; this shows how much i have in specific combination, till now.
 ;; in the process any combinations with un-ordered or repeated variables will be pre killed since we got (empty) for such cases
 ;; output: (($2 $a $3) ($2 $3 $a) ($1 $a $3) ($1 $a $2) ($1 $2 $a) ($1 $3 $a) ($a $1 $3) ($a $1 $2) ($a $2 $3)) 
 
-( = (combiner $accumulated $vars () $p1 $p2) $accumulated )
+( = (combiner $accumulated $vars () $p1 $p2 $comboCount) $accumulated )
 ;;;;; makes combinations by pre-killing what is going to make repetition or what is un-ordered
-( = (combiner $accumulated $vars (S $depth) $pointer1 $pointer2) 
+( = (combiner $accumulated $vars (S $depth) $pointer1 $pointer2 $comboCount) 
     (
         let*
             (
@@ -139,7 +142,7 @@
                     (
                         if (== $patName pat1)
                             ( >= $pointer1 $index)
-                            ( >= $pointer2 $index)  
+                            (or (>= $pointer2 $index) (not (== $index $comboCount)) )  
                     ) 
                 )
                 ($joiner (union-atom $accumulated ($randomVar) ) ) 
@@ -149,8 +152,8 @@
                     (empty)
                     (
                         if (== $patName pat1) 
-                            (combiner $joiner $vars $depth $index $pointer2)
-                            (combiner $joiner $vars $depth $pointer1 $index)
+                            (combiner $joiner $vars $depth $index $pointer2 (+ 1 $comboCount))
+                            (combiner $joiner $vars $depth $pointer1 $index (+ 1 $comboCount))
                     )
             ) 
     )
@@ -201,11 +204,11 @@
                 ($joiner (union-atom $first $second))
                 
                 ($width (size-atom $varsInPat2)) 
-                ($unpurifiedAllCombinations (collapse (combiner () $joiner (generateDepth $width) 0 0 )) )   
+                ($unpurifiedAllCombinations (collapse (combiner () $joiner (generateDepth $width) 0 0 1)) )   
             )
             
             ( let $var1Exist (collapse (purifier (superpose $unpurifiedAllCombinations) $varsInPat1)) $var1Exist )   
     )
 )
 
-;test by running this !(all-variable-combination (hi this is $a) (i am $1 years $2 $3 living in city  ) ) 
+;test by running this !(all-variable-combination (hi this is $a) (i am $1 years $2 $3 living in city) ) 
