@@ -60,14 +60,15 @@
              (empty)))
              
 
-(= (syn $kb $_ (: $prf (uniqueLink $db $pattern $cnt))) 
+(= (syn $kb $_ (: $prf (uniqueLink $pattern $cnt))) 
     (let* (
+        ($db (match $kb (db-ref $db) $db))
         ($uniquelink (collapse (unique (match $db ($link $x $y) $link)) ) )
         ($sup (superpose $uniquelink))
         )
     (if (== (size-atom $uniquelink) 0)
           (empty)
-             (: CPUUnique (uniqueLink $db ($sup $a $b) (count-sup $db ($sup $a $b))))
+             (: CPUUnique (uniqueLink ($sup $a $b) (count-sup $db ($sup $a $b))))
              ))
     )
 
@@ -92,6 +93,38 @@
         )    
     )
 )
+(= (syn $kb $_ (: $prf (get_variables $ptrn $vars)))
+    (let* (
+        ($vars (get_variable_for_pattern $ptrn))
+        )
+    (if (== $ptrn ())
+          (empty)
+             (: CPUGetPatternVariables (get_variables $ptrn $vars))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (combine_variables $vars1 $vars2 $comb)))
+    (let* (
+        ($comb (combine_lists $vars1 $vars2))
+        )
+    (if (== $comb ())
+          (empty)
+             (: CPUCombineVariables (combine_variables $vars1 $vars2 $comb))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (substitute_variables $pattern $vars $subpattern)))
+    (let* (
+        ($subpattern (substitute $pattern $vars))
+        )
+    (if (== $subpattern ())
+          (empty)
+             (: CPUSubstituteVariables (substitute_variables $pattern $vars $subpattern))
+        )    
+    )
+)
 
 (= (syn $kb $_ (: $prf (clause_count $ptrn $cnt)))
     (let* (
@@ -104,6 +137,18 @@
         )    
     )
 )
+
+(= (syn $kb $_ (: $prf (conjunction_clean $conjunction)))
+    (let* (
+        ($conjuncts (get-conjuncts $conjunction))
+        ($unique_conjuncts (unique-atom $conjuncts))
+        )
+    (if (== (size-atom $conjuncts) (size-atom $unique_conjuncts))
+        (: CPUConjunctionClean (conjunction_clean $conjunction))
+        (empty)
+    )
+    )
+)
 (= (syn $kb $_ (: $prf (depth-handler $p $np)))
     (let
      $np (handle-nested-exp $p)
@@ -114,13 +159,25 @@
     )
 )
 
-(= (syn $kb $_ (: $prf (valuation $db ($link $x $y) ($valx $valy))))
-    (let
-        ($valx $valy) (match $db ($link $x $y) ($x $y))
-    (if (== ($valx $valy) ())
+(= (syn $kb $_ (: $prf (valuation $type ($link $x $y) $val)))
+    (let* (
+        ($db (match $kb (db-ref $db) $db))
+        ( $valx (collapse (unique (match $db ($link $x $y) $x))))
+        ( $valy (collapse (unique (match $db ($link $x $y) $y))))
+        )
+    (if (== $type X)
+        (if (== ($valx $valy) ())
           (empty)
-             (: CPUHandleValuation (valuation $db ($link $x $y) ($valx $valy)))
-        )    
+             (: CPUHandleValuation (valuation $type ($link $x $y) (superpose $valx)))
+        )  
+        (if (== $type Y)
+            (if (== ($valy $valx) ())
+              (empty)
+                 (: CPUHandleValuation (valuation $type ($link $x $y) (superpose $valy)))
+            )
+            (empty)
+        )
+    )  
     )
 )
 ;; Proof for prunning
