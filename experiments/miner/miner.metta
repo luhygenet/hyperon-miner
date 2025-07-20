@@ -1,56 +1,56 @@
-!(register-module! ../../experiments)
-; !(register-module!  ../../../../chaining)
+; !(register-module! ../../experiments)
+; ; !(register-module!  ../../../../chaining)
 
-; !(import! &self experiments:miner:miner)
-!(import! &self experiments:miner:miner-utils)
-!(import! &self experiments:rules:conj-exp)
-!(import! &self experiments:rules:freq-pat)
-!(import! &self experiments:rules:use-python)
-!(import! &self experiments:utils:variable-combinations)
-
-
-
-;; import utils and rules files 
-! (import! &self experiments:rules:isurp)
-! (import! &self experiments:rules:isurp-old)
-! (import! &self experiments:utils:common-utils)
-! (import! &self experiments:utils:beta-dist)
-! (import! &self experiments:utils:constants)
-! (import! &self experiments:utils:TruthValue)
-! (import! &self experiments:utils:surp-utils)
-! (import! &self experiments:utils:miner-utils)
-! (import! &self experiments:rules:build-specialization)
-! (import! &self experiments:rules:conjunction-expansion)
-
-! (import! &self experiments:utils:gen_partition)
-! (import! &self experiments:rules:est-tv)
-! (import! &self experiments:rules:emp-tv)
-! (import! &self experiments:rules:emp-prob)
-! (import! &self experiments:rules:jsd)
-! (import! &self experiments:utils:emp-tv-bs)
-! (import! &self experiments:utils:bs-utils)
-! (import! &self experiments:utils:util-jsd)
-; ! (import! &dbspace experiments:data:ugly_man_sodaDrinker)
-! (import! &dbspace experiments:data:small-ugly)
+; ; !(import! &self experiments:miner:miner)
+; !(import! &self experiments:miner:miner-utils)
+; !(import! &self experiments:rules:conj-exp)
+; !(import! &self experiments:rules:freq-pat)
+; !(import! &self experiments:rules:use-python)
+; !(import! &self experiments:utils:variable-combinations)
 
 
 
-;; config kb : load the chainer , rules , system-proofs ....
-; !(import! &self  chaining:dtl:backward:curried)
-!(import! &temp   experiments:miner:miner-rules)
-!(import! &self  experiments:miner:system-proofs)
+; ;; import utils and rules files 
+; ! (import! &self experiments:rules:isurp)
+; ! (import! &self experiments:rules:isurp-old)
+; ! (import! &self experiments:utils:common-utils)
+; ! (import! &self experiments:utils:beta-dist)
+; ! (import! &self experiments:utils:constants)
+; ! (import! &self experiments:utils:TruthValue)
+; ! (import! &self experiments:utils:surp-utils)
+; ! (import! &self experiments:utils:miner-utils)
+; ! (import! &self experiments:rules:build-specialization)
+; ! (import! &self experiments:rules:conjunction-expansion)
 
-;;create new space for kb
-!(bind! &kb (new-space)) 
-!(bind! &db (new-space)) 
+; ! (import! &self experiments:utils:gen_partition)
+; ! (import! &self experiments:rules:est-tv)
+; ! (import! &self experiments:rules:emp-tv)
+; ! (import! &self experiments:rules:emp-prob)
+; ! (import! &self experiments:rules:jsd)
+; ! (import! &self experiments:utils:emp-tv-bs)
+; ! (import! &self experiments:utils:bs-utils)
+; ! (import! &self experiments:utils:util-jsd)
+; ; ! (import! &dbspace experiments:data:ugly_man_sodaDrinker)
+; ! (import! &dbspace experiments:data:small-ugly)
 
-!(let ($link $x $y) (get-atoms &dbspace) (add-atom &db ($link $x $y)))
-!(let $atoms  (get-atoms &temp) (add-atom &kb $atoms) )
 
 
-; !(add-atom &kb (: candidate (candidate-clean (Inheritance Z ugly))))
-; !(add-atom &kb (: candidate (candidate-clean ())))
-; !(add-atom &kb (: candidate (candidate-clean (Inheritance Z sodaDrinker))))
+; ;; config kb : load the chainer , rules , system-proofs ....
+; ; !(import! &self  chaining:dtl:backward:curried)
+; !(import! &temp   experiments:miner:miner-rules)
+; !(import! &self  experiments:miner:system-proofs)
+
+; ;;create new space for kb
+; !(bind! &kb (new-space)) 
+; !(bind! &db (new-space)) 
+
+; !(let ($link $x $y) (get-atoms &dbspace) (add-atom &db ($link $x $y)))
+; !(let $atoms  (get-atoms &temp) (add-atom &kb $atoms) )
+
+
+; !(add-atom &kb (: candidate (candidatePattern (Inheritance Z ugly))))
+; ; !(add-atom &kb (: candidate (candidatePattern ())))
+; !(add-atom &kb (: candidate (candidatePattern (Inheritance Z sodaDrinker))))
 
 
 ;;;;;;;;;;;
@@ -95,7 +95,7 @@
                  (() (add-atom $kb (: dbr (db-ratio $db-ratio))))
                  (() (add-atom $kb (surp-mod $surp)))
                  (() (add-atom $kb (db-ratio $db-ratio)))
-                 (() (add-reduct $kb (db-size (db_size $db))))
+                 (() (add-atom $kb (db-size (db_size $db))))
                  (() (add-atom &self (kb-ref $kb)))
                  (() (add-atom $kb (db-ref $db)))
                 ;; (() (add-reduct $kb (minsup-rule)))
@@ -134,44 +134,40 @@
 ))
 (= (abstract $depth $kb)
     ; (chain (syn $kb $depth (: $prf (AbstractPattern $x))) $res (add-reduct $kb $res))
-   (collapse 
+ 
    (let* (
     ($res (syn $kb $depth (: $prf (AbstractPattern $x))))
     ($rem (remove-atom $kb $res))
     ($add (add-reduct $kb $res))
     ) 
     $res
-    ))
+    )
 )
 (= (specialization $depth $kb)
-    ; (chain (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))) $res (add-reduct $kb $res))
-    (collapse 
+    ; (chain (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))) $res (add-reduct $kb $res)) 
    (let* (
-    ; ($resx (syn $kb $depth (: $prf (specializationx $aptrn $sptrn))))
-    ; ($rem (remove-atom $kb $resx))
-    ; ($add (add-reduct $kb $resx))
-    ($resy (syn $kb $depth (: $prf (specializationy $aptrn $sptrn))))
+    ($resy (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))))
     ($rem (remove-atom $kb $resy))
-    ($add (add-reduct $kb $resy))
+    ($add (add-atom $kb $resy))
     
     ) 
-    ($resx $resy)
-    ))
+    $resy
+    )
 ) 
 (= (support $depth $kb)
     ; (chain (syn $kb $depth (: $prf (supportOf $sptrn $cnt))) $res (add-reduct $kb $res))
-      (collapse 
+
    (let* (
     ($res (syn $kb $depth (: $prf (supportOf $sptrn $cnt))))
     ($rem (remove-atom $kb $res))
     ($add (add-reduct $kb $res))
     ) 
-    $res
-    ))
+    ()
+    )
 )
 
 (= (candidate $depth $kb)
-   (collapse 
+   
    (let*(
     ($atom (: candidate (-> (minsup $ptrn) (-> (replace_variables $ptrn) (candidatePattern $ptrn)))))
     ($add (add-atom $kb $atom))
@@ -180,11 +176,14 @@
     ($rem2 (remove-atom $kb $res))
     ($add2 (add-reduct $kb $res))
     )
-    $res
-    ))
+    ()
+    )
 )
 
-
+conjunct and pattern
+1 and 1
+2 1
+3
 (= (conjunction $depth $kb $rec $maxrec) 
     (let*
         (
@@ -198,16 +197,6 @@
     )
 )
 
-(= (remove_redundant_conjunctions $depth $kb)
-   (collapse 
-   (let*(
-    ($res (syn $kb $depth (: $prf (candidate-clean $x)))) 
-    ($rem2 (remove-atom $kb $res))
-    ($add2 (add-reduct $kb $res))
-    )
-    $res
-    ))
-)
 (= (format $depth $kb)
    (collapse 
    (let*(
@@ -239,11 +228,10 @@
 ( 
      let*  ( 
          ($re (collapse (abstract (fromNumber 5) $kb)))
-         ($res (collapse (specialization (fromNumber 6) $kb)))
-        ;  ($resu (collapse (support (fromNumber 4) $kb)))
-        ;  ($result (collapse (candidate (fromNumber 5) $kb)))
-        ;  ($results (collapse (conjunction (fromNumber 13) $kb $maxclauses $limit)))
-        ;  ($resultn (collapse (remove_redundant_conjunctions (fromNumber 2) $kb)))
+         ($res (collapse (specialization (fromNumber 5) $kb)))
+         ($resu (collapse (support (fromNumber 3) $kb)))
+         ($result (collapse (candidate (fromNumber 5) $kb)))
+         ($results (collapse (conjunction (fromNumber 16) $kb $maxclauses $limit)))
         ;  ($resultf (collapse (format (fromNumber 4) $kb)))
       ) ()
 )
@@ -350,13 +338,13 @@
 ))
 
 
-(=(min-sup) 2)
-(=(surp-mode) jsdsurp)
-(=(db-ratio) 0.5)
+; (=(min-sup) 2)
+; (=(surp-mode) jsdsurp)
+; (=(db-ratio) 0.5)
 
-! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio) 1 2)
+; ! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio) 1 2)
 
-; !(syn &kb Z (: $prf (valuation &db ($link $nx $ny) ($valx $valy))))
+; !(syn &kb Z (: $prf (substitute_variables (link $nx $ny) ($valx $valy) ($subptrn $remaining))))
 
 ; !(init-miner &db &kb (min-sup) (surp-mode) (db-ratio))
 
@@ -364,8 +352,7 @@
 
 
 
-
-
+; (syn &kb Z (: $prf (clause_count $ptrn $cnt)))
 
 
 
