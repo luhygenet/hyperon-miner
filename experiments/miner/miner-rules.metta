@@ -19,12 +19,11 @@
 
 ;; rule to extract abstract patterns from the database
 (: abstract-pattern
- (-> (db-ref $db)
-   (-> (uniqueLink $db $ptrn $cnt)
+   (-> (uniqueLink $ptrn $cnt)
     (-> (ms-threshold $ms)
       (-> (⍃ $ms $cnt)
       (-> (replace_variables $ptrn)
-       (AbstractPattern $ptrn)))))))
+       (AbstractPattern $ptrn))))))
 ; (: abstract-pattern
 ;  (-> (db-ref $db)
 ;    (-> (uniqueLink $db $ptrn $cnt)
@@ -40,25 +39,23 @@
 (: specializationx
        (-> (AbstractPattern ($link $x $y)) 
         (-> (replace_index ($link $x $y) ($link $nx $ny)) 
-         (-> (db-ref $db)
-          (-> (valuation $db ($link $nx $ny) ($valx $valy))
+          (-> (valuation X ($link $nx $ny) $valx)
             (-> (depth-handler $valx $shabx)
             (-> (replace_variables ($shabx $ny))
-              (specializationx ($link $x $y) ($link $shabx $ny)))))))))
+              (specializationOf ($link $x $y) ($link $shabx $ny))))))))
 (: specializationy
        (-> (AbstractPattern ($link $x $y)) 
         (-> (replace_index ($link $x $y) ($link $nx $ny)) 
-         (-> (db-ref $db)
-          (-> (valuation $db ($link $nx $ny) ($valx $valy))
+          (-> (valuation Y ($link $nx $ny) $valy)
             (-> (depth-handler $valy $shaby)
             (-> (replace_variables ($nx $shaby))
-              (specializationy ($link $x $y) ($link $nx $shaby)))))))))
-
+              (specializationOf ($link $x $y) ($link $nx $shaby))))))))
 
 (: support 
       (-> (specializationOf $aptrn $sptrn)
+      (-> (replace_index $sptrn $nsptrn) 
        (-> (db-ref $db)
-          (supportOf $sptrn (counter $db $sptrn)))))
+          (supportOf $sptrn (counter $db $nsptrn))))))
 
 
 ;; rule to get candidate patterns
@@ -111,25 +108,38 @@
 ;                         (candidatePattern (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False))))))))))))))
 (: conjunction-expand
       (-> (candidatePattern $ptrn1)
-       (-> (replace_variables $ptrn1)
-        (-> (replace_index $ptrn1 $nptrn1)
+       (-> (replace_index $ptrn1 $nptrn1)
          (-> (clause_count $nptrn1 $cnt)   
           (-> (maxClauses $max)
            (-> (equals $cnt $max)
             (-> (candidatePattern $ptrn2)
-             (-> (replace_variables $ptrn2)
               (-> (replace_index $ptrn2 $nptrn2)
                (-> (clause_count $nptrn2 $cnt2)
                 (-> (equals $cnt2 1)
                  (-> (ms-threshold $ms)
-                  (-> (db-ref $db)
-                    (candidatePattern (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False))))))))))))))))
+                  (-> (get_variables $nptrn1 $vars1)
+                   (-> (get_variables $nptrn2 $vars2)
+                    (-> (combine_variables $vars1 $vars2 $comb)
+                     (-> (substitute_variables $nptrn2 $comb ($subptrn2 $remaining))
+                      (-> (replace_variables (, $nptrn1 $subptrn2))
+                      (-> (conjunction_clean (, $nptrn1 $subptrn2))
+                       (candidatePattern (, $nptrn1 $subptrn2)))))))))))))))))))
+; (: conjunction-expand
+;       (-> (candidatePattern $ptrn1)
+;        (-> (replace_variables $ptrn1)
+;         (-> (replace_index $ptrn1 $nptrn1)
+;          (-> (clause_count $nptrn1 $cnt)   
+;           (-> (maxClauses $max)
+;            (-> (equals $cnt $max)
+;             (-> (candidatePattern $ptrn2)
+;              (-> (replace_variables $ptrn2)
+;               (-> (replace_index $ptrn2 $nptrn2)
+;                (-> (clause_count $nptrn2 $cnt2)
+;                 (-> (equals $cnt2 1)
+;                  (-> (ms-threshold $ms)
+;                   (-> (db-ref $db)
+;                     (candidatePattern (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False))))))))))))))))
 
-;; rule to clean conjunctions from redundant clauses
-(: remove-conjuncts-with-redundant-clause
-      (-> (candidatePattern $ptrn)
-        (-> (replace_variables $ptrn)
-            (candidate-clean (remove_conjuncts_with_redundant_clauses $ptrn)))))
 
 (: format 
       (-> (candidate-clean $ptrn)
