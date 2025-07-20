@@ -63,11 +63,13 @@
 ;; test the cog-miner
 ;; without sorting 
 ; ! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio) )
-! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio) 1 1)
+; ! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio) 1 2)
+!(union-atom () (1 2 3 4 5 6 7 8 9 10))
 
 
-
-; !(syn &kb (fromNumber 5) (: $prf (AbstractPattern $x))) 
+; !(syn &kb (fromNumber 0) (: $prf (uniqueLink $pattern $cnt))) 
+; !(syn &kb (fromNumber 0) (: $prf (valuation X (Inheritance $x $y) $val))) 
+; !(syn &kb (fromNumber 0) (: $prf (valuation Y (Inheritance $x $y) $val))) 
 ; !(abstract (fromNumber 5) &kb)
 ; !(specialization (fromNumber 3) &kb)
 ; !(support (fromNumber 4) &kb)
@@ -77,7 +79,7 @@
 ; !(conjunction (fromNumber 11) &kb 1 2)
 ; 
 
-!(match &kb $x $x)
+; !(match &kb $x $x)
 ;!(get-metatype (@doc random-int (@desc "Returns random int number from range defined by two numbers (first and second argument)")))
 
 ;;add the rb ref to the kb 
