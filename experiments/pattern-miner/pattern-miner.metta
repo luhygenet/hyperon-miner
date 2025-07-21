@@ -29,11 +29,11 @@
 
 (= (pattern-miner $kb $db $minsup $depth $surp-mode) ( 
     let*
-    (  
-       ($dummy (collapse (let ($link $x $y) (get-atoms $db) (add-atom &dbspace ($link $x $y))) ))
-           ($frequent-pattern  (frequency-pattern-miner $kb &dbspace &specspace &cndpspace &aptrnspace &conjspace $minsup $depth))
-           ($dummy3  (call-surprisingness $kb &dbspace $surp-mode $frequent-pattern))
-          )  ($dummy3)))
+    (    (() (println! "==== Pattern Miner Started ====="))
+         ($dummy (collapse (let ($link $x $y) (get-atoms $db) (add-atom &dbspace ($link $x $y))) ))
+         ($frequent-pattern  (frequency-pattern-miner $kb &dbspace &specspace &cndpspace &aptrnspace &conjspace $minsup $depth))
+         ($dummy3  (call-surprisingness $kb &dbspace $surp-mode $frequent-pattern))
+          )  ()))
 
 
 

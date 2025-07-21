@@ -346,14 +346,12 @@
 
 (= (do-conjunct $db $cndb $coming_conj  $ms Z)
     (let* (
+        (() (println! "==== Build conjunction with depth 0"))
         ($conjunct (replacev $coming_conj))
-        (() (println! (here2  $conjunct)))
         ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
         ($listconj (expand_conjunction $conjunct $matches $db $ms 2 False))
-         (() (println! (here 2 $listconj)))
         ($debconj (replace $listconj))
         ($fitlered (remove_conjuncts_with_redundant_clauses $debconj))
-         (() (println! (current conj2 $fitlered)))
     )
     $fitlered
     )
@@ -361,18 +359,14 @@
 
 (= (do-conjunct $db $cndb $coming_conj $ms (S $K))
     (let* (
+        (() (println! "==== Build conjunction with depth greater than 0"))
         ($conjunct (replacev $coming_conj))
-        (() (println! (here 1 $conjunct)))
-
         ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
         ($listconj (expand_conjunction $conjunct $matches $db $ms 2 False))
-        (() (println! (here 1 $listconj)))
-
         ($debconj (replace $listconj))
         ($fitlered (remove_conjuncts_with_redundant_clauses $debconj))
         ($varconj (replacev $fitlered))
         ($conj (do-conjunct $db $cndb $varconj $ms $K))
-        (() (println! (current conj1 $conj)))
     )
     $conj
     )
@@ -392,10 +386,10 @@
 
 (= (formatter $kb $conjspace $dbspace $depth) 
    (let* (
+        (() (println! "==== Formating  started ====="))
         ($sorted  (match $conjspace $pattern (sort_conj $pattern)))
         ($res  (cons-atom ,  $sorted))
         ($formatted (format-helper $res $dbspace (fromNumber $depth)))
-           (() (println! (informatted2 $formatted)))
         ;($dummy  (add-atom-local $kb  $formatted))
     ) (case $formatted (
                 ((supportOf $x 1) (empty) )
