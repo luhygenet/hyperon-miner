@@ -31,54 +31,41 @@
 (=(checkIntersection $var $set) 
     (not (== ((intersection-atom ($var) $set)) (())))) 
 
-; (=(process-pattern $acc $pattern $var)
-;  (if (== (get-metatype $pattern) Symbol) 
-;         $acc 
-;         (let* (
-;                 ($is_pattern (let $pat_temp (is-pattern $pattern) (car-atom $pat_temp))) 
-;                 ($is_expression (== (get-metatype $pattern) Expression)) 
-;                 ($vars (cdr-atom $pattern)) 
-;                 ($is_connected (checkIntersection $var $vars))) 
-;             (if (and (and $is_pattern $is_expression) $is_connected)
-;                 (cons-atom $pattern $acc) 
-;                 $acc))))
 
-(=(process-pattern  $pattern $var)
- 
-         
-        (let* (
-                ($is_pattern (let $pat_temp (is-pattern $pattern) (car-atom $pat_temp))) 
-                ($is_expression (== (get-metatype $pattern) Expression)) 
-                ($vars (cdr-atom $pattern)) 
-                ($is_connected (checkIntersection $var $vars))) 
-            (if (and (and $is_pattern $is_expression) $is_connected)
-                $pattern 
-                (empty))))
-
-; (=(connected-subpatterns-with-var $partition $var)
+(=(process-pattern $pattern $var)
+    (let* (
+        (($is_pat ) (is-pattern $pattern)))
+    
+        (if $is_pat
+            ; If it's a pattern, do the normal check
+            (let* (
+                ($is_expression (== (get-metatype $pattern) Expression))
+                ($vars (cdr-atom $pattern))
+                ($is_connected (checkIntersection $var $vars))
+            )
+                (if (and $is_expression $is_connected)
+                    $pattern
+                    (empty)
+                )
+            )
+           
+               (process-pattern (superpose $pattern) $var)
+     
+        )
+    ))
 
 
-;     (foldl-atom $partition () $acc $pattern (process-pattern $acc $pattern $var)))
+
 
 (=(connected-subpatterns-with-var $partition $var)
-(let* (($no-comma (cdr-atom $partition))
-($return (collapse (process-pattern (superpose $no-comma ) $var)))
 
-) (cons-atom , $return )
-    )
+ (collapse (process-pattern (superpose $partition ) $var)))
+
+
+
+
+
     
     
-    
-    
-    )
-
-
-
-
-!(connected-subpatterns-with-var (, (Inheritance $x $y) (Inheritance $y $z) (Inheritance $j $f) (Constant 42) (Inheritance $z $k)) $y)
-
-
-
-
-
+!(connected-subpatterns-with-var (((Inheritance $x $y) (Inheritance $y $z)) (Inheritance $j $f)  (Inheritance $y $k)) $y)   
 
