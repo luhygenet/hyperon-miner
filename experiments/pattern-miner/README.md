@@ -67,7 +67,7 @@ It is a **functional implementation** of a pattern mining pipeline written in Me
 ```
 
 
-## 🧾 Expected Output Format
+##  Expected Output Format
 
 ### Without Surprisingness (`none`)
 ```
