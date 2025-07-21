@@ -6,10 +6,7 @@
 ! (bind! &conjspace (new-space))
 
 
-(= (add-atom-nodup $space $atom)
-   (case (match $space $atom $atom)
-     (($atom ())
-      (Empty (add-atom $space $atom)))))
+
 
 (= (do-surp $kb $db $surp-mode (supportOf $pattern $support) $normalization ) 
          (case (match $kb  (surprisingnessOf $pattern $surp_val) $pattern)
@@ -25,8 +22,10 @@
      (isurp-old  (do-surp $kb $db isurp-old   False))
      ($_  ())
   )))
-  
 
+--------------------------------------------------------------
+;; 
+(: pattern-miner (-> $space $space Number Number $atom $atom))
 (= (pattern-miner $kb $db $minsup $depth $surp-mode) ( 
     let*
     (    (() (println! "==== Pattern Miner Started ====="))

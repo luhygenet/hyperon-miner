@@ -346,7 +346,7 @@
 
 (= (do-conjunct $db $cndb $coming_conj  $ms Z)
     (let* (
-        (() (println! "==== Build conjunction with depth 0"))
+        (() (println! "==== Build conjunction with depth 0 ===="))
         ($conjunct (replacev $coming_conj))
         ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
         ($listconj (expand_conjunction $conjunct $matches $db $ms 2 False))
@@ -359,7 +359,7 @@
 
 (= (do-conjunct $db $cndb $coming_conj $ms (S $K))
     (let* (
-        (() (println! "==== Build conjunction with depth greater than 0"))
+        (() (println! "==== Build conjunction with depth greater than 0 ====="))
         ($conjunct (replacev $coming_conj))
         ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
         ($listconj (expand_conjunction $conjunct $matches $db $ms 2 False))

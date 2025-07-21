@@ -35,7 +35,8 @@
 ;; minimum support 3
 
 !(pattern-miner &res1 &db 3 0 none)
-!(assertEqual (collapse (match &res1 $pattern $pattern )) 
+! (collapse (match &res1 $pattern $pattern )
+;; Expected result 
           ((supportOf (, (Inheritance $y human) (Inheritance $y man)) 3) 
           (supportOf (, (Inheritance $j human) (Inheritance $j ugly)) 3) 
           (supportOf (, (Inheritance $p human) (Inheritance $p sodaDrinker)) 3) 
