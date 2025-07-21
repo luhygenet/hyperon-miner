@@ -383,21 +383,23 @@
      (
       ($atom ())
       (Empty (case $atom (
-               ((supportOf (,) $x) () )
+               ((supportOf $x 1) () )
                ($_ (add-atom $space $atom))))))))
 
-(= (format-helper $var-index $dbspace ) (
-     let $var (replacev $var-index) (supportOf $var (sup-num $dbspace $var))) )
+(= (format-helper $var-index $dbspace $depth) (
+     let $var (replacev $var-index) (supportOf $var (sup-num $dbspace $var))))
 
 
-(= (formatter $kb $conjspace $dbspace) 
-    (let* (
+(= (formatter $kb $conjspace $dbspace $depth) 
+   (let* (
         ($sorted  (match $conjspace $pattern (sort_conj $pattern)))
         ($res  (cons-atom ,  $sorted))
-        ($formatted (format-helper $res $dbspace))
-        ($dummy  (add-atom-local $kb  $formatted)) 
-    )()
-    
+        ($formatted (format-helper $res $dbspace (fromNumber $depth)))
+           (() (println! (informatted2 $formatted)))
+        ;($dummy  (add-atom-local $kb  $formatted))
+    ) (case $formatted (
+                ((supportOf $x 1) (empty) )
+               ($_  $formatted)))
 ))
 
 (= (conjunct $dbspace $cndpspace $conjspace $minsup $depth )   

@@ -11,7 +11,7 @@
 ! (import! &self experiments:utils:miner-utils)
 ! (import! &self experiments:utils:gen_partition)
 ! (import! &self experiments:truth-values:est-tv)
-! (import! &self experiments:rules:emp-tv)
+! (import! &self experiments:truth-values:emp-tv)
 ! (import! &kb experiments:data:ugly_man_sodaDrinker)
 
 

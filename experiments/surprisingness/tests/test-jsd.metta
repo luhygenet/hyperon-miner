@@ -1,5 +1,5 @@
-! (register-module! ../../../hyperon-miner/experiments)
-! (import! &self experiments:rules:jsd)
+! (register-module! ../../../../hyperon-miner/experiments)
+! (import! &self experiments:surprisingness:jsd)
 ! (import! &self experiments:utils:common-utils)
 ! (import! &self experiments:utils:jsd-helper)
 ! (import! &self experiments:utils:beta-dist)

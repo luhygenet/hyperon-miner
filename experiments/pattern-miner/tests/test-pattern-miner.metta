@@ -20,5 +20,7 @@
 
 ! (bind! &kb (new-space))
 
-!(pattern-miner &kb &db 3 0 nisurp-old)
+!(pattern-miner &kb &db 3 1 nisurp-old )
 ! (match &kb $pattern $pattern )
+
+

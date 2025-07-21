@@ -5,22 +5,23 @@
 ! (bind! &aptrnspace (new-space))
 ! (bind! &conjspace (new-space))
 
-; (isurp-old (, (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x man)) &db  True)
 
 (= (add-atom-nodup $space $atom)
    (case (match $space $atom $atom)
      (($atom ())
       (Empty (add-atom $space $atom)))))
 
-(= (do-surp $kb $db $surp-mode $normalization ) (
-    let (supportOf $pattern $support) (unique (match $kb  $x $x))
-         ;(let $surp_val  ($surp-mode $pattern $db True) (add-atom-nodup $kb (surprisingnessOf $pattern $surp_val)))    
-         (println! (surp $pattern)) 
-))
+(= (do-surp $kb $db $surp-mode (supportOf $pattern $support) $normalization ) 
+         (case (match $kb  (surprisingnessOf $pattern $surp_val) $pattern)
+              ( ($pattern  ())
+                 (Empty  (add-atom-nodup $kb  (surprisingnessOf $pattern ($surp-mode $pattern $db True)) ))))
+)
 
-(=(call-surprisingness $kb $db $surp-mode)
+
+(= (call-surprisingness $kb $db $surp-mode $pattern)
   (case $surp-mode (
-     (nisurp-old  (do-surp $kb $db isurp-old  True))
+     (none (add-atom-nodup $kb $pattern))
+     (nisurp-old  (do-surp $kb $db isurp-old $pattern True))
      (isurp-old  (do-surp $kb $db isurp-old   False))
      ($_  ())
   )))
@@ -28,14 +29,11 @@
 
 (= (pattern-miner $kb $db $minsup $depth $surp-mode) ( 
     let*
-    (  ($dummy (collapse (let ($link $x $y) (get-atoms $db) (add-atom &dbspace ($link $x $y))) ))
-          (() (frequency-pattern-miner $kb &dbspace &specspace &cndpspace &aptrnspace &conjspace $minsup $depth))
-          ($dummy2 (collapse (call-surprisingness $kb $db $surp-mode)))
-          )  ()
-
-))
-
+    (  
+       ($dummy (collapse (let ($link $x $y) (get-atoms $db) (add-atom &dbspace ($link $x $y))) ))
+           ($frequent-pattern  (frequency-pattern-miner $kb &dbspace &specspace &cndpspace &aptrnspace &conjspace $minsup $depth))
+           ($dummy3  (call-surprisingness $kb &dbspace $surp-mode $frequent-pattern))
+          )  ($dummy3)))
 
 
 
-; !(match &dbspace (, (Inheritance $x man) (Inheritance $x sodaDrinker)) $x)

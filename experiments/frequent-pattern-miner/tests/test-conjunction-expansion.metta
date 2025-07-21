@@ -1,5 +1,5 @@
 
-! (register-module! ../../experiments)
+! (register-module! ../../../hyperon-miner)
 ! (import! &self experiments:rules:conjunction-expansion)
 ! (import! &self experiments:utils:common-utils)
 ! (import! &self experiments:rules:conj-exp)
