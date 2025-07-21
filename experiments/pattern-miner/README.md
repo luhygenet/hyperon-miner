@@ -12,11 +12,11 @@ It is a **functional implementation** of a pattern mining pipeline written in Me
    If a **surprisingness mode** is selected, the patterns are evaluated based on how unexpected they are.
 
 3. **Output**:
-   - If `surp-mode` is `none` → Only frequent patterns are returned:  
+   If `surp-mode` is `none` → Only frequent patterns are returned:  
      ```
      (supportOf $pattern $support)
      ```
-   - If `surp-mode` is not `none` → Each pattern is scored for surprisingness:  
+   If `surp-mode` is not `none` → Each pattern is scored for surprisingness:  
      ```
      (surprisingnessOf $pattern $score)
      ```
@@ -30,8 +30,9 @@ It is a **functional implementation** of a pattern mining pipeline written in Me
 | `nisurp-old` | Computes surprisingness **with normalization**.   |
 
 ##  Requirements
-- MeTTa 0.2.4 
-- 
+- MeTTa v0.2.4
+- A corpus (dataset) you want to mine patterns from
+- Clone and structure this `hyperon-miner` module
 
 ##  How to Run
 ### Example Call
