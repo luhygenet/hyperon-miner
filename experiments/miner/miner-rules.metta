@@ -58,21 +58,6 @@
           (supportOf $sptrn (counter $db $nsptrn))))))
 
 
-;; rule to get candidate patterns
-; (: candidate  
-;       (-> (minsup $ptrn)
-;          (candidatePattern $ptrn)))
-
-
-; (: candidate  
-;       (-> (minsup $ptrn)
-;        (-> (replace_variables $ptrn)
-;          (candidatePattern $ptrn))))
-
-; (: candidatePattern  
-;       (-> (specializationOf $aptrn $sptrn)
-;                 (candidatePattern $sptrn)))
-
 
 (: supportOfff 
       (-> (minsup $ptrn)
@@ -81,31 +66,7 @@
                         (supportOfff $ptrn (do-sup $ptrn $db $ratio))))))
 
 
-;; rule for creating conjunctions with more clauses
-; (: conjunction-expand
-;       (-> (candidatePattern $ptrn1)
-;          (-> (clause_count $ptrn1 $cnt)   
-;            (-> (maxClauses $max)
-;              (-> (equals $cnt $max)
-;               (-> (candidatePattern $ptrn2)
-;                (-> (clause_count $ptrn2 $cnt2)
-;                 (-> (equals $cnt2 1)
-;                  (-> (ms-threshold $ms)
-;                   (-> (db-ref $db)
-;                    (candidatePattern (expand_conjunction $ptrn1 $ptrn2 $db $ms 2 False))))))))))))
-; (: conjunction-expand
-;       (-> (candidatePattern $ptrn1)
-;        (-> (replace_index $ptrn1 $nptrn1)
-;          (-> (clause_count $nptrn1 $cnt)   
-;           (-> (maxClauses $max)
-;             (-> (equals $cnt $max)
-;             (-> (candidatePattern $ptrn2)
-;              (-> (replace_index $ptrn2 $nptrn2)
-;              (-> (clause_count $nptrn2 $cnt2)
-;             (-> (equals $cnt2 1)
-;                (-> (ms-threshold $ms)
-;                   (-> (db-ref $db)
-;                         (candidatePattern (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False))))))))))))))
+
 (: conjunction-expand
       (-> (candidatePattern $ptrn1)
        (-> (replace_index $ptrn1 $nptrn1)
@@ -124,21 +85,6 @@
                       (-> (replace_variables (, $nptrn1 $subptrn2))
                       (-> (conjunction_clean (, $nptrn1 $subptrn2))
                        (candidatePattern (, $nptrn1 $subptrn2)))))))))))))))))))
-; (: conjunction-expand
-;       (-> (candidatePattern $ptrn1)
-;        (-> (replace_variables $ptrn1)
-;         (-> (replace_index $ptrn1 $nptrn1)
-;          (-> (clause_count $nptrn1 $cnt)   
-;           (-> (maxClauses $max)
-;            (-> (equals $cnt $max)
-;             (-> (candidatePattern $ptrn2)
-;              (-> (replace_variables $ptrn2)
-;               (-> (replace_index $ptrn2 $nptrn2)
-;                (-> (clause_count $nptrn2 $cnt2)
-;                 (-> (equals $cnt2 1)
-;                  (-> (ms-threshold $ms)
-;                   (-> (db-ref $db)
-;                     (candidatePattern (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False))))))))))))))))
 
 
 (: format 
