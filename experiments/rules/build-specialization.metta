@@ -89,7 +89,7 @@
 (= (build-specialization-new  $dbspace $specspace $aptrnspace ) 
             (let*
                 (     (() (println! (here in spec)))
-                    ( ($link $x $y) (match $aptrnspace (AbstractPattern $pattern) $pattern))
+                    ( ($link $x $y) (match $aptrnspace (AbstractPattern ($link $x $y)) ($link $x $y)))
                    
                     ( ($link $x1 $y1) (replacev ($link $x $y)))                            ; replacev is a function that replaces index with variables
                     ( ($subx $suby) (match $dbspace ($link $x1 $y1) ($x1 $y1)))            ; getting the substitution /valuation of the pattern
