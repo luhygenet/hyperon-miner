@@ -402,10 +402,9 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 (=(is-present $atom ()) False)
 (=(is-present $atom $list) (
     if (is-expression $list) (
-    let ($head $tail) (decons-atom $list) (
+    let* ((($head $tail) (decons-atom $list))) (
         if (== $atom $head) True  (or (is-present $atom $head) (is-present $atom $tail))
-    )) (if (== $atom $head) True False)))
-
+    )) (if (== $atom $list) True False)))
 
 ;; =============================================================================
 ;; Function: is-pattern
