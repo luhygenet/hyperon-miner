@@ -347,8 +347,11 @@
                     ($right (cdr-atom $sliced))
                     ($rightPart (car-atom $right))   
 
-                    ($sortedLeft (merge_sort $leftPart))
-                    ($sortedRight (merge_sort $rightPart)) 
+                    ; ($sortedLeft (merge_sort $leftPart))
+                    ; ($sortedRight (merge_sort $rightPart)) 
+                    ;; using superpose will help us to parallarly sort the left and right wings
+                    (($sortedLeft $sortedRight) (collapse (superpose ( (merge_sort $leftPart) (merge_sort $rightPart) ))))
+
 
                     ($answer (merge $sortedLeft $sortedRight ()))
 
