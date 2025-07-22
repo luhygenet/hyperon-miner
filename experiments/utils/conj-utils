@@ -225,12 +225,11 @@
 ;;;; create new space and store letters with their index on it ;;;;;
 !(bind! &newSpace (new-space))
 !(add-reducts &newSpace (
-   ('a' 1) ('A' 1) ('b' 2) ('B' 2) ('c' 3) ('C' 3) ('d' 4) ('D' 4) ('e' 5) ('E' 5) 
-   ('f' 6) ('F' 6) ('g' 7) ('G' 7) ('h' 8) ('H' 8) ('i' 9) ('I' 9) ('j' 10) ('J' 10) 
-   ('k' 11) ('K' 11) ('l' 12) ('L' 12) ('m' 13) ('M' 13) ('n' 14) ('N' 14) 
-   ('o' 15) ('O' 15) ('p' 16) ('P' 16) ('q' 17) ('Q' 17) ('r' 18) ('R' 18) 
-   ('s' 19) ('S' 19) ('t' 20) ('T' 20) ('u' 21) ('U' 21) ('v' 22) ('V' 22) 
-   ('w' 23) ('W' 23) ('x' 24) ('X' 24) ('y' 25) ('Y' 25) ('z' 26) ('Z' 26)
+   ('!' 1) ('@' 2) ('#' 3) ('$' 4) ('^' 6) ('&' 7) ('-' 9) ('_' 10) ('|' 17) (':' 19) ('"' 20) (',' 23) ('.' 24) ('?' 26) ('~' 27) 
+   ('A' 28) ('B' 29) ('C' 30) ('D' 31) ('E' 32) ('F' 33) ('G' 34) ('H' 35) ('I' 36) ('J' 37) ('K' 38) ('L' 39) ('M' 40) ('N' 41) 
+   ('O' 42) ('P' 43) ('Q' 44) ('R' 45) ('S' 46) ('T' 47) ('U' 48) ('V' 49) ('W' 50) ('X' 51) ('Y' 52) ('Z' 53)
+   ('a' 54) ('b' 55) ('c' 56) ('d' 57) ('e' 58) ('f' 59) ('g' 60) ('h' 61) ('i' 62) ('j' 63) ('k' 64) ('l' 65) ('m' 66) ('n' 67) 
+   ('o' 68) ('p' 69) ('q' 70) ('r' 71) ('s' 72) ('t' 73) ('u' 74) ('v' 75) ('w' 76) ('x' 77) ('y' 78) ('z' 79)
 ))
 
 ;;;; get value for a character ;;;;;
@@ -246,10 +245,8 @@
 
 ;;;;; separate function ;;;;;
 ;; input: 4-parameter
-    ;; 1st-param: ($a $b $c $d)
-    ;; 2nd-param: 2  ; mid-number 
-    ;; 3rd-param: () ; accumulator
-    ;; 4th-param: 0  ; how many elements is there in 3rd param
+    ;; 1st-param: ($a $b $c $d) ;; 2nd-param: 2  ; mid-number 
+    ;; 3rd-param: () ; accumulator ;; 4th-param: 0  ; how many elements is there in 3rd param
 ;; output: ( ($a $b) ($c $d) )
 ( = (separate $given $mid $acc $curr)
     (
@@ -277,8 +274,7 @@
 ;;;; who is first function ;;;;;;
 ;; compares whether 2 words and compare which one comes first in alphabetical order 
 ;; input: 2 params
-    ;; 1st-param: ('z' 'e' 'b' 'r' 'a')
-    ;; 2nd-param: ('a' 'p' 'p' 'l' 'e')
+    ;; 1st-param: ('z' 'e' 'b' 'r' 'a') ;; 2nd-param: ('a' 'p' 'p' 'l' 'e')
 ;; output: second ;; since apple comes before zebra alphabetically 
 ( = (whoIsFirst $word1 $word2) ;handle first incase they are equal
     (
@@ -309,9 +305,7 @@
 ;;;; merge function ;;;;
 ;; get 2 sorted expressions and return 1 sorted expression (by merging the two)
 ;; input: 3 parameters
-    ;; 1st-param: ( ('a' 'b' 'a' 'y') ('r' 'i' 'v' 'e' 'r'))
-    ;; 2nd-param: ( ('b' 'r' 'i' 'd' 'g' 'e') ('d' 'a' 'm'))
-    ;; 3rd-param: () ;answer storage
+    ;; 1st-param: ( ('a' 'b' 'a' 'y') ('r' 'i' 'v' 'e' 'r')) ;; 2nd-param: ( ('b' 'r' 'i' 'd' 'g' 'e') ('d' 'a' 'm')) ;; 3rd-param: () ;answer storage
 ;; output: ( ('a' 'b' 'a' 'y') ('b' 'r' 'i' 'd' 'g' 'e') ('d' 'a' 'm') ('r' 'i' 'v' 'e' 'r') )
 ( = (merge $left $right $store)
     (  
@@ -371,8 +365,7 @@
 
 ;;;; chars To Atom Converter ;;;;
 ;; input: 2 parameters
-    ;; 1st-param: ( ('a' 'b' 'a' 'y') ('b' 'r' 'i' 'd' 'g' 'e') ('d' 'a' 'm') ('r' 'i' 'v' 'e' 'r') )
-    ;; 2nd-param: ()
+    ;; 1st-param: ( ('a' 'b' 'a' 'y') ('b' 'r' 'i' 'd' 'g' 'e') ('d' 'a' 'm') ('r' 'i' 'v' 'e' 'r') ) ;; 2nd-param: ()
 ;; output: (abay bridge dam river)
 ( = (to-Atom $word $finalAnswer) 
     (
