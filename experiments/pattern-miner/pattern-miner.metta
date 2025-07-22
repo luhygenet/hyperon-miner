@@ -15,7 +15,7 @@
 (= (do-surp $kb $db $surp-mode (supportOf $pattern $support) $normalization ) 
          (case (match $kb  (surprisingnessOf $pattern $surp_val) $pattern)
               ( ($pattern  ())
-                 (Empty  (add-atom-nodup $kb  (surprisingnessOf $pattern ($surp-mode $pattern $db True)) ))))
+                 (Empty  (add-atom-nodup $kb  (surprisingnessOf $pattern ($surp-mode $pattern $db $normalization)) ))))
 )
 
 ---------------------------------------------------
@@ -28,9 +28,10 @@
   (case $surp-mode (
      (none (add-atom-nodup $kb $pattern))
      (nisurp-old  (do-surp $kb $db isurp-old $pattern True))
-     (isurp-old  (do-surp $kb $db isurp-old   False))
+     (isurp-old  (do-surp $kb $db isurp-old  $pattern False))
      ($_  ())
   )))
+
 
 --------------------------------------------------------------
 ;; pattern-miner 

@@ -370,7 +370,7 @@
 ;; conjunct 
 -----------------------------------------------
 ;; function to extract candidate patterns and call do-conjunct 
-(: conjunct (-> space space space Number Number Atom))
+;(: conjunct (-> space space space Number Number Atom))
 (= (conjunct $dbspace $cndpspace $conjspace $minsup $depth )   
       (let $pattern (match $cndpspace (CandidatePattern $Cpattern) $Cpattern)
                    (let $conj  (do-conjunct $dbspace $cndpspace  $pattern $minsup (fromNumber $depth)) 

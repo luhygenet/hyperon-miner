@@ -1,8 +1,8 @@
 
-! (register-module! ../../../hyperon-miner)
-! (import! &self experiments:rules:conjunction-expansion)
-! (import! &self experiments:utils:common-utils)
-! (import! &self experiments:rules:conj-exp)
+! (register-module! ../../../../hyperon-miner)
+! (import! &self hyperon-miner:experiments:frequent-pattern-miner:conjunction-expansion)
+! (import! &self hyperon-miner:experiments:utils:common-utils)
+! (import! &self hyperon-miner:experiments:frequent-pattern-miner:conj-exp)
 
 
 !(assertEqual (get_variable_for_pattern (link $x $y)) ($x $y))

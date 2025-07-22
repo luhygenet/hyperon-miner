@@ -1,4 +1,4 @@
-! (register-module! ../../../hyperon-miner)
+! (register-module! ../../../../hyperon-miner)
 ! (import! &self hyperon-miner:experiments:rules:candidate-patterns)
 ! (import! &self hyperon-miner:experiments:utils:common-utils)
 ! (import! &self hyperon-miner:experiments:rules:freq-pat)
