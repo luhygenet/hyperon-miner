@@ -233,6 +233,15 @@
    ('w' 23) ('W' 23) ('x' 24) ('X' 24) ('y' 25) ('Y' 25) ('z' 26) ('Z' 26)
 ))
 
+;;;; get value for a character ;;;;;
+( = (get-value $char) 0)
+( = (get-value $char) (match &newSpace ($char $num) $num))
+
+( = (get-value-of $char) 
+    ( let $ans (collapse (get-value $char))
+        ( if (== 2 (size-atom $ans)) (max-atom $ans) (car-atom $ans) )
+    )
+)
 
 
 ;;;;; separate function ;;;;;
@@ -279,9 +288,9 @@
                 let*
                     (   
                         (($firstLetter1 $restLetter1) (decons-atom $word1))
-                        (($firstLetter2 $restLetter2) (decons-atom $word2))
-                        ($currentLetterNumber1 (match &newSpace ($firstLetter1 $num1) $num1))
-                        ($currentLetterNumber2 (match &newSpace ($firstLetter2 $num2) $num2)) 
+                        (($firstLetter2 $restLetter2) (decons-atom $word2))  
+                        ($currentLetterNumber1 (get-value-of $firstLetter1))
+                        ($currentLetterNumber2 (get-value-of $firstLetter2)) 
                     )
                     (
                         if (< $currentLetterNumber1 $currentLetterNumber2)
@@ -349,9 +358,7 @@
 
                     ; ($sortedLeft (merge_sort $leftPart))
                     ; ($sortedRight (merge_sort $rightPart)) 
-                    ;; using superpose will help us to parallarly sort the left and right wings
                     (($sortedLeft $sortedRight) (collapse (superpose ( (merge_sort $leftPart) (merge_sort $rightPart) ))))
-
 
                     ($answer (merge $sortedLeft $sortedRight ()))
 
@@ -402,4 +409,4 @@
     )
 )
 
-;test be running this !(sort (hey i am Yonas a Student))   
+;test be running this !(sort (hey i am Yonas Student))   
