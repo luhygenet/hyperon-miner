@@ -7,24 +7,16 @@
                  (-> (⍃ $ms $cnt)
                         (minsup $ptrn)))))
 
-;; Rule to extract abstract patterns from the database.
+                        
+
+;; rule to extract abstract patterns from the database
 (: abstract-pattern
    (-> (uniqueLink $ptrn $cnt)
     (-> (ms-threshold $ms)
       (-> (⍃ $ms $cnt)
       (-> (replace_variables $ptrn)
        (AbstractPattern $ptrn))))))
-; (: abstract-pattern
-;  (-> (db-ref $db)
-;    (-> (uniqueLink $db $ptrn $cnt)
-;        (AbstractPattern $ptrn))))
 
-;; rule to specialize abstract patterns
-; (: specialization
-;     (-> (AbstractPattern $aptrn) 
-;      (-> (replace_index $aptrn $naptrn)
-;       (-> (db-ref $db)
-;         (specializationOf $naptrn (build-specialization-chain $naptrn $db))))))
 
 (: specializationx
        (-> (AbstractPattern ($link $x $y)) 
@@ -33,6 +25,7 @@
             (-> (depth-handler $valx $shabx)
             (-> (replace_variables ($shabx $ny))
               (specializationOf ($link $x $y) ($link $shabx $ny))))))))
+
 (: specializationy
        (-> (AbstractPattern ($link $x $y)) 
         (-> (replace_index ($link $x $y) ($link $nx $ny)) 
@@ -48,12 +41,28 @@
           (supportOf $sptrn (counter $db $nsptrn))))))
 
 
+;; rule to get candidate patterns
+; (: candidate  
+;       (-> (minsup $ptrn)
+;          (candidatePattern $ptrn)))
+
+
+; (: candidate  
+;       (-> (minsup $ptrn)
+;        (-> (replace_variables $ptrn)
+;          (candidatePattern $ptrn))))
+
+; (: candidatePattern  
+;       (-> (specializationOf $aptrn $sptrn)
+;                 (candidatePattern $sptrn)))
+
 
 (: supportOfff 
       (-> (minsup $ptrn)
             (-> (db-ref $db)
                   (-> (db-ratio $ratio)
                         (supportOfff $ptrn (do-sup $ptrn $db $ratio))))))
+
 
 
 
@@ -77,6 +86,7 @@
                        (candidatePattern (, $nptrn1 $subptrn2)))))))))))))))))))
 
 
+
 (: format 
       (-> (candidate-clean $ptrn)
        (-> (replace_variables $ptrn)
@@ -91,7 +101,8 @@
        (-> (db-ref $db)
           (hasSupport $nptrn (counter $db $nptrn))))))
 
-;; iSurprisingness rule
+
+;; Rule to calculate surprisingness of a pattern.
 (: surprisingness 
       (-> (minsup $ptrn)
             (surp $ptrn (do-surp $ptrn))))
@@ -192,14 +203,18 @@
    (-> (normalized True) 
       (-> (empProb $pattern $emp)
            (-> (dst $pattern $dst)
-                  (surp-old $pattern (min ( (// $dst $emp) 1.0)) )))))
+                  (-> (divide $dst $emp $normalized) 
+                        (-> (minimum $normalized 1.0 $minimum)
+                                 (surp-old $pattern $minimum )))))))
+
+
 
 
 ---------------------------------------------------------------------
 ;; Rule to calculate the old surprisingness value (normalized False).
 (: old-surp 
    (-> (normalized False) 
-        (-> (empProb $pattern $emp)
                (-> (dst $pattern $dst)
-                     (surp-old $pattern (min ($dst 1.0)) )))))
+                     (-> (minimum $dst 1.0 $minimum )
+                              (surp-old $pattern $minimum )))))
                                                   

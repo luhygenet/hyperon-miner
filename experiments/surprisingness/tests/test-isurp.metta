@@ -1,4 +1,4 @@
-! (register-module! ../../../hyperon-miner/experiments)
+! (register-module! ../../../../hyperon-miner/experiments)
 ! (import! &self experiments:utils:common-utils)
 ! (import! &self experiments:utils:beta-dist)
 ! (import! &self experiments:utils:constants)
@@ -8,11 +8,13 @@
 ! (import! &self experiments:utils:gen_partition)
 ! (import! &self experiments:utils:bs-utils) 
 
-! (import! &self experiments:rules:est-tv)
-! (import! &self experiments:rules:emp-tv)
-! (import! &self experiments:rules:isurp)
-! (import! &self experiments:rules:emp-prob)
+! (import! &self experiments:truth-values:est-tv)
+! (import! &self experiments:truth-values:emp-tv)
+! (import! &self experiments:surprisingness:isurp)
+! (import! &self experiments:surprisingness:emp-prob)
 ! (import! &kb experiments:data:ugly_man_sodaDrinker)
+! (import! &self experiments:utils:binomialMetta)
+
 ! (import! &self experiments:utils:eq_prob_adaptor)
 
 
@@ -176,6 +178,6 @@
 ;;   3. Checks proper output format
 ;; =============================================================================
 
-(assertEqual (isurp (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb True 0.2) 0.8684478436521119)
+!(assertEqual (isurp (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb True 0.2) 0.8684478436521119)
 
-!(isurp (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb True 0.2)
+(isurp (, (Inheritance $x man) (Inheritance $x ugly) (Inheritance $x sodaDrinker) ) &kb True 0.2)

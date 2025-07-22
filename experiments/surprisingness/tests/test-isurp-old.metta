@@ -1,4 +1,4 @@
-! (register-module! ../../../hyperon-miner/experiments)
+! (register-module! ../../../../hyperon-miner/experiments)
 ! (import! &self experiments:utils:common-utils)
 ! (import! &self experiments:utils:binomialMetta)
 ! (import! &self experiments:utils:beta-dist)
@@ -7,8 +7,8 @@
 ! (import! &self experiments:utils:surp-utils)
 ! (import! &self experiments:utils:miner-utils)
 ! (import! &self experiments:utils:gen_partition)
-! (import! &self experiments:rules:est-tv)
-! (import! &self experiments:rules:isurp-old)
+! (import! &self experiments:truth-values:est-tv)
+! (import! &self experiments:surprisingness:isurp-old)
 ! (import! &db experiments:data:ugly_man_sodaDrinker)
 
 

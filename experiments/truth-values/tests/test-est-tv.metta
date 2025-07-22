@@ -1,4 +1,4 @@
-! (register-module! ../../../hyperon-miner/experiments)
+! (register-module! ../../../../hyperon-miner/experiments)
 ! (import! &self experiments:utils:common-utils)
 ! (import! &self experiments:utils:beta-dist)
 ! (import! &self experiments:utils:constants)

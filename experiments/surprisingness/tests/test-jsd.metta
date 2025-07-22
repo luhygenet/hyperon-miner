@@ -1,5 +1,5 @@
-! (register-module! ../../../hyperon-miner/experiments)
-! (import! &self experiments:rules:jsd)
+! (register-module! ../../../../hyperon-miner/experiments)
+! (import! &self experiments:surprisingness:jsd)
 ! (import! &self experiments:utils:common-utils)
 ! (import! &self experiments:utils:jsd-helper)
 ! (import! &self experiments:utils:beta-dist)
@@ -36,4 +36,4 @@
 ;;   - Confirms proper handling of base-10 logarithms
 ;; =============================================================================
 !(assertEqual 
-  (do-jsd (jsd (STV 0.8 0.111111) (STV 0.1 0.5555555555555556))) 1.0)
+  (do-jsd  (STV 0.8 0.111111) (STV 0.1 0.5555555555555556)) 1.0)

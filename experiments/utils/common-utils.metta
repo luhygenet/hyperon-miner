@@ -35,6 +35,13 @@
 ))
 
 
+
+(= (add-atom-nodup $space $atom)
+   (case (match $space $atom $atom)
+     (($atom ())
+      (Empty (add-atom $space $atom)))))
+
+      
 ;; =============================================================================
 ;; Function: conjunct-pattern
 ;; -----------------------------------------------------------------------------
@@ -853,7 +860,7 @@ let* ( ($pattern (cons-atom , $blks)) ($dummy (add-atom $db $pattern))) $pattern
 ;;   - Collapses the list of atoms to a simpler form.
 ;;   - Uses tuple-count to determine the number of atoms.
  ;;db size
-(: db_size (-> hyperon::space::DynSpace  Number))
+;(: db_size (-> SpaceType  Number))
 (= (db_size $db)
      (tuple-count (collapse (get-atoms $db)))
     
