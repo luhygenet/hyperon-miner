@@ -63,3 +63,6 @@
 (Inheritance Jassy sodaDrinker)
 (Inheritance Jenica sodaDrinker)
 (Inheritance Kecia sodaDrinker)
+
+
+; !(match &self (, (, (Inheritance $z42 sodaDrinker) (Inheritance $z42 human)) (Inheritance $z42 ugly)) yes)

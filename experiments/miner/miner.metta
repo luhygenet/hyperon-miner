@@ -1,8 +1,8 @@
 
 
-;;;;;;;;;;;;;;;;;
-;; Basic steps ;;
-;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;
+;; To Do ;;
+;;;;;;;;;;;
 
 ;: - Initialize Miner – Create a function to initialize the frequent pattern miner.
 ;: - Mine Patterns – Extract patterns that meet the minsup threshold.
@@ -34,7 +34,7 @@
                                               (: normalize (normalized False)))))
                  (() (add-atom $kb (surp-mod $surp)))
                  (() (add-atom $kb (db-ratio $db-ratio)))
-                 (() (add-reduct $kb (db-size (db_size $db))))
+                 (() (add-atom $kb (db-size (db_size $db))))
                  (() (add-atom &self (kb-ref $kb)))
                  (() (add-atom $kb (db-ref $db)))
                 )()))
@@ -69,66 +69,91 @@
       superpose((: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))
                (: (surprisingness (((minsupport FACT4) msT) CPU)) (surp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.8)))
 ))
-
 (= (abstract $depth $kb)
     ; (chain (syn $kb $depth (: $prf (AbstractPattern $x))) $res (add-reduct $kb $res))
-    (let $res (syn $kb $depth (: $prf (AbstractPattern $x))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
+ 
+   (let* (
+    ($res (syn $kb $depth (: $prf (AbstractPattern $x))))
+    ($rem (remove-atom $kb $res))
+    ($add (add-reduct $kb $res))
+    ) 
+    $res
+    )
 )
 (= (specialization $depth $kb)
-    ; (chain (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))) $res (add-reduct $kb $res))
-    (let $res (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
+    ; (chain (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))) $res (add-reduct $kb $res)) 
+   (let* (
+    ($resy (syn $kb $depth (: $prf (specializationOf $aptrn $sptrn))))
+    ($rem (remove-atom $kb $resy))
+    ($add (add-atom $kb $resy))
+    
+    ) 
+    $resy
+    )
 ) 
 (= (support $depth $kb)
     ; (chain (syn $kb $depth (: $prf (supportOf $sptrn $cnt))) $res (add-reduct $kb $res))
-    (let $res (syn $kb $depth (: $prf (supportOf $sptrn $cnt))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
+
+   (let* (
+    ($res (syn $kb $depth (: $prf (supportOf $sptrn $cnt))))
+    ($rem (remove-atom $kb $res))
+    ($add (add-reduct $kb $res))
+    ) 
+    ()
+    )
 )
 
 (= (candidate $depth $kb)
-    ; (chain (syn $kb $depth (: $prf (candidatePattern $x))) $res (add-reduct $kb $res))
-    (let $res (syn $kb $depth (: $prf (candidatePattern $x))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
-)
-(= (conjunction-old $depth $kb)
-    ; (chain (syn $kb $depth (: $prf (candidatePattern $x))) $res (add-reduct $kb $res))
-    ; (let $res (syn $kb $depth (: $prf (conjunction $x))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
-    (let $res (syn $kb $depth (: $prf (conjunction $x))) (add-reduct $kb $res))
-)
-(= (conjunction-clean $depth $kb)
-    ; (chain (syn $kb $depth (: $prf (candidatePattern $x))) $res (add-reduct $kb $res))
-    ; (let $res (syn $kb $depth (: $prf (conjunction $x))) (superpose ((remove-atom $kb $res) (add-reduct $kb $res))))
-    (let $res (syn $kb $depth (: $prf (conjunction-clean $x))) (add-reduct $kb $res))
+   
+   (let*(
+    ($atom (: candidate (-> (minsup $ptrn) (-> (replace_variables $ptrn) (candidatePattern $ptrn)))))
+    ($add (add-atom $kb $atom))
+    ($res (syn $kb $depth (: $prf (candidatePattern $x)))) 
+    ($rem (remove-atom $kb $atom))
+    ($rem2 (remove-atom $kb $res))
+    ($add2 (add-reduct $kb $res))
+    )
+    ()
+    )
 )
 
+conjunct and pattern
+1 and 1
+2 1
+3
 (= (conjunction $depth $kb $rec $maxrec) 
     (let*
         (
         ($prevrec (- $rec 1))
-        (() (remove-atom $kb (: maxClauses (maxClauses $prevrec))))
-        ; (() (println! $rec))
-        (() (add-atom $kb (: maxClauses (maxClauses $rec))))
-        ($conj (collapse (syn $kb $depth (: $prf (conjunction $x)))))
-        (() (add-reduct $kb $conj))
-        ($res (collapse (syn $kb (fromNumber 4) (: $prf (candidatePattern $y)))))
-        ; (() (remove-atom $kb $res))
-        (() (add-reduct $kb $res))
+        ($re (collapse (remove-atom $kb (: maxClauses (maxClauses $prevrec)))))
+        ($add (collapse (add-atom $kb (: maxClauses (maxClauses $rec)))))
+        ($res (collapse (syn $kb $depth (: $prf (candidatePattern $y)))))
+        ($red (collapse (add-reduct $kb (superpose $res))))
         )
-    (if (> (+ $rec 1) $maxrec) () (conjunction $depth $kb (+ $rec 1) $maxrec)))
+    (if (> (+ $rec 1) $maxrec) $red (conjunction $depth $kb (+ $rec 1) $maxrec))
+    )
 )
+
+(= (format $depth $kb)
+   (collapse 
+   (let*(
+    ($res (syn $kb $depth (: $prf (hasSupport $ptrn $cnt)))) 
+    ($rem2 (remove-atom $kb $res))
+    ($add2 (add-reduct $kb $res))
+    )
+    $res
+    ))
+)
+
+
 
 ;;;;; Dummies ;;;;;;
 ;; mocking the frequent pattern miner results 
-(= (frequent-miner $db $kb) ( 
-     let*  ( 
-
-        ;  (() (add-atom $kb (: FACT1  (supportOf (, (, (Inheritance $x human) (Inheritance $x ugly)) (Inheritance $x woman)) 8))))
-        ;  (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 8))))
-        ;  (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 4))))
-        ;  (() (add-atom $kb (: FACT4 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
-
-         ;; for new surp 
-         (() (add-atom $kb (: FACT1  (supportOf (, (Inheritance $x human) (Inheritance $x ugly) (Inheritance $x woman)) 5))))
-         (() (add-atom $kb (: FACT2 (supportOf (, (Inheritance $x sodaDrinker) (Inheritance $x human) (Inheritance $x woman)) 5))))
-         (() (add-atom $kb (: FACT3 (supportOf (,  (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x ugly)) 4))))
-         (() (add-atom $kb (: FACT4 (supportOf (,  (Inheritance $x human) (Inheritance $x sodaDrinker) (Inheritance $x man)) 8))))
+(= (frequent-miner-old $db $kb) ( 
+     let*  ( ;(() (add-atom $kb (: FACT1  (supportOf (, (, (Inheritance $x human) (Inheritance $x ugly)) (Inheritance $x woman)) 5))))
+        ; (() (add-atom $kb (: FACT2 (supportOf (, (, (Inheritance $x sodaDrinker) (Inheritance $x human)) (Inheritance $x woman)) 5))))
+        ; (() (add-atom $kb (: FACT3 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 4))))
+         (() (add-atom $kb (: FACT4 (supportOf (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 8))))
         ; (() (add-atom $kb (: ((est-rule (((minsupport FACT4) msT) CPU)) dbref) (est-tv (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) 0.6))))
         ; (() (add-atom $kb (: ((emp-rule (((minsupport FACT4) msT) CPU)) CPUEMP) (emp-val (, (, (Inheritance $x human) (Inheritance $x sodaDrinker)) (Inheritance $x man)) (EMPTV 0.5 0.7)))))
         ;; (() (add-atom $kb (: (surprisingness (((minsupport FACT4) msT) CPU)) (jsdsurp (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK L $D)) (LIST_LINK B k)) 0.6))))
@@ -136,15 +161,18 @@
 ))
 
 
-(= (frequent-miner-new $db $kb) ( 
+(= (frequent-miner $db $kb $maxclauses $limit) 
+( 
      let*  ( 
-         ($re (collapse (abstract (fromNumber 4) $kb)))
-         ($res (collapse (specialization (fromNumber 3) $kb)))
-         ($resu (collapse (support (fromNumber 4) $kb)))
+         ($re (collapse (abstract (fromNumber 5) $kb)))
+         ($res (collapse (specialization (fromNumber 5) $kb)))
+         ($resu (collapse (support (fromNumber 3) $kb)))
          ($result (collapse (candidate (fromNumber 5) $kb)))
-        ;  ($results (collapse (conjunction (fromNumber 5) $kb)))
+         ($results (collapse (conjunction (fromNumber 16) $kb $maxclauses $limit)))
+        ;  ($resultf (collapse (format (fromNumber 4) $kb)))
       ) ()
-))
+)
+)
 
 
 
@@ -236,12 +264,11 @@
 ;;proceeds to surprisingness pattern mining using the backward chainer 
 ;;Store the chainer result in to the &res (new space)
 ----------------------------------------------------------------------------
-(= (cog-mine $db $kb $ms $surp $db-ratio) (
+(= (cog-mine $db $kb $ms $surp $db-ratio $maxclauses $limit) (
     let* (
              (() (init-miner $db $kb $ms $surp $db-ratio)) 
-             (() (frequent-miner $db $kb))
-             ;($var (collapse (init-surp $db $kb)))           
-              ($var (collapse (mine-surp $kb &res $surp)))           
+             (() (frequent-miner $db $kb $maxclauses $limit))
+            ;  (() (init-surp $kb &res $surp))           
     )
     ;; return all atoms in &res
     ; (match &res $x $x)
@@ -249,15 +276,21 @@
 ))
 
 
+; (=(min-sup) 2)
+; (=(surp-mode) jsdsurp)
+; (=(db-ratio) 0.5)
+
+; ! (cog-mine &db &kb (min-sup) (surp-mode) (db-ratio) 1 2)
+
+; !(syn &kb Z (: $prf (substitute_variables (link $nx $ny) ($valx $valy) ($subptrn $remaining))))
+
+; !(init-miner &db &kb (min-sup) (surp-mode) (db-ratio))
+
+; !(conjunction (fromNumber 13) &kb 1 2)
 
 
 
-
-
-
-
-
-
+; (syn &kb Z (: $prf (clause_count $ptrn $cnt)))
 
 
 

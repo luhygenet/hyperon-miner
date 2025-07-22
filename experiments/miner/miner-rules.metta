@@ -9,27 +9,44 @@
 
 ;; Rule to extract abstract patterns from the database.
 (: abstract-pattern
- (-> (db-ref $db)
-   (-> (uniqueLink $db $ptrn $cnt)
+   (-> (uniqueLink $ptrn $cnt)
     (-> (ms-threshold $ms)
       (-> (⍃ $ms $cnt)
+      (-> (replace_variables $ptrn)
        (AbstractPattern $ptrn))))))
+; (: abstract-pattern
+;  (-> (db-ref $db)
+;    (-> (uniqueLink $db $ptrn $cnt)
+;        (AbstractPattern $ptrn))))
 
-;; Rule to specialize abstract patterns.
-(: specialization
-    (-> (AbstractPattern $aptrn) 
-      (-> (db-ref $db)
-        (specializationOf $aptrn (build-specialization-chain $aptrn $db)))))
+;; rule to specialize abstract patterns
+; (: specialization
+;     (-> (AbstractPattern $aptrn) 
+;      (-> (replace_index $aptrn $naptrn)
+;       (-> (db-ref $db)
+;         (specializationOf $naptrn (build-specialization-chain $naptrn $db))))))
 
-;; rule to get candidate patterns
-(: candidate  
-      (-> (minsup $ptrn)
-       (-> (replace_variables $ptrn)
-         (candidatePattern $ptrn))))
+(: specializationx
+       (-> (AbstractPattern ($link $x $y)) 
+        (-> (replace_index ($link $x $y) ($link $nx $ny)) 
+          (-> (valuation X ($link $nx $ny) $valx)
+            (-> (depth-handler $valx $shabx)
+            (-> (replace_variables ($shabx $ny))
+              (specializationOf ($link $x $y) ($link $shabx $ny))))))))
+(: specializationy
+       (-> (AbstractPattern ($link $x $y)) 
+        (-> (replace_index ($link $x $y) ($link $nx $ny)) 
+          (-> (valuation Y ($link $nx $ny) $valy)
+            (-> (depth-handler $valy $shaby)
+            (-> (replace_variables ($nx $shaby))
+              (specializationOf ($link $x $y) ($link $nx $shaby))))))))
 
-(: candidatePattern  
+(: support 
       (-> (specializationOf $aptrn $sptrn)
-                (candidatePattern $sptrn)))
+      (-> (replace_index $sptrn $nsptrn) 
+       (-> (db-ref $db)
+          (supportOf $sptrn (counter $db $nsptrn))))))
+
 
 
 (: supportOfff 
@@ -39,41 +56,42 @@
                         (supportOfff $ptrn (do-sup $ptrn $db $ratio))))))
 
 
-;; rule to expand conjunctions
-; (: conjunction
-;       (-> (candidatePattern $ptrn1)
-;             (-> (candidatePattern $ptrn2)
-;              (-> (replace_index $ptrn1 $nptrn1)
-;               (-> (replace_index $ptrn2 $nptrn2)
-;                (-> (ms-threshold $ms)
-;                   (-> (db-ref $db)
-;                         (conjunction (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False)))))))))
 
-;; rule for creating conjunctions with more clauses
 (: conjunction-expand
       (-> (candidatePattern $ptrn1)
-      (-> (replace_index $ptrn1 $nptrn1)
+       (-> (replace_index $ptrn1 $nptrn1)
          (-> (clause_count $nptrn1 $cnt)   
           (-> (maxClauses $max)
-            (-> (equals $cnt $max)
+           (-> (equals $cnt $max)
             (-> (candidatePattern $ptrn2)
-             (-> (replace_index $ptrn2 $nptrn2)
-               (-> (ms-threshold $ms)
-                  (-> (db-ref $db)
-                        (conjunction (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False))))))))))))
-
-(: conjunction-i
-      (-> (conjunction $conj)
-         (-> (replace_variables $conj)
-            (candidatePattern $conj))))
-;; rule to clean conjunctions from redundant clauses
-(: remove-conjuncts-with-redundant-clause
-      (-> (conjunction $ptrn)
-        (-> (replace_variables $ptrn)
-            (conjunction-clean (remove_conjuncts_with_redundant_clauses $ptrn)))))
+              (-> (replace_index $ptrn2 $nptrn2)
+               (-> (clause_count $nptrn2 $cnt2)
+                (-> (equals $cnt2 1)
+                 (-> (ms-threshold $ms)
+                  (-> (get_variables $nptrn1 $vars1)
+                   (-> (get_variables $nptrn2 $vars2)
+                    (-> (combine_variables $vars1 $vars2 $comb)
+                     (-> (substitute_variables $nptrn2 $comb ($subptrn2 $remaining))
+                      (-> (replace_variables (, $nptrn1 $subptrn2))
+                      (-> (conjunction_clean (, $nptrn1 $subptrn2))
+                       (candidatePattern (, $nptrn1 $subptrn2)))))))))))))))))))
 
 
-;; Rule to calculate surprisingness of a pattern.
+(: format 
+      (-> (candidate-clean $ptrn)
+       (-> (replace_variables $ptrn)
+       (-> (replace_index $ptrn $nptrn)
+        (-> (db-ref $db)
+         (has-support $nptrn (counter $db $nptrn)))))))
+
+
+(: supportFormat
+      (-> (candidate-clean $ptrn)
+      (-> (replace_index $ptrn $nptrn)
+       (-> (db-ref $db)
+          (hasSupport $nptrn (counter $db $nptrn))))))
+
+;; iSurprisingness rule
 (: surprisingness 
       (-> (minsup $ptrn)
             (surp $ptrn (do-surp $ptrn))))

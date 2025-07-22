@@ -1,6 +1,46 @@
+; !(register-module! ../rules)
+; !(import! &self rules:freq-pat)
+; (: tuple-count (-> %Undefined% Number))
+; (= (tuple-count $atom) (size-atom $atom))
 
-(=(is-number $x) 
-   (== (get-type $x) Number)  
+(= (count-sup $db $ptrn)
+    (let $result (collapse (match $db $ptrn $ptrn))
+         (size-atom $result)
+    )
+)
+
+(= (handle-nested-exp $p)
+    (if (not (== (get-metatype $p) Expression))
+        $p
+        (let* (
+                (() (println! (Handling nested expression: $p)))
+                ( ($link $x $y) $p)
+                ( $nx (collapse (handle-nested-exp $x)))
+                ( $ny (collapse (handle-nested-exp $y)))
+            )
+        (superpose (
+                ($link (superpose $nx) $w)
+                ($link $z (superpose $ny))
+                ($link $x $u)
+                ($link $k $y)
+                $d
+                ($link $g $o)
+                ($link (superpose $nx) (superpose $ny))
+            )
+    )
+)
+
+)
+)
+
+
+(= (get-clauses $cnj) (
+  unify (, $ncnj $ptrn) $cnj (let $result (get-clauses $ncnj) (cons-atom $ptrn $result) ) ($cnj)
+))
+
+
+(=(is-numb $x) 
+   (== (get-type $x) Number) 
 )
 
 ;; define system proofs 
@@ -10,12 +50,12 @@
 ;; if $x and $Y are fully grounded and (< $X $Y)
 ------------------------------------------------------------------
 (= (syn $kb $_ (: $prf (⍃ $X $Y))) 
-    (if (and (and (is-number $X) (is-number $Y)) (<= $X $Y))
+    (if (and (and (is-numb $X) (is-numb $Y)) (<= $X $Y))
           (: CPU (⍃ $X $Y))
              (empty)))
 
 (= (syn $kb $_ (: $prf (equals $X $Y))) 
-    (if (and (and (is-number $X) (is-number $Y)) (== $X $Y))
+    (if (and (and (is-numb $X) (is-numb $Y)) (== $X $Y))
           (: CPUequals (equals $X $Y))
              (empty)))
 
@@ -27,14 +67,15 @@
              
                         
 
-(= (syn $kb $_ (: $prf (uniqueLink $db $pattern $cnt))) 
+(= (syn $kb $_ (: $prf (uniqueLink $pattern $cnt))) 
     (let* (
+        ($db (match $kb (db-ref $db) $db))
         ($uniquelink (collapse (unique (match $db ($link $x $y) $link)) ) )
         ($sup (superpose $uniquelink))
         )
     (if (== (size-atom $uniquelink) 0)
           (empty)
-             (: CPUUnique (Abstract ($uniquelink $x $y)))
+             (: CPUUnique (uniqueLink ($sup $a $b) (count-sup $db ($sup $a $b))))
              ))
     )
 
@@ -59,16 +100,91 @@
         )    
     )
 )
+(= (syn $kb $_ (: $prf (get_variables $ptrn $vars)))
+    (let* (
+        ($vars (get_variable_for_pattern $ptrn))
+        )
+    (if (== $ptrn ())
+          (empty)
+             (: CPUGetPatternVariables (get_variables $ptrn $vars))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (combine_variables $vars1 $vars2 $comb)))
+    (let* (
+        ($comb (combine_lists $vars1 $vars2))
+        )
+    (if (== $comb ())
+          (empty)
+             (: CPUCombineVariables (combine_variables $vars1 $vars2 $comb))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (substitute_variables $pattern $vars $subpattern)))
+    (let* (
+        ($subpattern (substitute $pattern $vars))
+        )
+    (if (== $subpattern ())
+          (empty)
+             (: CPUSubstituteVariables (substitute_variables $pattern $vars $subpattern))
+        )    
+    )
+)
 
 (= (syn $kb $_ (: $prf (clause_count $ptrn $cnt)))
     (let* (
-        ($clauses (get-conjuncts $ptrn))
+        ($clauses (get-clauses $ptrn))
         ($cnt (size-atom $clauses))
         )
     (if (== $cnt 0)
           (empty)
              (: CPUCount (clause_count $ptrn $cnt))
         )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (conjunction_clean $conjunction)))
+    (let* (
+        ($conjuncts (get-conjuncts $conjunction))
+        ($unique_conjuncts (unique-atom $conjuncts))
+        )
+    (if (== (size-atom $conjuncts) (size-atom $unique_conjuncts))
+        (: CPUConjunctionClean (conjunction_clean $conjunction))
+        (empty)
+    )
+    )
+)
+(= (syn $kb $_ (: $prf (depth-handler $p $np)))
+    (let
+     $np (handle-nested-exp $p)
+    (if (== $np ())
+          (empty)
+             (: CPUHandleNestedExp (depth-handler $p $np))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (valuation $type ($link $x $y) $val)))
+    (let* (
+        ($db (match $kb (db-ref $db) $db))
+        ( $valx (collapse (unique (match $db ($link $x $y) $x))))
+        ( $valy (collapse (unique (match $db ($link $x $y) $y))))
+        )
+    (if (== $type X)
+        (if (== ($valx $valy) ())
+          (empty)
+             (: CPUHandleValuation (valuation $type ($link $x $y) (superpose $valx)))
+        )  
+        (if (== $type Y)
+            (if (== ($valy $valx) ())
+              (empty)
+                 (: CPUHandleValuation (valuation $type ($link $x $y) (superpose $valy)))
+            )
+            (empty)
+        )
+    )  
     )
 )
 ;; Proof for prunning
@@ -165,6 +281,43 @@
 
 
 
+;; Backward chainer/synthesizer
+(: syn (-> $a                           ; Knowledge base space
+           Nat                          ; Maximum depth
+           $b                           ; Query
+           $b))                         ; Result
 
 
-    
+ 
+;; Base case
+(= (syn $kb $_ (: $prf $ccln)) (match $kb (: $prf $ccln) (: $prf $ccln)))
+
+;; Recursive step
+(= (syn $kb (S $k) (: ($prfabs $prfarg) $ccln))
+   (let* (
+     ((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))
+          (() (println! (Next prims : $prms)))
+          ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms)))
+          )
+     (: ($prfabs $prfarg) $ccln)))
+
+;; Base case.  For now it terminates at exactly iteration Z to avoid
+;; collecting too many redundant results.
+(= (isyn $kb $depth Z $query) $query)
+
+;; Iterative step
+(= (isyn $kb $depth (S $k) $query)
+   (let* (
+      (() (println! (have called)))
+      ($cres (collapse (syn $kb $depth $query)))
+          (() (println! (cres: $cres)))
+          ($dummy (add-atoms-nodup $kb $cres)))
+     (isyn $kb $depth $k (superpose $cres))))
+
+(= (collapser $kb $depth  $query)
+   (let* (
+      (() (println! (have called)))
+      ($cres (collapse (syn $kb $depth $query)))
+      (() (println! (cres: $cres)))
+          )
+     $cres))
