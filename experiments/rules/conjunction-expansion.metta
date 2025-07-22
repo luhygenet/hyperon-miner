@@ -1,4 +1,4 @@
-; /**
+ ; /**
  ;  * Given cnjtion and pattern, consider all possible connections
  ;  * (a.k.a linkages) and expand cnjtion accordingly. For instance if
  ;  *
@@ -22,14 +22,28 @@
 
 ; ! (register-module! ../../experiments)
 ; ! (import! &self experiments:utils:common-utils)
+; ! (import! &self experiments:utils:variable-combinations)
 ! (import! &self conj-exp)
-! (import! &self freq-pat)
 
  ; The starting point for the conjunction expansion. It passes
  ; the Alpha Converted pattern (if necessary) to the expand_conjunction functions.
  ; if it passes the minimum variable check
 
 (= (expand_conjunction $cnjtion $pattern $db $ms $mv $es)
+     ; (let* (
+     ;         ($alpha_vars (alpha_convert (get_variables_for_tree $pattern) (get_variables_for_tree $cnjtion)))
+     ;         ($extract (substitute $pattern $alpha_vars))
+     ;         ($apat (car-atom $extract))
+     ;     )
+
+     ; ($apat (let $alpha_vars
+     ;         (alpha_convert (get_variables_for_tree $pattern) (get_variables_for_tree $cnjtion))
+     ;         (let $extract (substitute $pattern $alpha_vars) (car-atom $extract)))))
+     ; (if (> (let* (
+     ;                 ($temp (get_variables_for_tree $pattern))
+     ;                 ($temp2 (get_variables_for_tree $cnjtion)))
+     ;             (+ (count-atom-element  $temp) (count-atom-element  $temp2))) $mv)
+     ; )
     (if $es
         (expand_conjunctin_es_rec $cnjtion $pattern $db $ms)
         (expand_conjunction_rec $cnjtion $pattern $db $ms)
@@ -38,30 +52,13 @@
 
 (= (count-atom-element $atom) (if (== $atom ()) 0 (+ 1 (count-atom-element (cdr-atom $atom)))))
 
-(= (get_variables_for_tree $pattern)
-    (if (== $pattern ())
-        ()
-        (let* (
-                ($head (car-atom $pattern))
-                ($tail (cdr-atom $pattern)))
-
-            (if (== (get-metatype $head) Expression)
-                (concatTuple (get_variables_for_tree $head)
-                    (get_variables_for_tree $tail))
-                (if (== (get-metatype $head) Variable)
-                    (concatTuple
-                        ($head)
-                        (get_variables_for_tree $tail))
-
-                    (get_variables_for_tree $tail))))
-    )
-)
 
 
 
 (= (get_variable_for_pattern $pattern)
     (case ($pattern) (
             ( (()) ())
+             ; ( ( ($pattern) () ) $pattern)
             (  (($x))
                 (if (== (get-metatype $x) Variable)
                     ($x)
@@ -70,9 +67,11 @@
     ( (  ($link $x $y))
         (let* (
                 ( $subx (if ( == ( get-metatype $x ) Expression) (get_variable_for_pattern $x) (get_variable_for_pattern ($x))))
+
                 ( $suby (if (== (get-metatype $y) Expression) (get_variable_for_pattern $y) (get_variable_for_pattern ($y))))
             )
-        (concatTuple $subx $suby)
+        (union-atom $subx $suby)
+         ; ( ($subx $remaining))
     )
 )
 ( ( ($link $x))
@@ -86,6 +85,24 @@
 )
 )
 
+
+(= (get_variables_for_tree $pattern)
+   ( let* (
+            ($head (car-atom $pattern))
+            ($tail (cdr-atom $pattern))
+            ($x (if (== (get-metatype $head) Variable)
+                     ($head)
+                     (if (== (get-metatype $head) Expression)
+                        (if (== $head ())
+                           ()
+                           (get_variables_for_tree $head))
+                        () )))
+            ($y (if (== $tail ()) () (get_variables_for_tree $tail)))
+        )(union-atom $x $y)
+    )
+)
+; ! (get_variables_for_tree  (LIST_LINK (INHERITANCE_LINK (INHERITANCE_LINK (INHERITANCE_LINK $S $K) (INHERITANCE_LINK $n $m)) (INHERITANCE_LINK (INHERITANCE_LINK $S $K) (INHERITANCE_LINK $n $m))) (INHERITANCE_LINK (INHERITANCE_LINK $g $t) (INHERITANCE_LINK $p $r))))
+; ! (get_variable_for_pattern  (LIST_LINK (INHERITANCE_LINK (INHERITANCE_LINK (INHERITANCE_LINK $S $K) (INHERITANCE_LINK $n $m)) (INHERITANCE_LINK (INHERITANCE_LINK $S $K) (INHERITANCE_LINK $n $m))) (INHERITANCE_LINK (INHERITANCE_LINK $g $t) (INHERITANCE_LINK $p $r))))
 
 (= (substitute $pattern $variables)
     (case ($pattern $variables) (
@@ -115,15 +132,25 @@
             ( ($subx $remaining) (if ( == ( get-metatype $x ) Expression) (substitute $x $remains) (substitute ($x) $remains)))
         )
     ( ($sublink $subx) $remaining)
-)))))
+)
+)
+)
+)
+)
+
+;  ! (substitute ($LIST_LINK (INHERITANCE_LINK (INHERITANCE_LINK $S $K) (INHERITANCE_LINK $n $m)) (INHERITANCE_LINK (INHERITANCE_LINK $g $t) (INHERITANCE_LINK $p $r))) ($R-D1737102179 $A $b $c $d $e $f $h))
 
  
- ==============  alpha convert  =======================
+ ;############################################################
+ ;###############   alpha convert  ###########################
+ ;############################################################
 
 (= (alpha_convert  $pattern_vars $cnjtion_vars)
     (extract_values (consolidate_keys (address_conflict $pattern_vars $cnjtion_vars)))
 )
 
+ ; ! (get_variables_for_tree (INHERITANCE_LINK $X $Y))
+ ; ! (get_variables_for_tree (LIST_LINK $A $B))
 (= (address_conflict $pattern_vars $cnjtion_vars)
     (if (== $pattern_vars ())
         ()
@@ -145,6 +172,7 @@
     )
 )
 
+ ; ! (address_conflict ($A $B $F $A $F) ($A $C $D $F))
 
 (= (consolidate_keys $input_list)
     (let* (
@@ -196,13 +224,15 @@
     )
 )
 
- ================= alpha convert end ================================
 
+ ;#############################################################
+ ;############   alpha convert end  ###########################
+ ;#############################################################
 
 (= (expand_conjunction_rec $cnjtion $apat $db $ms)
     (let $npat (expand_conjunction_connect $cnjtion $apat (get_variable_for_pattern $cnjtion) (get_variable_for_pattern $apat))
          (checker $db $npat $ms)
-        ; $npat
+        ;  $npat
     )
 )
 
@@ -219,6 +249,7 @@
     (let* (
             ($sup (superpose $pv2cv))
             ($exp (substitute $pattern $sup))
+            ; ($exp (substitute $pattern $pv2cv))
             ($new_cnjtion (, $cnjtion (car-atom $exp)))
         )
         $new_cnjtion
@@ -226,16 +257,16 @@
 )
 
 (= (checker $db $pattern $ms) 
-   (let* (
-   ( () (println! (pattern $pattern)))
-   ($flat (flatten $pattern))
-   ) 
-   (if (sup-eval $db $flat $ms)
+    (let*
+    (
+        ($conjuncts (get-conjuncts $pattern))
+        ($flat (cons-atom , $conjuncts))
+    )
+    (if (sup-eval $db $flat $ms)
         $pattern
         ()
     ))
 )
-
 
 (= (remove_alpha_similar $list)
     (remove_alpha_similar_helper $list ())
@@ -257,6 +288,10 @@
     (pass)
 )
 
+    
+
+
+
 (= (remove_conjuncts_with_redundant_clauses $conjunction) 
     (let* (
         ($conjuncts (get-conjuncts $conjunction))
@@ -264,6 +299,7 @@
         )
     (if (== (size-atom $conjuncts) (size-atom $unique_conjuncts))
         $conjunction
+        ; (remove_conjuncts_with (unique $conjunction))
         ()
     )
     )
@@ -283,97 +319,27 @@
 
 (= ( append_pat $pat $conj) ( , $pat $conj))
 
- 
-------------------------------------------------
-;; do-conjunct
-------------------------------------------------
-;; function to expand the conjunctions of the patterns and create conjunctions of any amount of clauses
-
-;; parameters:
-;; $db: the database that is loaded and cleaned of the stdlib functions.
-;; $cndb: the candidate patterns space
-;; $conjunct: the conjunctions part of the pattern
-;; $ms: minimum support
-;; (S $K)/ Z: a debruijin index to check if we are in the last iteration of the recursion.
-
-;steps:
-;; 1: get the matches of the candidate patterns in the database
-;; 2: expand the conjunctions with the matches and the database
-;; 3: replace the variables with the debruijin index
-;; 4: remove any redundant clauses from the conjunctions
-;; 5: if we are in the last iteration of the recursion, return the conjunctions else call the function again with the new conjunctions and the debruijin index.
-
-; returns:
-; a superpose of conjunctions that satisfy the minimum support and are not redundant.
-;(: do-conjunct space space conj_pattern Number debruijin-index Atom)
-(= (do-conjunct $db $cndb $coming_conj  $ms Z)
-    (let* (
-        (() (println! "==== Build conjunction with depth 0 ===="))
-        ($conjunct (replacev $coming_conj))
-        ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
-        ($listconj (expand_conjunction $conjunct $matches $db $ms 2 False))
-        ($debconj (replace $listconj))
-        ($fitlered (remove_conjuncts_with_redundant_clauses $debconj))
-    )
-    $fitlered
-    )
-)
-
-(= (do-conjunct $db $cndb $coming_conj $ms (S $K))
-    (let* (
-        (() (println! "==== Build conjunction with depth greater than 0 ====="))
-        ($conjunct (replacev $coming_conj))
-        ($matches (match $cndb (CandidatePattern $pattern) (replacev $pattern)))
-        ($listconj (expand_conjunction $conjunct $matches $db $ms 2 False))
-        ($debconj (replace $listconj))
-        ($fitlered (remove_conjuncts_with_redundant_clauses $debconj))
-        ($varconj (replacev $fitlered))
-        ($conj (do-conjunct $db $cndb $varconj $ms $K))
-    )
-    $conj
-    )
-)
-
-(= (add-atom-local $space $atom)
-   (case (match $space $atom $atom)
-     (
-      ($atom ())
-      (Empty (case $atom (
-               ((supportOf $x 1) () )
-               ($_ (add-atom $space $atom))))))))
+ ; ! (expand_conjunction_disconnect (INHERITANCE_LINK A $X) (LIST_LINK $X B))
+;  !(expand_conjunction (Inheritance $x human) (Inheritance $y sodaDrinker) &db 2 2 False)
 
 
-(= (format-helper $var-index $dbspace $depth) (
-     let $var (replacev $var-index) (supportOf $var (sup-num $dbspace $var))))
+ ;##############
+ ;# Test cases #
+ ;##############
 
---------------------------------------------
-;;  formatter
---------------------------------------------
-;; function to format the patterns with thier support annotation.
-;; 1: get the matches of the conjunctions in the database
-;; 2: sort the conjunctions with a custom sorting function and get only the unique conjunctions from the sorte results
-;; 3: create a flattened conjunction  using cons-atom with the sorted conjunctions and ,.
-;; 4: add the results to the knowledge base with their support
-;(: formatter (-> space space Number Atom ))
-(= (formatter  $conjspace $dbspace $depth) 
-   (let* (
-        (() (println! "==== Formating  started ====="))
-        ($sorted  (match $conjspace $pattern (sort_conj $pattern)))
-        ($res  (cons-atom ,  $sorted))
-        ($formatted (format-helper $res $dbspace (fromNumber $depth)))
-    ) (case $formatted (
-                ((supportOf $x 1) (empty) )
-               ($_  $formatted)))
-))
+ ;Populate the Atomspace with some data
 
------------------------------------------------
-;; conjunct 
------------------------------------------------
-;; function to extract candidate patterns and call do-conjunct 
-;(: conjunct (-> space space space Number Number Atom))
-(= (conjunct $dbspace $cndpspace $conjspace $minsup $depth )   
-      (let $pattern (match $cndpspace (CandidatePattern $Cpattern) $Cpattern)
-                   (let $conj  (do-conjunct $dbspace $cndpspace  $pattern $minsup (fromNumber $depth)) 
-                             (if (== $conj ()) () (add-atom $conjspace  $conj)))))   
+; (INHERITANCE_LINK A B)
+; (LIST_LINK A B)
+; (LIST_LINK A C)
+; (LIST_LINK B C)
+; (INHERITANCE_LINK A D)
+; (INHERITANCE_LINK X Y)
+; (LIST_LINK Y C)
+; (INHERITANCE_LINK X D)
 
-   
+;  (expand_conjunction_inputs cnjtion pattern db ms mv es)
+; !(expand_conjunction (,(INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $G $F) &self 5 2 False)
+; !(expand_conjunction (INHERITANCE_LINK $X $Y) (INHERITANCE_LINK $G $F) &self 5 2 False)
+
+; !(match &self (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)) (, (, (INHERITANCE_LINK $X $Y) (LIST_LINK A $D)) (LIST_LINK $X $G)))
