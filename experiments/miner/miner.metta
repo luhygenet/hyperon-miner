@@ -1,56 +1,3 @@
-; !(register-module! ../../experiments)
-; ; !(register-module!  ../../../../chaining)
-
-; ; !(import! &self experiments:miner:miner)
-; !(import! &self experiments:miner:miner-utils)
-; !(import! &self experiments:rules:conj-exp)
-; !(import! &self experiments:rules:freq-pat)
-; !(import! &self experiments:rules:use-python)
-; !(import! &self experiments:utils:variable-combinations)
-
-
-
-; ;; import utils and rules files 
-; ! (import! &self experiments:rules:isurp)
-; ! (import! &self experiments:rules:isurp-old)
-; ! (import! &self experiments:utils:common-utils)
-; ! (import! &self experiments:utils:beta-dist)
-; ! (import! &self experiments:utils:constants)
-; ! (import! &self experiments:utils:TruthValue)
-; ! (import! &self experiments:utils:surp-utils)
-; ! (import! &self experiments:utils:miner-utils)
-; ! (import! &self experiments:rules:build-specialization)
-; ! (import! &self experiments:rules:conjunction-expansion)
-
-; ! (import! &self experiments:utils:gen_partition)
-; ! (import! &self experiments:rules:est-tv)
-; ! (import! &self experiments:rules:emp-tv)
-; ! (import! &self experiments:rules:emp-prob)
-; ! (import! &self experiments:rules:jsd)
-; ! (import! &self experiments:utils:emp-tv-bs)
-; ! (import! &self experiments:utils:bs-utils)
-; ! (import! &self experiments:utils:util-jsd)
-; ; ! (import! &dbspace experiments:data:ugly_man_sodaDrinker)
-; ! (import! &dbspace experiments:data:small-ugly)
-
-
-
-; ;; config kb : load the chainer , rules , system-proofs ....
-; ; !(import! &self  chaining:dtl:backward:curried)
-; !(import! &temp   experiments:miner:miner-rules)
-; !(import! &self  experiments:miner:system-proofs)
-
-; ;;create new space for kb
-; !(bind! &kb (new-space)) 
-; !(bind! &db (new-space)) 
-
-; !(let ($link $x $y) (get-atoms &dbspace) (add-atom &db ($link $x $y)))
-; !(let $atoms  (get-atoms &temp) (add-atom &kb $atoms) )
-
-
-; !(add-atom &kb (: candidate (candidatePattern (Inheritance Z ugly))))
-; ; !(add-atom &kb (: candidate (candidatePattern ())))
-; !(add-atom &kb (: candidate (candidatePattern (Inheritance Z sodaDrinker))))
 
 
 ;;;;;;;;;;;
@@ -69,40 +16,30 @@
 ;; of the conclusions before matching the correct premises.
 (: -> (-> Atom Atom Type))
 
-; ; ;; Backward chainer/synthesizer
-; (: syn (-> $a                           ; Knowledge base space
-;            Nat                          ; Maximum depth
-;            $b                           ; Query
-;            $b))                         ; Result
-
-; ;; Base case
-; (= (syn $kb $_ (: $prf $ccln)) (match $kb (: $prf $ccln) (: $prf $ccln)))
-; ;; Recursive step
-; (= (syn $kb (S $k) (: ($prfabs $prfarg) $ccln))
-;    (let* (
-;      (() (println! (syn-⍃ (: ($prfabs $prfarg) $ccln))))
-;      ((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))
-;           ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms))))
-;      (: ($prfabs $prfarg) $ccln)))
 
 
-;; Initializers
-;;initialize the necessary input parameters in the KB,
+
+
+
+
+====================================================
+;;initialize the hyper-parameters in the KB,
 (= (init-miner $db $kb $ms $surp $db-ratio)
     (         let* (  
                  (() (add-atom $kb (: msT (ms-threshold $ms))))
                  (() (add-atom $kb (: dbref (db-ref $db))))
                  (() (add-atom $kb (: dbr (db-ratio $db-ratio))))
+                 (() (add-reduct $kb (if (or (== $surp nisurp) (== $surp nisurp-old)) 
+                                              (: normalize (normalized True))  
+                                              (: normalize (normalized False)))))
                  (() (add-atom $kb (surp-mod $surp)))
                  (() (add-atom $kb (db-ratio $db-ratio)))
                  (() (add-atom $kb (db-size (db_size $db))))
                  (() (add-atom &self (kb-ref $kb)))
                  (() (add-atom $kb (db-ref $db)))
-                ;; (() (add-reduct $kb (minsup-rule)))
-                ;; (() (add-reduct $kb (surp-rule)))
                 )()))
 
-
+=========================================================================
 ;;Returns frequent patters with their support from the kb
 (= (get-patterns $kb) (
   chain (match $kb (: msT (ms-threshold $ms)) $ms) $msT
@@ -110,7 +47,7 @@
                 (let True (>= $value $msT) (($pattern) (sup $value))))           
 ))
 
-
+==========================================================================
 ;; extract the mode of the Surprisingness
 ;; if the surprisingness mode is none return lis of mined patterns
 ;; otherwise launches the backward chainer for surprising patterns mining
@@ -249,7 +186,7 @@ conjunct and pattern
           ($db    (match $kb (db-ref $ref) $ref))
           ($db-ratio (match $kb (db-ratio $db-ratio) $db-ratio))
           ($db-size (match $kb (db-size $db-size) $db-size))   
-          ($ptrn (flatten $pattern))        
+          ($ptrn (flatten $pattern))
     )
      (case $surp (
         (isurp-old (isurp-old $ptrn $db False))
@@ -319,6 +256,7 @@ conjunct and pattern
 
 ;; new space to store the init-surp results
 !(bind! &res (new-space))
+
 
 ---------------------------------------------------------------------------
 ;; initializes the necessary input parameters in the KB
