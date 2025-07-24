@@ -49,7 +49,7 @@
                  (() (add-atom $kb (db-ref $db)))
                 )()))
 
-
+;;abstract patterns
 (= (abstract $depth $kb)
  
    (let* (
@@ -62,6 +62,8 @@
     $res
     )
 )
+
+;;specialization of abstract patterns
 (= (specialization $depth $kb)
 
    (let* (
@@ -73,6 +75,8 @@
     $resy
     )
 ) 
+
+;; support of specialized patterns
 (= (support $depth $kb)
    (let* (
     ($res (syn $kb $depth (: $prf (supportOf $sptrn $cnt))))
@@ -83,6 +87,7 @@
     )
 )
 
+;;candidate patterns
 (= (candidate $depth $kb)
    
    (let*(
@@ -97,6 +102,7 @@
     )
 )
 
+;; expand conjunctions for as many clauses as needed
 (= (conjunction $depth $kb $rec $maxrec) 
     (let*
         (
@@ -110,6 +116,7 @@
     )
 )
 
+;;format the patterns and add them to the knowledge base with their support
 (= (format $depth $kb)
    (collapse 
    (let*(
@@ -131,7 +138,7 @@
          ($resu (collapse (support (fromNumber 3) $kb)))
          ($result (collapse (candidate (fromNumber 5) $kb)))
          ($results (collapse (conjunction (fromNumber 16) $kb $maxclauses $limit)))
-         ($resultf (collapse (format (fromNumber 4) $kb)))
+         ($resultf (collapse (format (fromNumber 3) $kb)))
       ) ()
 )
 )
