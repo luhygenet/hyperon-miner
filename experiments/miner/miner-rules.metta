@@ -1,100 +1,20 @@
-
-
 ;; Rules 
-  (: minsupport 
+-----------------------------------------------------------------
+;; Rule to check if a pattern meets the minimum support threshold.
+(: minsupport 
     (-> (supportOf $ptrn $cnt)
           (-> (ms-threshold $ms)
                  (-> (⍃ $ms $cnt)
                         (minsup $ptrn)))))
 
-
-
- ;; (: surprisingness 
- ;;   (-> (minsup $ptrn)
- ;;          (-> (surpabsent $ptrn)
- ;;                  (surp $ptrn (do-surp $ptrn)))))
-
-
-
-
-;; rule to extract abstract patterns from the database
-(: abstract-pattern
- (-> (db-ref $db)
-   (-> (uniqueLink $db $ptrn $cnt)
-    (-> (ms-threshold $ms)
-      (-> (⍃ $ms $cnt)
-       (AbstractPattern $ptrn))))))
-
-;; rule to specialize abstract patterns
-(: specialization
-    (-> (AbstractPattern $aptrn) 
-      (-> (db-ref $db)
-        (specializationOf $aptrn (build-specialization-chain $aptrn $db)))))
-
-;; rule to get candidate patterns
-(: candidate  
-      (-> (minsup $ptrn)
-       (-> (replace_variables $ptrn)
-         (candidatePattern $ptrn))))
-
-(: candidatePattern  
-      (-> (specializationOf $aptrn $sptrn)
-                (candidatePattern $sptrn)))
-
-
-(: supportOfff 
-      (-> (minsup $ptrn)
-            (-> (db-ref $db)
-                  (-> (db-ratio $ratio)
-                        (supportOfff $ptrn (do-sup $ptrn $db $ratio))))))
-
-
-;; rule to expand conjunctions
-; (: conjunction
-;       (-> (candidatePattern $ptrn1)
-;             (-> (candidatePattern $ptrn2)
-;              (-> (replace_index $ptrn1 $nptrn1)
-;               (-> (replace_index $ptrn2 $nptrn2)
-;                (-> (ms-threshold $ms)
-;                   (-> (db-ref $db)
-;                         (conjunction (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False)))))))))
-
-;; rule for creating conjunctions with more clauses
-(: conjunction-expand
-      (-> (candidatePattern $ptrn1)
-      (-> (replace_index $ptrn1 $nptrn1)
-         (-> (clause_count $nptrn1 $cnt)   
-          (-> (maxClauses $max)
-            (-> (equals $cnt $max)
-            (-> (candidatePattern $ptrn2)
-             (-> (replace_index $ptrn2 $nptrn2)
-               (-> (ms-threshold $ms)
-                  (-> (db-ref $db)
-                        (conjunction (expand_conjunction $nptrn1 $nptrn2 $db $ms 2 False))))))))))))
-
-(: conjunction-i
-      (-> (conjunction $conj)
-         (-> (replace_variables $conj)
-            (candidatePattern $conj))))
-;; rule to clean conjunctions from redundant clauses
-(: remove-conjuncts-with-redundant-clause
-      (-> (conjunction $ptrn)
-        (-> (replace_variables $ptrn)
-            (conjunction-clean (remove_conjuncts_with_redundant_clauses $ptrn)))))
-
-
-
-
-;; iSurprisingness rule
+ ------------------------------------------------                       
+;; Rule to calculate surprisingness of a pattern.
 (: surprisingness 
       (-> (minsup $ptrn)
             (surp $ptrn (do-surp $ptrn))))
 
 
-
-
-
-
+------------------------------------------------------------
 ;; Rule to calculate the empirical truth value of a pattern.
 ;;(: emp-rule 
 ;;         (-> (minsup $ptrn) 
@@ -131,7 +51,7 @@
                       (est-tv $ptrn $est)))))
                       
 
-
+----------------------------------------------------------------------
 ;; Rule to calculate the Jensen-Shannon Distance between the empirical
 ;; truth value and the truth value estimate of a pattern according to
 ;; some db.
@@ -141,6 +61,65 @@
                        (-> (est-tv $ptrn $est)
                               (jsdsurp $ptrn (do-jsd $emp $est))))))
 
+----------------------------------------------------------------------
+;; Rule to calculate the empirical probability of a pattern.
+(: emp-prob-rule 
+   (->  (minsup $pattern) 
+                  (-> (prob-cpu $pattern $prob)
+                             (empProb $pattern $prob))))
 
-                      
-                      
+
+------------------------------------------------------------------------
+;;  generate partitions for a pattern.          
+(: partitions 
+   (-> (empProb $pattern $prob) 
+         (-> (partition-cpu $pattern $partitions)
+                  (partitions $pattern $partitions))))
+
+                  
+------------------------------------------------------------------------
+;; Rule to estimate the probability interval for a pattern.
+(: est-prob-rule 
+          (-> (partitions $pattern $partitions)
+                  (-> (est-prob-cpu  $pattern $partitions $emin-emax)
+                           (est-prob $pattern  $emin-emax)))) 
+                           
+------------------------------------------------------------------------
+;; Rule to calculate the distance from the empirical probability to the estimated interval (upper bound).
+(: dst-from-interval 
+  (->  (empProb $pattern $emp)  
+            (-> (est-prob $pattern ($emin $emax))
+                   (-> (⍄ $emp $emax) 
+                            (-> (dst-cpu $emp $emax $dst)
+                                  (dst $pattern $dst))))))
+
+-----------------------------------------------------------------------
+;; Rule to calculate the distance from the empirical probability to the estimated interval (lower bound).
+(: dst-from-interval 
+  (->  (empProb $pattern $emp)
+            (-> (est-prob $pattern ($emin $emax))
+                   (-> (⍄ $emin $emp) 
+                           (-> (dst-cpu $emin $emp $dst)
+                                   (dst $pattern $dst))))))
+
+------------------------------------------------------------------------
+;; Rule to calculate the old surprisingness value (normalized True).
+(: old-surp 
+   (-> (normalized True) 
+      (-> (empProb $pattern $emp)
+           (-> (dst $pattern $dst)
+                  (-> (divide $dst $emp $normalized) 
+                        (-> (minimum $normalized 1.0 $minimum)
+                                 (surp-old $pattern $minimum )))))))
+
+
+
+
+---------------------------------------------------------------------
+;; Rule to calculate the old surprisingness value (normalized False).
+(: old-surp 
+   (-> (normalized False) 
+               (-> (dst $pattern $dst)
+                     (-> (minimum $dst 1.0 $minimum )
+                              (surp-old $pattern $minimum )))))
+                                                  

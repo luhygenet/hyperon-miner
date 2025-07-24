@@ -39,8 +39,8 @@
 
 ;; Recursive step
 (= (syn $kb (S $k) (: ($prfabs $prfarg) $ccln))
-   (let* (((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))   ;; (: minsupport (-> (⍃ $ms $cnt) (minsup $ptrn)))
-          ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms))))                         ;;  ((-> $prms (-> (⍃ $ms $cnt) (minsup $ptrn))))
+   (let* (((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))  
+          ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms))))                       
      (: ($prfabs $prfarg) $ccln)))
 
 
@@ -182,3 +182,186 @@ ugly_man_pattern (LambdaLink
 (First: (: ($prfabs#27797 $prfarg#27798) (⍃ 6 5)))
 (First: (: ($prfabs#28556 $prfarg#28557) (-> $prms#27800 (⍃ 6 5))))
 (First: (: ($prfabs#29004 $prfarg#29005) (-> $prms#28559 (-> $prms#27800 (⍃ 6 5)))))
+
+
+
+
+;!(eval (filter-atom (a (b) $c) $x (eval (if-error $x False True))))
+;!(eval (filter-atom (a (b) $c) $x (eval (== (get-metatype $x) Variable))))
+(= (iss-variable $x) (not (== (get-metatype $x) Variable)))
+;!(iss-variable 4)
+;!(eval (filter-atom (a (Error (b) \"Test error\") $c) $x (eval (if-error $x False True))))
+;! (filter-atom (a (b) $c 2 3) $x  (is-number $x))
+
+(: filterr-atom (-> Expression Expression Expression))
+(= (filterr-atom $list  $filterr)
+  (function (eval (if-decons-expr $list $head $tail
+    (chain (eval (filterr-atom $tail  $filterr)) $tail-filterred
+      (chain (eval ($filterr $head)) $filterr-expr
+        (chain $filterr-expr $is-filterred
+          (eval (if $is-filterred
+            (chain (cons-atom $head $tail-filterred) $res (return $res))
+            (return $tail-filterred) )))))
+    (return ()) ))))
+    
+;!(filterr-atom (a (b) $c 2 3) $x (eval (is-number $x)))
+
+;!(eval (filterr-atom (a (b) $c) $x (eval (if-equal Variable Variable True False))))
+
+;!(eval (filterr-atom (a (b) $c) $x (eval (if-error $x False True))))
+;!(atom-subst 5 $x (is-number $x))
+
+(= (atom-subs-customm $atom $var $templ)
+   (function (chain  $atom $var (chain (eval $templ) $res (return $res))))) 
+
+
+
+(= (filter-custommm $list $var $filter)
+  (if-decons-expr $list $head $tail
+    (chain  (filter-custom $tail $var $filter) $tail-filtered
+       (chain  (atom-subst $head $var $filter) $filter-exp 
+                   (cons-atom $filter-exp $tail-filtered)))
+      (return ()) ))
+
+
+(= (ch1 ($x $y))  () )
+
+
+(= (filter-custom1 $list $filter ) (
+  if (== $list ()) () (
+    let  ($head $tail) (decons-atom $list)
+          (let $tail-filtered (filter-custom1 $tail  $filter ) 
+             (let $filter-exp   ($filter $head) 
+                (if $filter-exp  (cons-atom $head $tail-filtered) $tail-filtered)) ) )
+  )
+)
+
+(= (filter-custom $list $filter )  (
+  if (== $list ()) () (
+    let  ($head $tail) (decons-atom $list)
+          (let $tail-filtered (filter-custom $tail $filter  )
+             (let $x  $head 
+             (let $filter-exp  $filter  
+                (if $filter-exp  (cons-atom $head $tail-filtered) $tail-filtered))) ) )
+  ))
+
+
+(= (filter-var $list $var ) (
+  if (== $list ()) () (
+    let  ($head $tail) (decons-atom $list)
+          (let $tail-filtered (filter-var $tail  $var ) 
+             (let $filter-exp   (== (car-atom $head) $var) 
+                (if $filter-exp  (cons-atom $head $tail-filtered) $tail-filtered)) ) )
+  )
+)
+
+
+
+;!(eval (== (eval (car-atom ($x 1))) $x))
+;!(ch1 (x 2))
+
+;!(eval (filter-var  (($x 1) ($y 2) (2 $x) ($x 4)) $x))
+
+;!(eval (filter-atom (1 2 3) $x (eval (< $x 3))))
+
+;!(eval (filter-custom1 (a (b) $c 2 3)  is-number ))
+
+;!(atom-subs-custom 1 $x  (< $x 3))
+
+
+(chain (collapse (syn $kb $k (: $prfargg $prmss))) $res2  
+                 (chain ((remove-parenthesis (cdr-atom $res2))) $res2-in 
+                    (map-atom $res2-in $var2 (unify (: $prfargg2 $prms2)  $var2 (: ($prfabss $prfargg2) $cclnn) (j)))))
+
+
+(= (synn $kb (S $k) (: ($prfabs $prfarg) $ccln))
+   (let* (((: $prfabs (-> $prms $ccln)) (syn $kb $k (: $prfabs (-> $prms $ccln))))  
+          ((: $prfarg $prms) (syn $kb $k (: $prfarg $prms))))                       
+     (: ($prfabs $prfarg) $ccln)))
+
+
+;; Base case
+(= (syn $kb $_ (: $prf $ccln)) (match $kb (: $prf $ccln) (: $prf $ccln)))
+
+;; Recursive step
+(= (syn $kb (S $k) (: ($prfabs $prfarg) $ccln))
+   (chain  (collapse (syn $kb $k (: $prfabs (-> $prms $ccln)))) $res  
+          (chain (remove-parenthesis (cdr-atom $res)) $res-in 
+            (map-atom $res-in $var (unify (: $prfabss (-> $prmss $cclnn)) $var 
+               (chain (collapse (syn $kb $k (: $prfargg $prmss))) $res2  
+                 (chain ((remove-parenthesis (cdr-atom $res2))) $res2-in 
+                    (map-atom $res2-in $var2 (unify (: $prfargg2 $prms2)  $var2 (: ($prfabss $prfargg2) $cclnn) (j))))) $res-in)))))
+
+
+
+(function (eval (chain   ((: ruleone (-> (minsup $ptrn) (surp $ptrn $value)))
+                       (: ruleTwo (-> (minsup $ptrn) (surp  $ptrn $value))) ) )
+                        $res 
+                            (eval (map-atom $res $var (eval (unify  $var (: $prfabs (-> $prms $ccln)) (return Yes) (return ($prfabs and $var))))))
+))
+
+
+
+!(chain (
+       (: ruleTwo (-> (minsup $ptrn) (surp $ptrn $value)))
+       (: rule (-> (minsup $ptrn) (surp  $ptrn $value))) 
+       ) 
+       $res
+      (map-atom $res $var (unify  (: $prfabs (-> $prms $ccln))  $var  Yes  ($prfabs and $var)))) 
+
+
+;;(: cog-mine (-> db         ;; Data base space 
+                ms         ;; Minimum support
+                           ;; Minimum support. All patterns with count below
+                           ;; ms are discarded.
+
+                cnjexp     ;; Conjunction expansion
+                           ;; Flag whether to use the conjunctions expansion
+                           ;; heuristic rules. It will only expand conjunctions with enough support
+                           ;; with patterns with enough support.
+
+                maxcnj     ;; Maximum number of conjunctions
+                           ;; Maximum number of conjuncts of a pattern
+                           ;; to apply shallow specialization to, which can be very expensive
+                           ;; when applied to patterns with more than 1 conjunct.
+                           ;; Any value between 0 and the number of conjuncts of the initial
+                           ;; pattern (excluded) will disable shallow specialization.
+
+                max-cnjexp-variables   ;; Maximum number of variables in conjunction expansion
+                                       ;; Maximum number of variables in patterns produced
+                                       ;; by the conjunction expansion rule.
+
+                surp        ;; Surprisingness measure 
+                            ;; After running the pattern miner,
+                            ;; patterns can be ranked according to a surprisingness measure.
+                            ;; The following supported modes are:
+                            ;;    'isurp-old:  Verbatim port of Shujing I-Surprisingness.
+                            ;;    'nisurp-old: Verbatim port of Shujing normalized I-Surprisingness.
+                            ;;    'isurp:      New implementation of I-Surprisingness that takes
+                            ;;            l    linkage into account.
+                            ;;    'nisurp:     New implementation of normalized I-Surprisingness
+                            ;;                 that takes linkage into account.
+                            ;;    'jsdsurp:    Jensen-Shannon Distance based surprisingness.
+                            ;;                 The type of surprisingness is determined by the way
+                            ;;                 the truth value estimate is calculated.
+                            ;;    'none:       No surprisingness measure is applied.
+                            ;;    If a surprisingness measure is selected then the pattern miner returns
+                            ;;     list of patterns each wrapped in an surp expression with
+                            ;;    their surprisingness. Otherwise, if 'none' is selected then it returns a list of patterns.
+
+                db-ratio    ;; db-ratio
+                            ;; Controls downsampling for estimating empirical probability in surprisingness measures.  
+                            ;; Downsampling reduces computational cost while maintaining accuracy.  
+                            ;; Indicates the proportion of the dataset used for pattern count estimation.  
+                            ;; dbr < 1 → more efficient, less accurate  
+                            ;; dbr > 1 → less efficient, more accurate  
+                            ;; Range: (0, +∞), default = 1.0  
+                            ;; Affects only surprisingness, not frequent mining.  
+
+;;))
+
+;; $cnjexp $maxcnj $maxcevar
+
+
+
+
