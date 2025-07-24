@@ -13,6 +13,7 @@
       (-> (replace_variables $ptrn)
        (AbstractPattern $ptrn))))))
 
+;;specialization of abstract patterns on the $x rule
 (: specializationx
        (-> (AbstractPattern ($link $x $y)) 
         (-> (replace_index ($link $x $y) ($link $nx $ny)) 
@@ -20,6 +21,8 @@
             (-> (depth-handler $valx $shabx)
             (-> (replace_variables ($shabx $ny))
               (specializationOf ($link $x $y) ($link $shabx $ny))))))))
+
+;;specialization of abstract patterns on the $y rule
 (: specializationy
        (-> (AbstractPattern ($link $x $y)) 
         (-> (replace_index ($link $x $y) ($link $nx $ny)) 
@@ -28,6 +31,7 @@
             (-> (replace_variables ($nx $shaby))
               (specializationOf ($link $x $y) ($link $nx $shaby))))))))
 
+;;support of specialized patterns rule
 (: support 
       (-> (specializationOf $aptrn $sptrn)
       (-> (replace_index $sptrn $nsptrn) 
@@ -35,6 +39,7 @@
           (supportOf $sptrn $count)))))
 
 
+;; conjunction expansion rule
 (: conjunction-expand
       (-> (candidatePattern $ptrn1)
        (-> (replace_index $ptrn1 $nptrn1)
@@ -55,16 +60,9 @@
                        (candidatePattern (, $nptrn1 $subptrn2)))))))))))))))))))
 
 
-(: format 
-      (-> (candidate-clean $ptrn)
-       (-> (replace_variables $ptrn)
-       (-> (replace_index $ptrn $nptrn)
-        (-> (db-ref $db)
-         (has-support $nptrn (counter $db $nptrn)))))))
-
-
+;;; rule to format the patterns with their support
 (: supportFormat
-      (-> (candidate-clean $ptrn)
+      (-> (candidatePattern $ptrn)
       (-> (replace_index $ptrn $nptrn)
-       (-> (db-ref $db)
-          (hasSupport $nptrn (counter $db $nptrn))))))
+       (-> (sup_count $nptrn $count)
+          (hasSupport $nptrn $count)))))
