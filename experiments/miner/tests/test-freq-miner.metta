@@ -39,7 +39,7 @@
 
 
 ;; define parameters 
-(=(min-sup) 6)
+(=(min-sup) 2)
 (=(surp-mode ) nisurp-old)
 (=(db-ratio) 0.5)
 ; !(add-atom &kb (: msT (ms-threshold 2)))

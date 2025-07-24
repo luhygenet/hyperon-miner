@@ -51,7 +51,7 @@
           ; (supportOf (, (Inheritance $x sodaDrinker) (Inheritance $x ugly)) 3) 
           ; (supportOf (, (Inheritance Abe $r) (Inheritance Cason $r)) 4) (
           ;   supportOf (, (Inheritance Abe $l) (Inheritance Allen $l)) 4) 
-          ;   (supportOf (, (Inheritance Allen $g) (Inheritance Cason $g)) 4)))
+          ;   (supportOf (, (Inheritance Allen $g) (Inheritance Cason $g)) 4))
 
 
 ----------------------------------------------------------------
