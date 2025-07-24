@@ -125,6 +125,8 @@
 ==============================================================================
 ;;frequent pattern miner system proofs
 ==============================================================================
+
+;; system proof to get the unique links from the database
 (= (syn $kb $_ (: $prf (uniqueLink $pattern $cnt))) 
     (let* (
         ($db (match $kb (db-ref $db) $db))
@@ -137,6 +139,8 @@
              ))
     )
 
+---------------------------------------------------------------------------
+;; system proof to replace variables with debruijn index
 (= (syn $kb $_ (: $prf (replace_variables $ptrn)))
     (let* (
         ($new_ptrn (call_replace $ptrn))
@@ -148,8 +152,8 @@
     )
 )
 
-
-
+-----------------------------------------------------------------------------
+;; system proof to count support
 (= (syn $kb $_ (: $prf (sup_count $ptrn $count)))
     (let* (
         ($db (match $kb (db-ref $db) $db))
@@ -159,6 +163,9 @@
      (: CPUCounter (sup_count $ptrn $count))
     )
 )
+
+-----------------------------------------------------------------------------
+;;system proof to replace debruijn index with variables
 (= (syn $kb $_ (: $prf (replace_index $ptrn $res)))
     (let* (
         ($new_ptrn (call_replacev $ptrn))
@@ -169,6 +176,9 @@
         )    
     )
 )
+
+-----------------------------------------------------------------------------
+;; system proof to get variables of a pattern
 (= (syn $kb $_ (: $prf (get_variables $ptrn $vars)))
     (let* (
         ($vars (get_variable_for_pattern $ptrn))
@@ -180,6 +190,8 @@
     )
 )
 
+-----------------------------------------------------------------------------
+;; system proof to combine variable of two patterns
 (= (syn $kb $_ (: $prf (combine_variables $vars1 $vars2 $comb)))
     (let* (
         ($comb (combine_lists $vars1 $vars2))
@@ -191,6 +203,8 @@
     )
 )
 
+-----------------------------------------------------------------------------
+;; system proof to substitute variables in a pattern by another variables
 (= (syn $kb $_ (: $prf (substitute_variables $pattern $vars $subpattern)))
     (let* (
         ($subpattern (substitute $pattern $vars))
@@ -202,6 +216,8 @@
     )
 )
 
+-----------------------------------------------------------------------------
+;;system proof to count the number of clauses in a pattern
 (= (syn $kb $_ (: $prf (clause_count $ptrn $cnt)))
     (let* (
         ($clauses (get-clauses $ptrn))
@@ -214,6 +230,8 @@
     )
 )
 
+-----------------------------------------------------------------------------
+;; system proof to clean conjunction with redundant clauses
 (= (syn $kb $_ (: $prf (conjunction_clean $conjunction)))
     (let* (
         ($conjuncts (get-conjuncts $conjunction))
@@ -225,6 +243,9 @@
     )
     )
 )
+
+------------------------------------------------------------------------------
+;; system proof to handle depth
 (= (syn $kb $_ (: $prf (depth-handler $p $np)))
     (let
      $np (handle-nested-exp $p)
@@ -235,6 +256,8 @@
     )
 )
 
+------------------------------------------------------------------------------
+;; system proof to get valuation set of a pattern
 (= (syn $kb $_ (: $prf (valuation $type ($link $x $y) $val)))
     (let* (
         ($db (match $kb (db-ref $db) $db))
