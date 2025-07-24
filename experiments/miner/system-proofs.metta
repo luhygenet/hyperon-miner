@@ -3,6 +3,41 @@
    (== (get-type $x) Number) 
 )
 
+(= (count-sup $db $ptrn)
+    (let $result (collapse (match $db $ptrn $ptrn))
+         (size-atom $result)
+    )
+)
+
+(= (handle-nested-exp $p)
+    (if (not (== (get-metatype $p) Expression))
+        $p
+        (let* (
+                (() (println! (Handling nested expression: $p)))
+                ( ($link $x $y) $p)
+                ( $nx (collapse (handle-nested-exp $x)))
+                ( $ny (collapse (handle-nested-exp $y)))
+            )
+        (superpose (
+                ($link (superpose $nx) $w)
+                ($link $z (superpose $ny))
+                ($link $x $u)
+                ($link $k $y)
+                $d
+                ($link $g $o)
+                ($link (superpose $nx) (superpose $ny))
+            )
+    )
+)
+
+)
+)
+
+
+(= (get-clauses $cnj) (
+  unify (, $ncnj $ptrn) $cnj (let $result (get-clauses $ncnj) (cons-atom $ptrn $result) ) ($cnj)
+))
+
 ;; define system proofs 
 ------------------------------------------------------------------
 ;; System proof for ⍃
@@ -87,10 +122,140 @@
           (: CPU (⍄ $X $Y))
              (empty))) 
 
+==============================================================================
+;;frequent pattern miner system proofs
+==============================================================================
+(= (syn $kb $_ (: $prf (uniqueLink $pattern $cnt))) 
+    (let* (
+        ($db (match $kb (db-ref $db) $db))
+        ($uniquelink (collapse (unique (match $db ($link $x $y) $link)) ) )
+        ($sup (superpose $uniquelink))
+        )
+    (if (== (size-atom $uniquelink) 0)
+          (empty)
+             (: CPUUnique (uniqueLink ($sup $a $b) (count-sup $db ($sup $a $b))))
+             ))
+    )
 
-             
+(= (syn $kb $_ (: $prf (replace_variables $ptrn)))
+    (let* (
+        ($new_ptrn (call_replace $ptrn))
+        )
+    (if (== $new_ptrn ())
+          (empty)
+             (: CPUReplacevar (replace_variables $new_ptrn))
+        )    
+    )
+)
 
 
+
+(= (syn $kb $_ (: $prf (sup_count $ptrn $count)))
+    (let* (
+        ($db (match $kb (db-ref $db) $db))
+        ($new_ptrn (collapse (match $db $ptrn $ptrn)))
+        ($count (size-atom $new_ptrn))
+    )
+     (: CPUCounter (sup_count $ptrn $count))
+    )
+)
+(= (syn $kb $_ (: $prf (replace_index $ptrn $res)))
+    (let* (
+        ($new_ptrn (call_replacev $ptrn))
+        )
+    (if (== $new_ptrn ())
+          (empty)
+             (: CPUReplaceindex (replace_index $ptrn $new_ptrn))
+        )    
+    )
+)
+(= (syn $kb $_ (: $prf (get_variables $ptrn $vars)))
+    (let* (
+        ($vars (get_variable_for_pattern $ptrn))
+        )
+    (if (== $ptrn ())
+          (empty)
+             (: CPUGetPatternVariables (get_variables $ptrn $vars))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (combine_variables $vars1 $vars2 $comb)))
+    (let* (
+        ($comb (combine_lists $vars1 $vars2))
+        )
+    (if (== $comb ())
+          (empty)
+             (: CPUCombineVariables (combine_variables $vars1 $vars2 $comb))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (substitute_variables $pattern $vars $subpattern)))
+    (let* (
+        ($subpattern (substitute $pattern $vars))
+        )
+    (if (== $subpattern ())
+          (empty)
+             (: CPUSubstituteVariables (substitute_variables $pattern $vars $subpattern))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (clause_count $ptrn $cnt)))
+    (let* (
+        ($clauses (get-clauses $ptrn))
+        ($cnt (size-atom $clauses))
+        )
+    (if (== $cnt 0)
+          (empty)
+             (: CPUCount (clause_count $ptrn $cnt))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (conjunction_clean $conjunction)))
+    (let* (
+        ($conjuncts (get-conjuncts $conjunction))
+        ($unique_conjuncts (unique-atom $conjuncts))
+        )
+    (if (== (size-atom $conjuncts) (size-atom $unique_conjuncts))
+        (: CPUConjunctionClean (conjunction_clean $conjunction))
+        (empty)
+    )
+    )
+)
+(= (syn $kb $_ (: $prf (depth-handler $p $np)))
+    (let
+     $np (handle-nested-exp $p)
+    (if (== $np ())
+          (empty)
+             (: CPUHandleNestedExp (depth-handler $p $np))
+        )    
+    )
+)
+
+(= (syn $kb $_ (: $prf (valuation $type ($link $x $y) $val)))
+    (let* (
+        ($db (match $kb (db-ref $db) $db))
+        ( $valx (collapse (unique (match $db ($link $x $y) $x))))
+        ( $valy (collapse (unique (match $db ($link $x $y) $y))))
+        )
+    (if (== $type X)
+        (if (== ($valx $valy) ())
+          (empty)
+             (: CPUHandleValuation (valuation $type ($link $x $y) (superpose $valx)))
+        )  
+        (if (== $type Y)
+            (if (== ($valy $valx) ())
+              (empty)
+                 (: CPUHandleValuation (valuation $type ($link $x $y) (superpose $valy)))
+            )
+            (empty)
+        )
+    )  
+    )
+)            
 ==============================================================================
 ;; chainner 
 ==============================================================================
